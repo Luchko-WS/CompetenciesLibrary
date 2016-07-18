@@ -6,18 +6,21 @@ mainApp.factory('IOModel', ['$resource', function ($resource) {
 
 mainApp.factory('SkillsModel', ['$resource', function ($resource) {
     return $resource('http://localhost:8088/api/skills.php/params/:id', {'id':'@id'}, {
+        'create' : {method: 'POST'},
         'update': {method: 'PUT'}
     });
 }]);
 
 mainApp.factory('IndicatorsModel', ['$resource', function ($resource) {
     return $resource('http://localhost:8088/api/indicators.php/params/:id', {'id':'@id'}, {
+        'create' : {method: 'POST'},
         'update': {method: 'PUT'}
     });
 }]);
 
 mainApp.factory('GroupsModel', ['$resource', function ($resource) {
     return $resource('http://localhost:8088/api/groups.php/params/:id', {'id':'@id'}, {
+        'create' : {method: 'POST'},
         'update': {method: 'PUT'}
     });
 }]);
@@ -25,6 +28,12 @@ mainApp.factory('GroupsModel', ['$resource', function ($resource) {
 mainApp.factory('AuthModel', ['$resource', function ($resource) {
     return $resource('http://localhost:8088/api/auth.php/auth/:id', {'id':'@id'}, {
         'login': {method: 'PUT'}
+    });
+}]);
+
+mainApp.factory('ActionModel', ['$resource', function ($resource) {
+    return $resource('http://localhost:8088/api/actions.php/params/:id', {'id':'@id'}, {
+        'set': {method: 'PUT'}
     });
 }]);
 

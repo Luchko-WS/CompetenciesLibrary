@@ -2,11 +2,11 @@
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head></head>
-<body ng-controller="UserController">
+<body ng-controller="UsersController">
 <div class="row padded">
     <div class="col-lg-2 col-xs-0"></div>
     <div class="col-lg-8 col-xs-12">
-        <div ng-if="!$user" ng-controller="UserController">
+        <div ng-if="!$user" ng-controller="UsersController">
             <div class="thumbnail">
                 <div ng-if="message">
                     <div class="alert alert-info">
@@ -31,6 +31,7 @@
             <div class="alert alert-info">
                 <h4><b>Вітаємо, {{$user.firstName}} {{$user.secondName}}!</b></h4>
                 <p style="margin-bottom: 20px">Ви авторизовані у системі!</p>
+                <a href="#main"><button class="btn btn-primary">Перейти на головну сторінку</button></a>
             </div>
         </div>
     </div>

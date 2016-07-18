@@ -9,16 +9,19 @@
 
     <div ng-if="$user">
 
-        <div ng-init="getGroupTree(); getGroup(getCurrentGroupId());"></div>
+        <div ng-init="getGroupTree(); getGroup(getCurrentGroupId(), 1);"></div>
 
-        <div ng-if="data[0].skill_name">
+        <div ng-show="data[0].skill_name">
             <!-- Редагування групи -->
             <h2>Редагування групи:</h2>
+            <h3 ng-bind="data[0].skill_name"></h3>
+            <h4>Користувач: {{data[0].user}}</h4>
+            <h4>Група: {{data[0].path}}</h4>
 
             <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Назва групи" ng-model="nameText">
             <textarea class="form-control" rows="5" style="margin-bottom: 10px" placeholder="Опис" ng-model="descriptionText"></textarea>
             <div class="input-group" style="margin-bottom: 10px">
-                <input type="text" class="form-control" placeholder="Коренева група" ng-model="groupText">
+                <input type="text" readonly class="form-control" placeholder="Коренева група" ng-model="groupText">
                 <div class="input-group-btn">
                     <button class="btn btn-primary" ng-click="show=!show">{{onClickSelectCurrentGroup(show)}}</button>
                 </div>
@@ -29,11 +32,16 @@
             <div style="margin-bottom: 20px"></div>
 
             <div style="margin-bottom: 20px" class="btn-group">
-                <a href="#main"><button ng-click="saveGroup(nameText, $currentGroup.right_key, $currentGroup.node_level, descriptionText, data[0].id);" class="btn btn-primary" type="button">Зберегти</button></a>
+                <a href="#main"><button ng-controller="ActionsCtrl" ng-click="prepareGroupToUpdate(data[0].id, data[0].skill_name, nameText, descriptionText, $currentGroup.id, data[0].user_id, $user.id);" class="btn btn-primary" type="button">Зберегти</button></a>
                 <a href="#main"><button ng-click="" class="btn btn-primary" type="button">Скасувати</button></a>
             </div>
         </div>
-        <div ng-if="data[0].skill_name == null">
+
+        <div ng-show="data==null" style="text-align: center">
+            <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
+        </div>
+
+        <div ng-show="data == -1">
             <h4>Групу (id={{getCurrentGroupId()}}) не знайдено!</h4>
             <a href="#main"><button class="btn btn-primary" type="button">Назад</button></a>
         </div>

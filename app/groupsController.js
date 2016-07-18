@@ -1,10 +1,11 @@
-mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', '$routeParams', 'GroupsModel', function ($scope, $rootScope, $http, $location, $routeParams, GroupsModel) {
+mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', '$routeParams', 'GroupsModel',
+    function ($scope, $rootScope, $http, $location, $routeParams, GroupsModel) {
 
     $scope.data = null;
-
     $scope.nameText = null;
     $scope.groupText = null;
-    $scope.descriptionText = null
+    $scope.descriptionText = null;
+    $scope.oldGroupID = null;
 
     $scope.getCurrentGroupId = function () {
         return $routeParams.id;
@@ -29,53 +30,124 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
         }
     };
 
-    $scope.getGroup = function (groupId) {
+    $scope.getGroup = function (groupId, setDataIntoForm) {
+        $scope.oldGroupID = null;
+        $scope.data = null;
+        $rootScope.$currentGroup = null;
 
         var params =  {
             tree: false,
             groupId: groupId
         };
-
         GroupsModel.get({'id':JSON.stringify(params)}, function (res) {
             if(res.data === undefined) {
                 console.log('ERROR IN GET GROUP');
+                $scope.data = -1;
             }
             else {
                 $scope.data = res.data;
-                $scope.nameText = res.data[0].skill_name;
-                $rootScope.$currentGroup = $rootScope.getCurrentGroup($scope.data[0].left_key,
-                    $scope.data[0].right_key, $scope.data[0].node_level);
-                $scope.groupText = $rootScope.$currentGroup.skill_name;
-                $scope.descriptionText = res.data[0].description;
+                if(setDataIntoForm) {
+                    $scope.nameText = $scope.data[0].skill_name;
+                    $rootScope.$currentGroup = $rootScope.getCurrentGroup($scope.data[0].left_key,
+                        $scope.data[0].right_key, $scope.data[0].node_level);
+                    if ($rootScope.$currentGroup) {
+                        $scope.oldGroupID = $rootScope.$currentGroup.id;
+                        $scope.groupText = $rootScope.$currentGroup.skill_name;
+                    }
+                    $scope.descriptionText = $scope.data[0].description;
+                }
             }
         });
     };
 
-    $scope.saveGroup = function(nameValue, groupRightKeyValue, groupLevelValue, descriptionValue, groupId, userId){
+    $scope.prepareGroupToCreate = function (groupName, groupDescription, parentGroupID, parentGroupUserID, currentUserID) {
+        if (!parentGroupID || !groupName) {
+            alert("Заповніть поля назви і групи!");
+            return;
+        }
 
-        var value =  {
-            groupId: groupId,
+        if (currentUserID != parentGroupUserID) {
+            $rootScope.saveAction('create', 'group', -1, groupName, null, groupDescription, parentGroupID, currentUserID);
+            alert('Дану дію додано до списку!');
+            return;
+        }
+        $scope.createGroup(groupName, parentGroupID, groupDescription, currentUserID);
+
+    };
+
+    $scope.createGroup = function(nameValue, parentGroupID, descriptionValue, userID){
+        var params =  {
             groupName: nameValue,
-            groupRightKey: groupRightKeyValue,
-            groupLevel: groupLevelValue,
+            parentGroupID: parentGroupID,
             groupDescription: descriptionValue,
-            userId: userId
+            userID: userID
         };
 
-        GroupsModel.save(value, function(res){
+        GroupsModel.create(params, function(res){
             console.log(res);
         });
+        alert("Групу створено!");
+        $rootScope.getAllSkills();
+        $rootScope.getGroupTree();
+    };
 
-        alert("Групу збережено!");
+    $scope.prepareGroupToUpdate = function (groupID, groupName, newGroupName, newGroupDescription, newParentGroupID, userID, currentUserID) {
+        var isMove = false;
+        if (groupID == 1) {
+            isMove = false;
+            alert("Не можливо перемістити кореневу групу!");
+            return;
+        }
+
+        if ($scope.data != null) {
+            if (Number($rootScope.$currentGroup.left_key) >= Number($scope.data[0].left_key) && ($rootScope.$currentGroup.right_key <= $scope.data[0].right_key)) {
+                    isMove = false;
+                    alert("Не можливо перемістити дану групу в підлеглу їй групу!");
+                    return;
+            }
+        }
+        if (newParentGroupID != $scope.oldGroupID) {
+            isMove = true;
+        }
+
+        if (userID != currentUserID) {
+            $rootScope.saveAction('edit', 'group', groupID, groupName, newGroupName, newGroupDescription, newParentGroupID, currentUserID);
+            alert('Дану дію додано до списку!');
+            return;
+        }
+
+        $scope.updateGroup(newGroupName, newParentGroupID, newGroupDescription, groupID, isMove);
+    };
+
+    $scope.updateGroup = function(nameValue, parentGroupID, descriptionValue, groupID, isMove){
+        var params =  {
+            groupID: groupID,
+            parentGroupID: parentGroupID,
+            groupName: nameValue,
+            groupDescription: descriptionValue,
+            isMove: isMove
+        };
+
+        GroupsModel.update({'id':JSON.stringify(params)}, function(res){
+            console.log(res);
+        });
+        alert("Групу оновлено!");
 
         $rootScope.getAllSkills();
         $rootScope.getGroupTree();
     };
 
+    $scope.prepareGroupToRemove = function (groupID, groupName, parentGroupID, userID, currentUserID) {
+        if (userID != currentUserID) {
+            $rootScope.saveAction('remove', 'group', groupID, groupName, null, null, parentGroupID, currentUserID);
+            alert('Дану дію додано до списку!');
+            return;
+        }
+        $scope.removeGroup(groupID);
+    };
+
     $scope.removeGroup = function(groupId){
-
         var params = groupId;
-
         var answer = confirm("Ви дійсно бажаєте видалити групу? ");
         if (answer === true) {
             GroupsModel.delete({id:params}, function (res) {
@@ -94,15 +166,13 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
             exportToFile: 'NONE',
             tree: 'GROUPS'
         };
-
         GroupsModel.get({'id':JSON.stringify(params)}, function (res) {
             if(res.data === undefined) {
                 console.log('ERROR IN GET GROUP TREE');
             }
             else {
                 $rootScope.$tree = res.data;
-                $('#tree').treeview({data: formatDataToTree()});
-
+                $('#tree').treeview({data: $rootScope.formatDataToTree(), nodeIcon: 'glyphicon glyphicon-pencil'});
                 $('#tree').on('nodeSelected', function(event, data) {
                     $rootScope.$currentGroup = data;
                 });
@@ -110,68 +180,54 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
         });
     };
 
-    function formatDataToTree() {
-
-        var tree = $rootScope.$tree;
-        var root = tree[0];
-        root.text = tree[0].skill_name;
+    $rootScope.formatDataToTree = function() {
+        var root = $rootScope.$tree[0];
+        root.text = $rootScope.$tree[0].skill_name;
         root.node_id = 0;
-
-        var indexMap = [0];
+        var stack = [0];
         var currentLevel = 2;
 
-        for(var i = 1; i < tree.length; i++) {
+        for(var i = 1; i < $rootScope.$tree.length; i++) {
+            $rootScope.$tree[i].node_id = i;
+            $rootScope.$tree[i].nodes = null;
+            $rootScope.$tree[i].text = $rootScope.$tree[i].skill_name;
 
-            tree[i].node_id = i;
-            tree[i].nodes = null;
-            tree[i].text = tree[i].skill_name;
-            if(tree[i].node_level == 2){
-                tree[i].parentId = indexMap[0];
+            if(currentLevel == $rootScope.$tree[i].node_level){
+                $rootScope.$tree[i].parentId = stack[0];
             }
-            else{
-                if(currentLevel == tree[i].node_level){
-                    tree[i].parentId = indexMap[tree[i].node_level - 2];
+            else if(currentLevel < $rootScope.$tree[i].node_level){
+                stack.unshift($rootScope.$tree[i-1].node_id);
+                $rootScope.$tree[i].parentId = stack[0];
+                currentLevel++;
+            }
+            else if(currentLevel > $rootScope.$tree[i].node_level) {
+                for(j = 0; j < currentLevel - $rootScope.$tree[i].node_level; j++) {
+                    stack.shift();
                 }
-                else if(currentLevel < tree[i].node_level){
-                    if(tree[i].node_level - 1 > indexMap.length){
-                        indexMap.push(i-1);
-                        tree[i].parentId = indexMap[tree[i].node_level - 2];
-                        currentLevel = tree[i].node_level;
-                    }
-                    else{
-                        indexMap[tree[i].node_level - 2] = i-1;
-                        tree[i].parentId = indexMap[tree[i].node_level - 2];
-                        currentLevel = tree[i].node_level;
-                    }
-                }
-                else if(currentLevel > tree[i].node_level){
-                    tree[i].parentId = indexMap[tree[i].node_level - 2];
-                    currentLevel = tree[i].node_level;
-                }
+                $rootScope.$tree[i].parentId = stack[0];
+                currentLevel -= (currentLevel - $rootScope.$tree[i].node_level);
             }
         }
 
         var map = {}, node, roots = [];
-        for (var i = 1; i < tree.length; i ++) {
-            node = tree[i];
+        for (var i = 1; i < $rootScope.$tree.length; i++) {
+            node = $rootScope.$tree[i];
             node.nodes = null;
             map[node.node_id] = i;
             if (node.parentId !== 0) {
-                if(tree[map[node.parentId]].nodes == null) {
-                    tree[map[node.parentId]].nodes = [];
+                if($rootScope.$tree[map[node.parentId]].nodes == null) {
+                    $rootScope.$tree[map[node.parentId]].nodes = [];
                 }
-                tree[map[node.parentId]].nodes.push(node);
+                $rootScope.$tree[map[node.parentId]].nodes.push(node);
             } else {
                 roots.push(node);
             }
         }
-
         root.nodes = roots;
         return [root];
-    }
+    };
 
     $rootScope.getCurrentGroup = function (left_key, right_key, level) {
-
         if($scope.$tree != null) {
             for (var i = 0; i < $rootScope.$tree.length; i++) {
                 if (Number($rootScope.$tree[i].node_level) == (level - 1) &&

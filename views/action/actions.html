@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<div ng-controller="ActionsCtrl">
+    <div ng-init="getAllActions();"></div>
+    <div class="row padded">
+        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></div>
+        <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+            <div ng-if="actionData != null && actionData != -1">
+                <div class="thumbnail">
+                    <div style="margin-bottom: 20px" class="row padded">
+                        <div class="col-lg-1 col-xs-1">
+                            <p style="text-align: center"><b>#</b></p>
+                        </div>
+                        <div class="col-lg-1 col-xs-1">
+                            <p style="text-align: center"><b>Дія</b></p>
+                        </div>
+                        <div class="col-lg-2 col-xs-2">
+                            <p style="text-align: center"><b>Тип об'єкта</b></p>
+                        </div>
+                        <div class="col-lg-3 col-xs-3">
+                            <p style="text-align: center"><b>Назва об'єкта</b></p>
+                        </div>
+                        <div class="col-lg-2 col-xs-2">
+                            <p style="text-align: center"><b>Користувач</b></p>
+                        </div>
+                        <div class="col-lg-1 col-xs-1">
+                            <p style="text-align: center"><b>Статус</b></p>
+                        </div>
+                        <div class="col-lg-2 col-xs-1">
+                        </div>
+                    </div>
+                    <div ng-repeat="item_action in actionData">
+                        <div>
+                            <div class="row padded">
+                                <a ng-if="item_action.item_id != -1" href="#actions/id/{{item_action.id}}/{{item_action.item_type}}/{{item_action.item_id}}/{{item_action.action_type}}">
+                                    <div class="col-lg-1 col-xs-1">
+                                        <p style="text-align: center">{{item_action.id}}</p>
+                                    </div>
+                                    <div class="col-lg-1 col-xs-1">
+                                        <p style="text-align: center">{{item_action.action_type}}</p>
+                                    </div>
+                                    <div class="col-lg-2 col-xs-2">
+                                        <p style="text-align: center">{{item_action.item_type}}</p>
+                                    </div>
+                                    <div class="col-lg-3 col-xs-3">
+                                        <p style="text-align: center">{{item_action.item_name}}</p>
+                                    </div>
+                                </a>
+                                <a ng-if="item_action.item_id == -1" href="#actions/id/{{item_action.id}}/{{item_action.item_type}}/{{item_action.action_type}}">
+                                    <div class="col-lg-1 col-xs-1">
+                                        <p style="text-align: center">{{item_action.id}}</p>
+                                    </div>
+                                    <div class="col-lg-1 col-xs-1">
+                                        <p style="text-align: center">{{item_action.action_type}}</p>
+                                    </div>
+                                    <div class="col-lg-2 col-xs-2">
+                                        <p style="text-align: center">{{item_action.item_type}}</p>
+                                    </div>
+                                    <div class="col-lg-3 col-xs-3">
+                                        <p style="text-align: center">{{item_action.item_name}}</p>
+                                    </div>
+                                </a>
+                                <div class="col-lg-2 col-xs-2">
+                                    <p style="text-align: center">{{item_action.user}}</p>
+                                </div>
+                                <div class="col-lg-1 col-xs-1">
+                                    <p ng-if="item_action.state == 0" style="text-align: center">Очікується</p>
+                                    <p ng-if="item_action.state == 1" style="text-align: center">Прийнято</p>
+                                    <p ng-if="item_action.state == -1" style="text-align: center">Відхидено</p>
+                                </div>
+                                <div class="col-lg-2 col-xs-1">
+                                    <button ng-click="removeAction(item_action.id);" class="btn btn-primary">x</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div ng-show="actionData==null" style="text-align: center">
+                <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
+            </div>
+            <div ng-if="actionData == -1">
+                Actions not found!
+                <a href="#actions"><button class="btn btn-primary" type="button">До списку дій</button></a>
+            </div>
+        </div>
+        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></div>
+    </div>
+</div>
+</body>
+</html>

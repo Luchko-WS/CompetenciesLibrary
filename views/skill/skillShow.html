@@ -11,7 +11,7 @@
     <div ng-controller="GroupsCtrl">
         <div ng-init="getGroupTree();"></div>
     </div>
-    <div ng-init="getSkill(getCurrentSkillIdSkillCtrl())"></div>
+    <div ng-init="getSkill(getCurrentSkillIdSkillCtrl(), 1)"></div>
 
     <div ng-if="data[0].skill_name">
         <div class="row padded">
@@ -23,6 +23,8 @@
 
                     <h4>Опис: {{descriptionText}}</h4>
                     <h4>Група: {{groupText}}</h4>
+                    <p>{{data[0].path}}</p>
+                    <h4>Користувач: {{data[0].user}}</h4>
 
                     <a href="#main"><button ng-click="" class="btn btn-primary" type="button">Назад</button></a>
 
@@ -50,7 +52,11 @@
         </div>
     </div>
 
-    <div ng-if="data[0].skill_name == null">
+    <div ng-if="data==null" style="text-align: center">
+        <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
+    </div>
+
+    <div ng-if="data == -1">
         <h4>Компетенцію (id={{getCurrentSkillIdSkillCtrl()}}) не знайдено!</h4>
         <a href="#main"><button class="btn btn-primary" type="button">Назад</button></a>
     </div>

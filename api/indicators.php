@@ -27,45 +27,54 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
     $input = json_decode($args['id'], true);
     //file_put_contents('INDICATORS.txt', $input["indicatorId"]);
 
-    $rowIndicators = DB::fetchAll("SELECT * FROM indicators WHERE id="
+    $rowIndicator = DB::fetchAll("SELECT * FROM indicators WHERE id = "
         .$input['indicatorId'].";");
-    $rowsSkills[0]['indicators'] = $rowIndicators;
 
-    $response->getBody()->write('{"data":'.json_encode($rowsSkills).'}');
+    $user = DB::fetchAll("SELECT * FROM users WHERE id=" . $rowIndicator[0]['user_id'].";");
+    $userName = $user[0]['firstname']." ".$user[0]['secondname'];
+    $rowIndicator[0]['user'] = $userName;
+
+    $response->getBody()->write('{"data":'.json_encode($rowIndicator).'}');
     return $response;
 });
 
+//створення індикатору
 $app->post('/params', function (Request $request, Response $response, $args) {
     $input = $request->getParsedBody();
     $skillId = $input['skillId'];
-    $indicatorId = $input['indicatorId'];
     $indicatorName = $input['indicatorName'];
     $indicatorDescription = $input['indicatorDescription'];
     $userId = $input['userId'];
 
-    //редагування індикатору
-    if ($indicatorId != -1) {
-        $sql = "UPDATE indicators SET indicator_name='".$indicatorName.
-            "', description='".$indicatorDescription.
-            "', skill_id=".$skillId." WHERE id=".$indicatorId.";";
+    $sql = "INSERT INTO indicators (skill_id, indicator_name, description, user_id) ".
+      "VALUES ($skillId, '$indicatorName', '$indicatorDescription', $userId);";
+    DB::exec($sql);
+    //file_put_contents('OOOOO.txt', $sql);
 
-        //file_put_contents('indicator.txt', $sql);
-        DB::exec($sql);
-    }
-    //створення індикатору
-    else {
-        $sql = "INSERT INTO indicators (skill_id, indicator_name, description, user_id) ".
-          "VALUES (".$skillId.", '".$indicatorName."', '".$indicatorDescription."', ".$userId.");";
-        DB::exec($sql);
-        file_put_contents('OOOOO.txt', $sql);
-    }
     return $this->response->withJson($input);
+});
+
+//редагування індикатору
+$app->put('/params/{id}', function ($request, $response, $args) {
+    $input = json_decode($args['id'], true);
+    $skillId = $input['skillId'];
+    $indicatorId = $input['indicatorId'];
+    $indicatorName = $input['indicatorName'];
+    $indicatorDescription = $input['indicatorDescription'];
+
+    $sql = "UPDATE indicators SET indicator_name = '$indicatorName', ".
+        "description = '$indicatorDescription', skill_id = $skillId WHERE id = $indicatorId;";
+    //file_put_contents('indicator.txt', $sql);
+    DB::exec($sql);
+
+    return $this->response->withJson($input);
+
 });
 
 $app->delete('/params/[{id}]', function (Request $request, Response $response, $args) {
     $input = $request->getAttribute('id');
     $id = $input;
-    $sql = "DELETE FROM indicators WHERE id=".$id.";";
+    $sql = "DELETE FROM indicators WHERE id = $id;";
     DB::exec($sql);
     return $this->response->true;
 });

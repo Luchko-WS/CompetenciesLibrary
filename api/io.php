@@ -26,17 +26,25 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
 
     $input = json_decode($args['id'], true);
 
-    $rows = DB::fetchAll("SELECT * FROM skill_tree ORDER BY left_key");
+    if($input['id']) {
+        $item = DB::fetchAll("SELECT * FROM skill_tree WHERE id=" . $input['id'] . ";");
+        $leftKey = $item[0]['left_key'];
+        $rightKey = $item[0]['right_key'];
+        $rows = DB::fetchAll("SELECT * FROM skill_tree WHERE left_key>=" . $leftKey . " AND right_key<=" . $rightKey . " ORDER BY left_key");
+    }
+    else{
+        $rows = DB::fetchAll("SELECT * FROM skill_tree ORDER BY left_key");
+    }
 
     for($i = 0; $i < count($rows); $i++) {
         $rowIndicators = DB::fetchAll("SELECT * FROM indicators WHERE skill_id=".$rows[$i]['id']);
         $rows[$i]['indicators'] = $rowIndicators;
     }
 
-    if($input['exportToFile'] == "JSON") {
+    if($input['format'] == "JSON") {
         file_put_contents('exportFile.json', json_encode($rows));
     }
-    else if($input['exportToFile'] == "XLS") {
+    else if($input['format'] == "XLS") {
         $xls = new PHPExcel();
         $xls->setActiveSheetIndex(0);
         $sheet = $xls->getActiveSheet();
@@ -76,7 +84,7 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
             }
         }
         $objWriter = new PHPExcel_Writer_Excel5($xls);
-        $objWriter->save('TestExcel.xls');
+        $objWriter->save('ExportFile.xls');
     }
 
     return $response;

@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<div ng-controller="ActionsCtrl">
+    <div ng-init="preparePageForAction()"></div>
+    <div class="row padded">
+        <div class="col-lg-1 col-xs-0"></div>
+        <div class="col-lg-10 col-xs-12">
+            <div ng-if="actionData != null && actionData != -1">
+                <div ng-controller="GroupsCtrl" ng-init="getGroup(getItemID());">
+                    <div class="thumbnail">
+                        <h3>Запропоновані зміни користувачем</h3>
+                        <h3>{{actionData[0].user}}</h3>
+                        <h4 ng-if="actionData[0].state == -1" style="color: red">Відхилено</h4>
+                        <h4 ng-if="actionData[0].state == 0">Очікується</h4>
+                        <h4 ng-if="actionData[0].state == 1" style="color: green">Прийнято</h4>
+
+                        <h2>Редагування групи</h2>
+
+                        <div ng-if="data != null && data != -1">
+                            <div class="row padded">
+                                <div class="col-lg-6 col-xs-12">
+                                    <h2>Попередня інформація</h2>
+                                    <h3>Назва: {{data[0].skill_name}}</h3>
+                                    <h3>Опис: {{data[0].description}}</h3>
+                                    <h3>Група: {{data[0].path}}</h3>
+                                </div>
+                                <div class="col-lg-6 col-xs-12">
+                                    <h2>Змінена інформація</h2>
+                                    <h3>Назва: {{actionData[0].new_item_name}}</h3>
+                                    <h3>Опис: {{actionData[0].new_item_description}}</h3>
+                                    <h3>Група: {{actionData[0].path}}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div ng-show="data==null" style="text-align: center">
+                            <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
+                        </div>
+                        <div ng-if="data == -1">
+                            Group not found!
+                            <a href="#actions"><button class="btn btn-primary" type="button">До списку дій</button></a>
+                        </div>
+
+                        <a href="#actions" ng-show="actionData[0].state == 0 && actionData[0].user_id != $user.id"><button class="btn btn-primary" type="button" ng-click="rejectOrAcceptTheAction(actionData[0].id, 1); updateGroup(actionData[0].new_item_name, actionData[0].new_parent_id, actionData[0].new_item_description, actionData[0].item_id, actionData[0].new_parent_id != data[0].parent_id);">Прийняти</button></a>
+                        <a href="#actions" ng-show="actionData[0].state == 0 && actionData[0].user_id != $user.id"><button class="btn btn-danger" type="button" ng-click="rejectOrAcceptTheAction(getActionID(), -1);">Скасувати</button></a>
+                        <a href="#actions"><button class="btn btn-primary" type="button">До списку дій</button></a>
+                    </div>
+                </div>
+            </div>
+            <div ng-show="actionData==null" style="text-align: center">
+                <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
+            </div>
+            <div ng-if="actionData == -1">
+                Action not found!
+                <a href="#actions"><button class="btn btn-primary" type="button">До списку дій</button></a>
+            </div>
+        </div>
+        <div class="col-lg-1 col-xs-0"></div>
+    </div>
+</div>
+</body>
+</html>

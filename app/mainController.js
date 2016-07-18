@@ -1,8 +1,4 @@
 mainApp.controller('MainCtrl', ['$scope', '$rootScope', '$http', '$location', '$routeParams', 'IOModel', function ($scope, $rootScope, $http, $location, $routeParams, IOModel) {
-
-    $rootScope.$id;
-    $rootScope.$edit_mode;
-
     $rootScope.$tree;
     $rootScope.$currentGroup;
 
@@ -13,36 +9,28 @@ mainApp.controller('MainCtrl', ['$scope', '$rootScope', '$http', '$location', '$
         $scope.$page = page;
     };
 
-    $scope.setCreateMode = function () {
-        $rootScope.editMode = 'create';
-    };
+    $scope.xlsFileIsReadyForDownload = false;
+    $scope.jsonFileIsReadyForDownload = false;
 
-    $scope.exportAllData = function (format) {
+    $scope.exportAllData = function (format, id) {
         var params =  {
-            exportToFile: format,
-            skill: 'ALL_SKILLS',
-            indicator: 'ALL_INDICATORS',
+            format: format,
+            id: id
         };
 
         IOModel.get({'id':JSON.stringify(params)}, function (res) {
+            switch (format){
+                case "XLS":
+                    $scope.xlsFileIsReadyForDownload = true;
+                    break;
+                case "JSON":
+                    $scope.jsonFileIsReadyForDownload = true;
+                    break;
+            }
             alert("Export data!");
+            console.log($scope.jsonFileIsReadyForDownload);
         });
     };
 
-    $scope.changeButtonTextSelectFromTree = function(flag){
-        if(flag){
-            return "Select node";
-        }
-        else {
-            return "SelectFromTree";
-        }
-    };
 
-    $scope.saveAdditionalData = function (value) {
-        additionalData = value;
-    };
-
-    $scope.getAdditionalData = function () {
-        return additionalData;
-    };
 }]);

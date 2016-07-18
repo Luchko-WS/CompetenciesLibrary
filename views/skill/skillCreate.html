@@ -12,14 +12,14 @@
         <h2>Створення нової компетенції:</h2>
 
         <div ng-controller="GroupsCtrl">
-            <div ng-init="getGroupTree()"></div>
+            <div ng-init="getGroupTree();"></div>
         </div>
 
         <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Компетенція" ng-model="nameText">
         <textarea class="form-control" rows="5" style="margin-bottom: 10px" placeholder="Опис" ng-model="descriptionText"></textarea>
 
         <div class="input-group" style="margin-bottom: 10px">
-            <input type="text" class="form-control" placeholder="Група" ng-model="groupText">
+            <input type="text" readonly class="form-control" placeholder="Група" ng-model="groupText">
             <div class="input-group-btn">
                 <button class="btn btn-primary" ng-click="show=!show">{{onClickSelectCurrentGroup(show)}}</button>
             </div>
@@ -30,7 +30,7 @@
         <div style="margin-bottom: 20px"></div>
 
         <div style="margin-bottom: 20px" class="btn-group">
-            <a href="#main"><button ng-click="saveSkill(nameText, $currentGroup.right_key, $currentGroup.node_level, descriptionText, -1, $user.id);" class="btn btn-primary" type="button">Створити</button></a>
+            <a href="#main"><button ng-controller="ActionsCtrl" ng-click="prepareSkillToCreate(nameText, descriptionText, $currentGroup.id, $currentGroup.user_id, $user.id);" class="btn btn-primary" type="button">Створити</button></a>
             <a href="#main"><button ng-click="" class="btn btn-primary" type="button">Назад</button></a>
         </div>
     </div>

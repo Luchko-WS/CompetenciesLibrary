@@ -12,6 +12,16 @@ mainApp.config(['$routeProvider', function ($routeProvider){
         .when('/main', {
             templateUrl: 'views//main.html'
         })
+        /*
+         .when('/main/page/:page', {
+         templateUrl: 'views//main.html',
+         controller: 'MainCtrl'
+         })
+         */
+        .when('/download', {
+            templateUrl: 'views//downloadPage.html'
+        })
+        //USER
         .when('/login', {
             templateUrl: 'views//user/login.html'
         })
@@ -21,10 +31,51 @@ mainApp.config(['$routeProvider', function ($routeProvider){
         .when('/registration', {
             templateUrl: 'views//user/registration.html'
         })
-        .when('/main/page/:page', {
-            templateUrl: 'views//main.html',
-            controller: 'MainCtrl'
+        //ACTIONS
+        .when('/actions', {
+            templateUrl: 'views//action//actions.html'
         })
+        .when('/actions/id/:id', {
+            templateUrl: 'views//action//loadActionPage.html',
+            controller: 'ActionsCtrl'
+        })
+        .when('/actions/id/:id/skill/create', {
+            templateUrl: 'views//action//skill//createAction.html',
+            controller: 'ActionsCtrl'
+        })
+        .when('/actions/id/:id/skill/:itemID/edit', {
+            templateUrl: 'views//action//skill//editAction.html',
+            controller: 'ActionsCtrl'
+        })
+        .when('/actions/id/:id/skill/:itemID/remove', {
+            templateUrl: 'views//action//skill//removeAction.html',
+            controller: 'ActionsCtrl'
+        })
+        .when('/actions/id/:id/group/create', {
+            templateUrl: 'views//action//group//createAction.html',
+            controller: 'ActionsCtrl'
+        })
+        .when('/actions/id/:id/group/:itemID/edit', {
+            templateUrl: 'views//action//group//editAction.html',
+            controller: 'ActionsCtrl'
+        })
+        .when('/actions/id/:id/group/:itemID/remove', {
+            templateUrl: 'views//action//group//removeAction.html',
+            controller: 'ActionsCtrl'
+        })
+        .when('/actions/id/:id/indicator/create', {
+            templateUrl: 'views//action//indicator//createAction.html',
+            controller: 'ActionsCtrl'
+        })
+        .when('/actions/id/:id/indicator/:itemID/edit', {
+            templateUrl: 'views//action//indicator//editAction.html',
+            controller: 'ActionsCtrl'
+        })
+        .when('/actions/id/:id/indicator/:itemID/remove', {
+            templateUrl: 'views//action//indicator//removeAction.html',
+            controller: 'ActionsCtrl'
+        })
+        //ITEMS
         .when('/skill/create', {
             templateUrl: 'views//skill//skillCreate.html'
         })

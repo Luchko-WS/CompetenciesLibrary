@@ -5,6 +5,8 @@ mainApp.config(['$httpProvider', function ($httpProvider) {
 mainApp.run(['$rootScope', function ($rootScope) {
     $rootScope.logout = function () {
         $rootScope.$user = null;
+        $rootScope.$tree = null;
+        $rootScope.$currentGroup = null;
         window.localStorage.removeItem('authToken');
         window.localStorage.removeItem('authUser');
     };
@@ -13,41 +15,24 @@ mainApp.run(['$rootScope', function ($rootScope) {
     $rootScope.$user = authUser ? JSON.parse(authUser) : null;
 }]);
 
-mainApp.controller('UserController', ['$scope', '$rootScope', 'AuthModel', function ($scope, $rootScope, AuthModel) {
+mainApp.controller('UsersController', ['$scope', '$rootScope', '$http', '$location', '$routeParams', 'AuthModel',
+    function ($scope, $rootScope, $http, $location, $routeParams, AuthModel) {
     $scope.user = {};
 
     $scope.login = function () {
-        console.log('user', $scope.user);
-
-        $scope.message = null;
-
-        /* DON'T WORK!!!!
-        AuthModel.login($scope.user, function (res) {
-            res = res.toJSON();
-            console.log('res', res);
-            window.localStorage.setItem('authToken', res.token);
-            window.localStorage.setItem('authUser', JSON.stringify(res.user));
-            $rootScope.$user = res.user;
-            console.log($rootScope.$user);
-        }, function (err) {
-            console.log('err', err.data);
-        });
-        */
+         $scope.message = null;
 
         var params =  {
             login: $scope.user.login,
             password: $scope.user.password
         };
 
-        console.log(params);
-
-        AuthModel.get({'id':JSON.stringify(params)}, function (res) {
+        AuthModel.login({'id':JSON.stringify(params)}, function (res) {
             res = res.toJSON();
-            console.log('res', res);
             window.localStorage.setItem('authToken', res.token);
             window.localStorage.setItem('authUser', JSON.stringify(res.user));
             $rootScope.$user = res.user;
-            console.log($rootScope.$user);
+            //$location.path('/main');
         }, function (err) {
             $scope.message = "Невірний логін чи пароль!";
             console.log('err', err.data);
@@ -55,7 +40,6 @@ mainApp.controller('UserController', ['$scope', '$rootScope', 'AuthModel', funct
     };
 
     $scope.registerUser = function () {
-
         if(!$scope.validateRegistrationForm()){
             return;
         }

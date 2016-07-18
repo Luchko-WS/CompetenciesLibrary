@@ -6,10 +6,12 @@
 <body>
 <div ng-if="$user">
     <div ng-controller="SkillsCtrl">
-        <div ng-init="getSkillName(getCurrentSkillIdIndicatorCtrl())"></div>
+        <div ng-init="getSkill(getCurrentSkillIdIndicatorCtrl())"></div>
         <div ng-if="data[0].skill_name">
             <h2>Компетенція:</h2>
             <h3 ng-bind="data[0].skill_name"></h3>
+            <p>{{data[0].path}}</p>
+            <h4>Користувач: {{data[0].user}}</h4>
 
             <div ng-controller="IndicatorsCtrl">
                 <!-- Додання індикатору -->
@@ -18,13 +20,16 @@
                 <textarea class="form-control" rows="5" style="margin-bottom: 10px" placeholder="Опис" ng-model="descriptionText"></textarea>
 
                 <div style="margin-bottom: 20px" class="btn-group">
-                    <a href="#skill/{{getCurrentSkillIdIndicatorCtrl()}}/edit"><button ng-click="saveIndicator(nameText, getCurrentSkillIdIndicatorCtrl(), descriptionText, -1, $user.id)" class="btn btn-primary" type="button">Створити</button></a>
+                    <a href="#skill/{{getCurrentSkillIdIndicatorCtrl()}}/edit"><button ng-click="prepareIndicatorToCreate(nameText, descriptionText, data[0].id, data[0].user_id, $user.id)" class="btn btn-primary" type="button">Створити</button></a>
                     <a href="#skill/{{getCurrentSkillIdIndicatorCtrl()}}/edit"><button class="btn btn-primary" type="button">Назад</button></a>
                 </div>
             </div>
         </div>
 
-        <div ng-if="data[0].skill_name == null">
+        <div ng-if="data==null" style="text-align: center">
+            <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
+        </div>
+        <div ng-if="data == -1">
             <h4>Компетенцію (id={{getCurrentSkillIdIndicatorCtrl()}}) не знайдено!</h4>
             <div style="margin-bottom: 20px" class="btn-group">
                 <a href="#main"><button class="btn btn-primary" type="button">Назад</button></a>
