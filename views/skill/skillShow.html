@@ -4,61 +4,64 @@
 <head></head>
 
 <body>
+<div class="thumbnail">
+    <div style="margin: 10px; margin-left: 20px; margin-right: 20px">
+        <div ng-controller="SkillsCtrl">
 
-<div ng-controller="SkillsCtrl">
+            <!-- Перегляд компетенції -->
+            <div ng-controller="GroupsCtrl">
+                <div ng-init="getGroupTree();"></div>
+            </div>
+            <div ng-init="getSkill(getCurrentSkillIdSkillCtrl(), 1)"></div>
 
-    <!-- Перегляд компетенції -->
-    <div ng-controller="GroupsCtrl">
-        <div ng-init="getGroupTree();"></div>
-    </div>
-    <div ng-init="getSkill(getCurrentSkillIdSkillCtrl(), 1)"></div>
+            <div ng-if="data != null && data != -1">
+                <h2>Інформація про компетенцію:</h2>
+                <h3 ng-bind="data[0].skill_name"></h3>
 
-    <div ng-if="data[0].skill_name">
-        <div class="row padded">
-            <div class="col-lg-1 col-xs-1"></div>
-            <div class="col-lg-10 col-xs-10">
+                <h4 ng-if="descriptionText" ng-bind="'Опис: ' + descriptionText"></h4>
+                <h4 ng-bind="'Група: ' + groupText"></h4>
+                <p ng-bind="data[0].path"></p>
+                <h4 ng-bind="'Користувач: ' + data[0].user"></h4>
+
+                <a ng-if="$user" href="#skill/{{getCurrentSkillIdSkillCtrl()}}/edit"><button class="btn btn-primary" type="button">Редагувати компетенцію</button></a>
+                <a href="#main"><button ng-click="" class="btn btn-primary" type="button">На головну</button></a>
+                <a ng-if="$user" href="#editLibrary"><button ng-click="" class="btn btn-primary" type="button">До редактору</button></a>
+
+                <h3>Список індикаторів:</h3>
                 <div class="thumbnail">
-                    <h2>Інформація про компетенцію:</h2>
-                    <h3 ng-bind="data[0].skill_name"></h3>
-
-                    <h4>Опис: {{descriptionText}}</h4>
-                    <h4>Група: {{groupText}}</h4>
-                    <p>{{data[0].path}}</p>
-                    <h4>Користувач: {{data[0].user}}</h4>
-
-                    <a href="#main"><button ng-click="" class="btn btn-primary" type="button">Назад</button></a>
-
-                    <h3>Список індикаторів:</h3>
-                    <div class="thumbnail">
-
+                    <div style="margin: 10px">
                         <div ng-if="data[0].indicators.length == 0">
                             <h5>Дана компетенція не містить в собі індикаторів</h5>
                         </div>
 
                         <div ng-repeat="item_indicator in data[0].indicators">
-                            <div style="margin: 5px">
-                                <div class="row padded">
-                                    <div class="col-lg-10 col-xs-10">
-                                        <a href="#skill/{{data[0].id}}/indicator/{{item_indicator.id}}/show"><h4>{{item_indicator.indicator_name}}</h4></a>
-                                        <h5>{{item_indicator.description}}</h5>
-                                    </div>
+                            <div class="panel panel-info">
+                                <div class="panel-body" style="padding: 5px">
+                                    <h4><span ng-bind="($index+1) + '. '"></span><a href="#skill/{{data[0].id}}/indicator/{{item_indicator.id}}/show"><span ng-bind="item_indicator.indicator_name"></span></a></h4>
+                                </div>
+                                <div class="panel-footer">
+                                    <p ng-if="item_indicator.description" style="margin-left: 15px"><b>Опис: </b><span ng-bind="item_indicator.description"></span></p>
+                                    <p style="margin-left: 15px"><b>Користувач: </b><span ng-bind="item_indicator.user"></span></p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-1 col-xs-1"></div>
+
+            <div ng-if="data==null" style="text-align: center">
+                <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
+            </div>
+
+            <div ng-show="data == -1">
+                <div class="alert alert-warning">
+                    <h4><b>Увага!</b></h4>
+                    <p style="margin-bottom: 10px">Не вдалося отримати компетенцію (id=<span ng-bind="getCurrentSkillIdSkillCtrl()"></span>)!</p>
+                    <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+                    <a ng-if="$user" href="#editLibrary"><button ng-click="" class="btn btn-primary" type="button">До редактору</button></a>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <div ng-if="data==null" style="text-align: center">
-        <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
-    </div>
-
-    <div ng-if="data == -1">
-        <h4>Компетенцію (id={{getCurrentSkillIdSkillCtrl()}}) не знайдено!</h4>
-        <a href="#main"><button class="btn btn-primary" type="button">Назад</button></a>
     </div>
 </div>
 

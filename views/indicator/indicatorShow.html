@@ -6,53 +6,61 @@
 <body>
 
 <!-- Перегляд індикатору -->
-<div ng-controller="SkillsCtrl">
-    <div ng-init="getSkill(getCurrentSkillIdIndicatorCtrl())"></div>
-    <div ng-if="data[0].skill_name">
-        <div class="row padded">
-            <div class="col-lg-1 col-xs-1"></div>
-            <div class="col-lg-10 col-xs-10">
-                <div class="thumbnail">
-                    <h2>Компетенція:</h2>
-                    <h3 ng-bind="data[0].skill_name"></h3>
-                    <p>{{data[0].path}}</p>
-                    <h4>Користувач: {{data[0].user}}</h4>
+<div class="thumbnail">
+    <div style="margin: 10px; margin-left: 20px; margin-right: 20px">
+        <div ng-controller="SkillsCtrl">
+            <div ng-init="getSkill(getCurrentSkillIdIndicatorCtrl())"></div>
 
-                    <div ng-controller="IndicatorsCtrl">
-                        <div ng-init="getIndicator(getCurrentIndicatorId(), 1)"></div>
-                        <div ng-if="indicatorData[0].indicator_name">
-                            <h2>Інформація про індикатор:</h2>
-                            <h3>{{nameText}}</h3>
-                            <h4>Користувач: {{indicatorData[0].user}}</h4>
-                            <h4>Опис: {{descriptionText}}</h4>
-                        </div>
-                        <div ng-if="indicatorData==null" style="text-align: center">
-                            <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
-                        </div>
-                        <div ng-if="indicatorData == -1">
-                            <h4>Індикатор (id={{getCurrentIndicatorId()}}) компетенції (id={{getCurrentSkillIdIndicatorCtrl()}}) не знайдено!</h4>
-                        </div>
+            <div ng-if="data != null && data != -1">
+                <h2>Компетенція:</h2>
+                <h3 ng-bind="data[0].skill_name"></h3>
+                <h4 ng-bind="'Група: ' + data[0].path"></h4>
+                <h4 ng-bind="'Користувач: ' + data[0].user"></h4>
+
+                <div ng-controller="IndicatorsCtrl">
+                    <div ng-init="getIndicator(getCurrentIndicatorId(), 1)"></div>
+                    <div ng-if="indicatorData != null && indicatorData != -1">
+                        <h2>Інформація про індикатор:</h2>
+                        <h3 ng-bind="nameText"></h3>
+                        <h4 ng-bind="'Користувач: ' + indicatorData[0].user"></h4>
+                        <h4 ng-if="descriptionText" ng-bind="'Опис: ' + descriptionText"></h4>
+
+                        <a ng-if="$user" href="#skill/{{getCurrentSkillIdIndicatorCtrl()}}/indicator/{{getCurrentIndicatorId()}}/edit"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">Редагувати індикатор</button></a>
+                        <a href="#skill/{{getCurrentSkillIdIndicatorCtrl()}}/show"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">Назад до компетенції</button></a>
+                        <a href="#main"><button style="margin-bottom: 5px" style="margin-bottom: 5px" class="btn btn-primary" type="button">На головну</button></a>
+                        <a ng-if="$user" href="#editLibrary"><button ng-click="" style="margin-bottom: 5px" class="btn btn-primary" type="button">До редактору</button></a>
                     </div>
-                    <div style="margin-bottom: 20px" class="btn-group">
-                        <a href="#skill/{{getCurrentSkillIdIndicatorCtrl()}}/show"><button class="btn btn-primary" type="button">Назад до компетенції</button></a>
+
+                    <div ng-if="indicatorData==null" style="text-align: center">
+                        <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
+                    </div>
+
+                    <div ng-if="indicatorData == -1">
+                        <div class="alert alert-warning">
+                            <h4><b>Увага!</b></h4>
+                            <p style="margin-bottom: 10px">Не вдалося отримати індикатор (id=<span ng-bind="getCurrentIndicatorId()"></span>) компетенції (id=<span ng-bind="getCurrentSkillIdIndicatorCtrl()"></span>)!</p>
+                            <a href="#skill/{{getCurrentSkillIdIndicatorCtrl()}}/show"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">До компетенції</button></a>
+                            <a href="#main"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">На головну</button></a>
+                            <a ng-if="$user" href="#editLibrary"><button ng-click="" style="margin-bottom: 5px" class="btn btn-primary" type="button">До редактору</button></a>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-1 col-xs-1"></div>
-        </div>
-    </div>
 
-    <div ng-if="data==null" style="text-align: center">
-        <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
-    </div>
+            <div ng-if="data==null" style="text-align: center">
+                <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
+            </div>
 
-    <div ng-if="data == -1">
-        <h4>Компетенцію (id={{getCurrentSkillIdIndicatorCtrl()}}) не знайдено!</h4>
-        <div style="margin-bottom: 20px" class="btn-group">
-            <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+            <div ng-show="data == -1">
+                <div class="alert alert-warning">
+                    <h4><b>Увага!</b></h4>
+                    <p style="margin-bottom: 10px">Не вдалося отримати компетенцію (id=<span ng-bind="getCurrentSkillIdIndicatorCtrl()"></span>)!</p>
+                    <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+                    <a ng-if="$user" href="#editLibrary"><button ng-click="" class="btn btn-primary" type="button">До редактору</button></a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
 </body>
 </html>

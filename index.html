@@ -14,37 +14,26 @@
 </head>
 <body ng-app="MainApp">
     <div ng-controller="UsersController">
-        <div class="page-header">
-            <div class="row padded">
-                <div class="col-lg-2 col-xs-3">
-                    <div ng-if="$user">
-                        <div class="btn-group">
-                            <a href="#editUserInfo"><button class="btn btn-primary" type="button">Edit</button></a>
-                            <a href="#actions"><button class="btn btn-primary" type="button">Actions <span class="badge badge-important">6</span></button></a>
-                        </div>
-                    </div>
+        <div class="row" style="background-color: darkblue; margin: 0px; margin-bottom: 10px">
+            <div class="col-lg-3 col-md-3 col-xs-0"></div>
+            <div class="col-lg-6 col-md-5 col-xs-12">
+                <a href="#main"><h1 class="text-center" style="color: white">Бібліотека компетенцій</h1></a>
+            </div>
+            <div class="col-lg-3 col-md-4 col-xs-12" style="margin-top: 20px; margin-bottom: 10px">
+                <div style="float: right" ng-if="$user">
+                    <a href="#actions"><button class="btn btn-danger" type="button"><span class="glyphicon glyphicon-star" aria-hidden="true"></span> Дії <span class="badge badge-important" ng-bind="$countOfActions"></span></button></a>
+                    <a href="#editUserInfo"><button class="btn btn-danger" type="button"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span ng-bind="$user.firstName + ' ' + $user.secondName"></span></button></a>
+                    <button ng-click="logout()" class="btn btn-danger" type="button"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></button>
                 </div>
-                <div class="col-lg-8 col-xs-6">
-                    <a href="#main"><h1 class="text-center">Бібліотека компетенцій</h1></a>
-                </div>
-                <div class="col-lg-2 col-xs-3">
-                    <div style="margin-right: 20px">
-                        <div class="row padded">
-                            <div class="col-lg-6 col-xs-6">
-                                <p ng-if="$user">{{$user.firstName}} {{$user.secondName}}</p>
-                            </div>
-                            <div class="col-lg-6 col-xs-6">
-                                <button ng-if="$user" ng-click="logout()" class="btn btn-primary" type="button">Log out</button>
-                                <a ng-if="!$user" href="#login"><button class="btn btn-primary" type="button">Log in</button></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <a style="float: right" ng-if="!$user" href="#login"><button class="btn btn-danger" type="button"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span></button></a>
             </div>
         </div>
 
+        <!--INLINE -->
+
         <div style="background-color: white" class="container">
             <ng-view></ng-view>
+            <button id="toTop" style="position: fixed; bottom: 20px; right: 20px; display: none; height: 50px; width: 50px" class="btn btn-primary">↑</button>
         </div>
 
         <h5 style="text-align: center">Вінниця, 2017</h5>
@@ -65,5 +54,6 @@
     <script src="app/skillsController.js"></script>
     <script src="app/indicatorsController.js"></script>
     <script src="app/actionsController.js"></script>
+    <script src="app/editViewController.js"></script>
 </body>
 </html>

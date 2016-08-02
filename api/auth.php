@@ -88,9 +88,14 @@ $app->post("/auth", function (Request $request, Response $response, $args) {
     $secondName = $input['secondName'];
     $organization = $input['organization'];
     $changePassword = $input['changePassword'];
+    $lastActionID = $input['lastActionID'];
 
+    if($lastActionID){
+        $sql = "UPDATE users SET lastActionID = $lastActionID WHERE id = $id;";
+        DB::exec($sql);
+    }
     //create
-    if($id == -1) {
+    else if($id == -1) {
         $sql = "INSERT INTO users SET login='" . $login . "', password='" . $password . "', firstName='" .
             $firstName . "', secondName='" . $secondName . "', organization='" . $organization . "';";
         DB::exec($sql);

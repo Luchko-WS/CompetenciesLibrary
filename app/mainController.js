@@ -2,6 +2,8 @@ mainApp.controller('MainCtrl', ['$scope', '$rootScope', '$http', '$location', '$
     $rootScope.$tree;
     $rootScope.$currentGroup;
 
+    $scope.showProgress = false;
+
     $rootScope.$page = 0;
     $rootScope.$pageView = true;
 
@@ -9,8 +11,8 @@ mainApp.controller('MainCtrl', ['$scope', '$rootScope', '$http', '$location', '$
         $scope.$page = page;
     };
 
-    $scope.xlsFileIsReadyForDownload = false;
-    $scope.jsonFileIsReadyForDownload = false;
+    $rootScope.xlsFileIsReadyForDownload = false;
+    $rootScope.jsonFileIsReadyForDownload = false;
 
     $scope.exportAllData = function (format, id) {
         var params =  {
@@ -18,19 +20,25 @@ mainApp.controller('MainCtrl', ['$scope', '$rootScope', '$http', '$location', '$
             id: id
         };
 
-        IOModel.get({'id':JSON.stringify(params)}, function (res) {
+        IOModel.export({'id':JSON.stringify(params)}, function (res) {
             switch (format){
                 case "XLS":
-                    $scope.xlsFileIsReadyForDownload = true;
+                    $rootScope.xlsFileIsReadyForDownload = true;
                     break;
                 case "JSON":
-                    $scope.jsonFileIsReadyForDownload = true;
+                    $rootScope.jsonFileIsReadyForDownload = true;
                     break;
             }
-            alert("Export data!");
-            console.log($scope.jsonFileIsReadyForDownload);
+            $location.path("/download");
         });
     };
 
+    $scope.importData = function (id) {
+        var params = {id: id};
+
+        IOModel.import({'id': JSON.stringify(params)}, function (res) {
+
+        });
+    };
 
 }]);

@@ -25,10 +25,9 @@ $app->add(function ($req, $res, $next) {
 $app->get('/params/{id}', function (Request $request, Response $response, $args) {
 
     $input = json_decode($args['id'], true);
-    //file_put_contents('INDICATORS.txt', $input["indicatorId"]);
 
-    $rowIndicator = DB::fetchAll("SELECT * FROM indicators WHERE id = "
-        .$input['indicatorId'].";");
+    $rowIndicator = DB::fetchAll("SELECT * FROM indicators WHERE id = ".$input['indicatorId'].";");
+    file_put_contents('INDICATOR!!!!!!!!!!.txt', "SELECT * FROM indicators WHERE id = ".$input['indicatorId'].";");
 
     $user = DB::fetchAll("SELECT * FROM users WHERE id=" . $rowIndicator[0]['user_id'].";");
     $userName = $user[0]['firstname']." ".$user[0]['secondname'];

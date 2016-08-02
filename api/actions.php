@@ -43,8 +43,7 @@ function getSkillName($id){
 };
 
 function getUserName($userID){
-    $user = DB::fetchAll("SELECT * FROM users".
-        " WHERE id=" . $userID.";");
+    $user = DB::fetchAll("SELECT * FROM users WHERE id = $userID;");
     $userName = $user[0]['firstname']." ".$user[0]['secondname'];
     return $userName;
 }
@@ -54,10 +53,19 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
 
     if($input['actionID'] == 'ALL_ACTIONS') {
         $rowsActions = DB::fetchAll("SELECT * FROM actions");
+
         for($i = 0; $i < count($rowsActions); $i++){
             $rowsActions[$i]['user'] = getUserName($rowsActions[$i]['user_id']);
+            if($rowsActions[$i]['action_type'] != 'remove') {
+                $rowsActions[$i]['path'] = getPath($rowsActions[$i]['new_parent_id']);
+            }
         }
         $response->getBody()->write('{"data":' . json_encode($rowsActions) . '}');
+    }
+    else if($input['actionID'] == 'COUNT_OF_ACTIONS'){
+        $rowsActions = DB::fetchAll("SELECT * FROM actions WHERE id > ".$input['lastActionID']." AND user_id <> ".$input['userID'].";");
+        file_put_contents('COUNT OF ACTION.txt', "SELECT * FROM actions WHERE id > ".$input['lastActionID']." AND user_id <> ".$input['userID'].";");
+        $response->getBody()->write('{"data":' . json_encode(count($rowsActions)) . '}');
     }
     else{
         $rowAction = DB::fetchAll("SELECT * FROM actions WHERE id=".$input['actionID'].";");
@@ -65,12 +73,9 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
 
         if($rowAction[0]['item_type'] == 'indicator'){
             $rowAction[0]['skill_name'] = getSkillName($rowAction[0]['new_parent_id']);
-            $rowAction[0]['path'] = getPath($rowAction[0]['new_parent_id']);
         }
-        else{
-            if($rowAction[0]['action_type'] != 'remove') {
-                $rowAction[0]['path'] = getPath($rowAction[0]['new_parent_id']);
-            }
+        if($rowAction[0]['action_type'] != 'remove') {
+            $rowAction[0]['path'] = getPath($rowAction[0]['new_parent_id']);
         }
         $response->getBody()->write('{"data":' . json_encode($rowAction) . '}');
     }

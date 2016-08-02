@@ -4,57 +4,64 @@
 <head>
     <title></title>
 </head>
-<body ng-controller="UsersController">
-<div class="row padded">
-    <div class="col-lg-2 col-xs-0"></div>
-    <div class="col-lg-8 col-xs-12">
+<body>
+<div class="row">
+    <div class="col-lg-4 col-md-3 col-sm-2 col-xs-0"></div>
+    <div class="col-lg-4 col-md-6 col-sm-8 col-xs-12">
         <div class="thumbnail">
-            <div ng-if="!$user" ng-controller="UsersController">
+            <div ng-if="!$user" style="margin: 10px; margin-left: 20px; margin-right: 20px">
+                <div ng-controller="UsersController">
+                    <h3>Реєстрація нового користувача:</h3>
+                    <div class="form-group">
+                        <label>Електронна пошта <span style="color: red">*</span></label>
+                        <input type="text" ng-model="user.login" class="form-control" id="login" placeholder="Логін">
+                    </div>
+                    <div class="form-group">
+                        <label>Пароль <span style="color: red">*</span></label>
+                        <input type="password" ng-model="user.password" class="form-control" placeholder="Пароль">
+                    </div>
+                    <div class="form-group">
+                        <label>Повторіть пароль <span style="color: red">*</span></label>
+                        <input type="password" ng-model="user.confirmPassword" class="form-control" placeholder="Пароль">
+                    </div>
+                    <div class="form-group">
+                        <label>Ім'я <span style="color: red">*</span></label>
+                        <input type="text" ng-model="user.firstName" class="form-control" placeholder="Ім'я">
+                    </div>
+                    <div class="form-group">
+                        <label>Прізвище <span style="color: red">*</span></label>
+                        <input type="text" ng-model="user.secondName" class="form-control" placeholder="Прізвище">
+                    </div>
+                    <div class="form-group">
+                        <label>Організація</label>
+                        <input type="text" ng-model="user.organization" class="form-control" placeholder="Організація">
+                    </div>
 
-                <h4>Реєстрація нового користувача:</h4>
+                    <div style="font-size: small; margin-bottom: 20px"><span style="color: red">*</span> — поля, які потрібно обов'язково заповнити</div>
 
-                <div ng-if="message">
-                    <div class="alert alert-info">
-                        <h4><b>Увага!</b></h4>
-                        <p ng-bind="message" style="margin-bottom: 20px"></p>
+                    <button ng-click="registerUser()" class="btn btn-success">Зареєструватися</button>
+                    <a href="#main"><button class="btn btn-primary">На головну</button></a>
+
+                    <div id="messageBox" style="display: none; margin-top: 20px" ng-class="messageBoxClass">
+                        <button id="closeMessageBoxButton" type="button" class="close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4><b ng-bind="messageTitleText"></b></h4>
+                        <p ng-bind="messageText"></p>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label>Електронна пошта *</label>
-                    <input type="text" ng-model="user.login" class="form-control" id="login" placeholder="Логін">
-                </div>
-                <div class="form-group">
-                    <label>Пароль *</label>
-                    <input type="password" ng-model="user.password" class="form-control" placeholder="Пароль">
-                </div>
-                <div class="form-group">
-                    <label>Повторіть пароль *</label>
-                    <input type="password" ng-model="user.confirmPassword" class="form-control" placeholder="Пароль">
-                </div>
-                <div class="form-group">
-                    <label>Ім'я *</label>
-                    <input type="text" ng-model="user.firstName" class="form-control" placeholder="Ім'я">
-                </div>
-                <div class="form-group">
-                    <label>Прізвище *</label>
-                    <input type="text" ng-model="user.secondName" class="form-control" placeholder="Прізвище">
-                </div>
-                <div class="form-group">
-                    <label>Організація</label>
-                    <input type="text" ng-model="user.organization" class="form-control" placeholder="Організація">
-                </div>
-
-                <button ng-click="registerUser()" class="btn btn-primary">Зареєструватися</button>
-                <a href="#main"><button class="btn btn-primary">Скасувати</button></a>
             </div>
-            <div ng-if="$user">
-                <h4>Ви зареєстровані в системі як {{$user.firstName}} {{$user.secondName}}!</h4>
-                <a href="#main"><button class="btn btn-primary">Перейти на головну сторінку</button></a>
+            <div ng-if="$user" style="margin-top: 20px; margin-left: 20px; margin-right: 20px">
+                <div class="alert alert-info">
+                    <h4><b><span ng-bind="'Вітаємо, ' + $user.firstName + ' ' + $user.secondName + '!'"></span></b></h4>
+                    <p style="margin-bottom: 20px">Ви авторизовані у системі!</p>
+                    <a href="#main"><button style="margin-bottom: 5px" class="btn btn-primary">Перейти на головну сторінку</button></a>
+                    <a href="#editLibrary"><button style="margin-bottom: 5px" class="btn btn-primary">Перейти до редактору</button></a>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-2 col-xs-0"></div>
+    <div class="col-lg-4 col-md-3 col-sm-2 col-xs-0"></div>
 </div>
 </body>
 </html>

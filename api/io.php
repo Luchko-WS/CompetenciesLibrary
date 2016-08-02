@@ -22,6 +22,7 @@ $app->add(function ($req, $res, $next) {
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
 });
 
+//export
 $app->get('/params/{id}', function (Request $request, Response $response, $args) {
 
     $input = json_decode($args['id'], true);
@@ -88,6 +89,20 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
     }
 
     return $response;
+});
+
+//import
+$app->put('/params/{id}', function ($request, $response, $args) {
+    $input = json_decode($args['id'], true);
+
+    $groupID = $input['groupID'];
+    $parentGroupID = $input['parentGroupID'];
+    $groupName = $input['groupName'];
+    $groupDescription = $input['groupDescription'];
+    $isMove = $input['isMove'];
+
+    return $this->response->withJson($input);
+
 });
 
 $app->post('/params', function (Request $request, Response $response, $args) {

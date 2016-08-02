@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<div ng-controller="ActionsCtrl">
+    <div class="row padded">
+        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></div>
+        <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+            <div ng-show="$user" ng-init="getAllActions();">
+                <div ng-show="actionData != null && actionData != -1">
+                    <div class="thumbnail">
+                        <button id="toggleButton" style="margin-bottom: 15px" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" type="button">Фільтри <span class="caret"></span></button>
+                        <div id="toggleBox" style="display: none; margin-bottom: 15px">
+                            <label>Відображати за статусом:</label>
+                            <div>
+                                <label>очікуються <input ng-model='filterParam.waitingActions' type="checkbox"></label>
+                                <label>прийнято <input ng-model='filterParam.acceptedActions' type="checkbox"></label>
+                                <label>відхилено <input ng-model='filterParam.rejectedActions' type="checkbox"></label>
+                            </div>
+
+                            <label>Відображати за характером дії:</label>
+                            <div>
+                                <label>створити <input ng-model='filterParam.createActions' type="checkbox"></label>
+                                <label>копіювати <input ng-model='filterParam.copyActions' type="checkbox"></label>
+                                <label>редагувати <input ng-model='filterParam.editActions' type="checkbox"></label>
+                                <label>видалити <input ng-model='filterParam.removeActions' type="checkbox"></label>
+                            </div>
+
+                            <label>Відображати за типом об'єкту:</label>
+                            <div>
+                                <label>компетенції <input ng-model='filterParam.skillObject' type="checkbox"></label>
+                                <label>групи <input ng-model='filterParam.groupObject' type="checkbox"></label>
+                                <label>індикатори <input ng-model='filterParam.indicatorObject' type="checkbox"></label>
+                            </div>
+                        </div>
+
+                        <div class="input-group" style="margin-bottom: 10px">
+                            <input type="text" class="form-control" type="text" class="form-control" ng-model="filterParam.name" placeholder="Пошук по назві, користувачу, групі...">
+                            <div class="input-group-btn">
+                                <button readonly class="btn"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                            </div>
+                        </div>
+
+                        <ul class="nav nav-tabs">
+                            <li ng-class="allActionsTab" ng-click="setAllActionsTab()">
+                                <a href="">Усі дії</a>
+                            </li>
+                            <li ng-class="myActionsTab" ng-click="setMyActionsTab()">
+                                <a href="">Мої дії</a>
+                            </li>
+                        </ul>
+
+                        <div style="margin-top: 10px; margin-bottom: 15px" class="row padded">
+                            <div class="col-lg-1 col-xs-1">
+                                <p style="text-align: center"><b>#</b></p>
+                            </div>
+                            <div class="col-lg-1 col-xs-1">
+                                <p style="text-align: center"><b>Дія</b></p>
+                            </div>
+                            <div class="col-lg-2 col-xs-2">
+                                <p style="text-align: center"><b>Тип об'єкта</b></p>
+                            </div>
+                            <div class="col-lg-3 col-xs-3">
+                                <p style="text-align: center"><b>Назва об'єкта</b></p>
+                            </div>
+                            <div class="col-lg-2 col-xs-2">
+                                <p style="text-align: center"><b>Користувач</b></p>
+                            </div>
+                            <div class="col-lg-1 col-xs-1">
+                                <p style="text-align: center"><b>Статус</b></p>
+                            </div>
+                            <div class="col-lg-2 col-xs-1">
+                            </div>
+                        </div>
+                        <div ng-repeat="item_action in actionData | filter: actionsFilter">
+                            <div>
+                                <div class="row padded">
+                                    <a ng-if="item_action.item_id != -1" href="#actions/id/{{item_action.id}}/{{item_action.item_type}}/{{item_action.item_id}}/{{item_action.action_type}}">
+                                        <div class="col-lg-1 col-xs-1">
+                                            <p style="text-align: center">{{item_action.id}} <span ng-if="item_action.user_id != $user.id && oldActionsID < item_action.id" class="glyphicon glyphicon-star" aria-hidden="true"></span></p>
+                                        </div>
+                                        <div class="col-lg-1 col-xs-1">
+                                            <p style="text-align: center">{{item_action.action_type}}</p>
+                                        </div>
+                                        <div class="col-lg-2 col-xs-2">
+                                            <p style="text-align: center">{{item_action.item_type}}</p>
+                                        </div>
+                                        <div class="col-lg-3 col-xs-3">
+                                            <p style="text-align: center">{{item_action.item_name}}</p>
+                                        </div>
+                                    </a>
+                                    <a ng-if="item_action.item_id == -1" href="#actions/id/{{item_action.id}}/{{item_action.item_type}}/{{item_action.action_type}}">
+                                        <div class="col-lg-1 col-xs-1">
+                                            <p style="text-align: center">{{item_action.id}} <span ng-if="item_action.user_id != $user.id && oldActionsID < item_action.id" class="glyphicon glyphicon-star" aria-hidden="true"></span></p>
+                                        </div>
+                                        <div class="col-lg-1 col-xs-1">
+                                            <p style="text-align: center">{{item_action.action_type}}</p>
+                                        </div>
+                                        <div class="col-lg-2 col-xs-2">
+                                            <p style="text-align: center">{{item_action.item_type}}</p>
+                                        </div>
+                                        <div class="col-lg-3 col-xs-3">
+                                            <p style="text-align: center">{{item_action.item_name}}</p>
+                                        </div>
+                                    </a>
+                                    <div class="col-lg-2 col-xs-2">
+                                        <p style="text-align: center">{{item_action.user}}</p>
+                                    </div>
+                                    <div class="col-lg-1 col-xs-1">
+                                        <p ng-if="item_action.state == 0" style="text-align: center">Очікується</p>
+                                        <p ng-if="item_action.state == 1" style="text-align: center">Прийнято</p>
+                                        <p ng-if="item_action.state == -1" style="text-align: center">Відхидено</p>
+                                    </div>
+                                    <div class="col-lg-2 col-xs-1">
+                                        <button ng-if="item_action.user_id == $user.id" ng-click="removeAction(item_action.id);" class="btn-mini btn-danger"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div ng-show="actionData==null" style="text-align: center">
+                    <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
+                </div>
+                <div ng-if="actionData == -1">
+                    Actions not found!
+                    <a href="#actions"><button class="btn btn-primary" type="button">До списку дій</button></a>
+                </div>
+            </div>
+            <div ng-if="!$user">
+                <div class="alert alert-info">
+                    <h4><b>Попередження!</b></h4>
+                    <p style="margin-bottom: 20px">Вибачте, дана сторінка не доступна для Вас. Щоб переглянути її, увійдіть в систему.</p>
+                    <a href="#main"><button class="btn btn-primary" type="button">Назад</button></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></div>
+    </div>
+</div>
+</body>
+</html>

@@ -12,6 +12,10 @@ mainApp.config(['$routeProvider', function ($routeProvider){
         .when('/main', {
             templateUrl: 'views//main.html'
         })
+        .when('/main/group/:id', {
+            templateUrl: 'views//main.html',
+            controller: 'SkillCtrl'
+        })
         /*
          .when('/main/page/:page', {
          templateUrl: 'views//main.html',
@@ -20,6 +24,9 @@ mainApp.config(['$routeProvider', function ($routeProvider){
          */
         .when('/download', {
             templateUrl: 'views//downloadPage.html'
+        })
+        .when('/editLibrary', {
+            templateUrl: 'views//editView.html'
         })
         //USER
         .when('/login', {
@@ -33,46 +40,54 @@ mainApp.config(['$routeProvider', function ($routeProvider){
         })
         //ACTIONS
         .when('/actions', {
-            templateUrl: 'views//action//actions.html'
+            templateUrl: 'views//actions//actions.html'
         })
         .when('/actions/id/:id', {
-            templateUrl: 'views//action//loadActionPage.html',
+            templateUrl: 'views//actions//loadActionPage.html',
             controller: 'ActionsCtrl'
         })
         .when('/actions/id/:id/skill/create', {
-            templateUrl: 'views//action//skill//createAction.html',
+            templateUrl: 'views//actions//skill//createAction.html',
+            controller: 'ActionsCtrl'
+        })
+        .when('/actions/id/:id/skill/:itemID/copy', {
+            templateUrl: 'views//actions//skill//copyAction.html',
             controller: 'ActionsCtrl'
         })
         .when('/actions/id/:id/skill/:itemID/edit', {
-            templateUrl: 'views//action//skill//editAction.html',
+            templateUrl: 'views//actions//skill//editAction.html',
             controller: 'ActionsCtrl'
         })
         .when('/actions/id/:id/skill/:itemID/remove', {
-            templateUrl: 'views//action//skill//removeAction.html',
+            templateUrl: 'views//actions//skill//removeAction.html',
             controller: 'ActionsCtrl'
         })
         .when('/actions/id/:id/group/create', {
-            templateUrl: 'views//action//group//createAction.html',
+            templateUrl: 'views//actions//group//createAction.html',
+            controller: 'ActionsCtrl'
+        })
+        .when('/actions/id/:id/group/:itemID/copy', {
+            templateUrl: 'views//actions//group//copyAction.html',
             controller: 'ActionsCtrl'
         })
         .when('/actions/id/:id/group/:itemID/edit', {
-            templateUrl: 'views//action//group//editAction.html',
+            templateUrl: 'views//actions//group//editAction.html',
             controller: 'ActionsCtrl'
         })
         .when('/actions/id/:id/group/:itemID/remove', {
-            templateUrl: 'views//action//group//removeAction.html',
+            templateUrl: 'views//actions//group//removeAction.html',
             controller: 'ActionsCtrl'
         })
         .when('/actions/id/:id/indicator/create', {
-            templateUrl: 'views//action//indicator//createAction.html',
+            templateUrl: 'views//actions//indicator//createAction.html',
             controller: 'ActionsCtrl'
         })
         .when('/actions/id/:id/indicator/:itemID/edit', {
-            templateUrl: 'views//action//indicator//editAction.html',
+            templateUrl: 'views//actions//indicator//editAction.html',
             controller: 'ActionsCtrl'
         })
         .when('/actions/id/:id/indicator/:itemID/remove', {
-            templateUrl: 'views//action//indicator//removeAction.html',
+            templateUrl: 'views//actions//indicator//removeAction.html',
             controller: 'ActionsCtrl'
         })
         //ITEMS
@@ -112,22 +127,17 @@ mainApp.config(['$routeProvider', function ($routeProvider){
         });
 }]);
 
-mainApp.filter('divideToPages', function () {
-    return function (item) {
-        var vector = [];
-        if(item!=null)
-        {
-            if (item.length % 5 == 0) {
-                for (var i = 1; i <= item.length / 5; i++) {
-                    vector.push(i);
-                }
-            }
-            else {
-                for (var i = 1; i <= item.length / 5 + 1; i++) {
-                    vector.push(i);
-                }
-            }
+$(document).ready(function () {
+    $(window).scroll(function () {
+        if($(this).scrollTop() != 0){
+            $('#toTop').fadeIn();
         }
-        return vector;
-    };
+        else{
+            $('#toTop').fadeOut();
+        }
+    });
+
+    $('#toTop').click(function () {
+        $('body, html').animate({scrollTop: 0});
+    });
 });

@@ -4,66 +4,72 @@
 <head>
     <title></title>
 </head>
-<body ng-controller="UsersController">
-<div class="row padded">
-    <div class="col-lg-2 col-xs-0"></div>
-    <div class="col-lg-8 col-xs-12">
-        <div ng-if="$user">
-            <div class="thumbnail">
-                <div ng-init="loadCurrentUserInfo();"></div>
+<body>
+<div class="row">
+    <div class="col-lg-4 col-md-3 col-sm-2 col-xs-0"></div>
+    <div class="col-lg-4 col-md-6 col-sm-8 col-xs-12">
+        <div class="thumbnail">
+            <div ng-if="$user" style="margin: 10px; margin-left: 20px; margin-right: 20px">
+                <div ng-controller="UsersController">
+                    <div ng-init="loadCurrentUserInfo();"></div>
 
-                <h4>Редагування користувача:</h4>
-                <h4 ng-bind="$user.login"></h4>
+                    <h3>Редагування користувача:</h3>
+                    <h4 ng-bind="$user.login"></h4>
 
-                <div ng-if="message">
-                    <div class="alert alert-info">
-                        <h4><b>Увага!</b></h4>
-                        <p ng-bind="message" style="margin-bottom: 20px"></p>
+                    <div id="toggleBox" style="display: none">
+                        <div class="form-group">
+                            <label>Старий пароль <span style="color: red">*</span></label>
+                            <input type="password" ng-model="user.oldPassword" class="form-control" placeholder="Старий пароль">
+                        </div>
+                        <div class="form-group">
+                            <label>Новий пароль <span style="color: red">*</span></label>
+                            <input type="password" ng-model="user.password" class="form-control" placeholder="Новий пароль">
+                        </div>
+                        <div class="form-group">
+                            <label>Повторіть новий пароль <span style="color: red">*</span></label>
+                            <input type="password" ng-model="user.confirmPassword" class="form-control" placeholder="Новий пароль">
+                        </div>
                     </div>
-                </div>
+                    <button id="toggleButton" style="margin-bottom: 20px" class="btn btn-warning" ng-click="show=!show; onChangePasswordButtonClick(show)"><span ng-bind="buttonText"></span></button>
 
-                <div ng-show="show">
                     <div class="form-group">
-                        <label>Старий пароль *</label>
-                        <input type="password" ng-model="user.oldPassword" class="form-control" placeholder="Старий пароль">
+                        <label>Ім'я <span style="color: red">*</span></label>
+                        <input type="text" ng-model="user.firstName" class="form-control" placeholder="Ім'я">
                     </div>
                     <div class="form-group">
-                        <label>Новий пароль *</label>
-                        <input type="password" ng-model="user.password" class="form-control" placeholder="Новий пароль">
+                        <label>Прізвище <span style="color: red">*</span></label>
+                        <input type="text" ng-model="user.secondName" class="form-control" placeholder="Прізвище">
                     </div>
                     <div class="form-group">
-                        <label>Повторіть новий пароль *</label>
-                        <input type="password" ng-model="user.confirmPassword" class="form-control" placeholder="Новий пароль">
+                        <label>Організація</label>
+                        <input type="text" ng-model="user.organization" class="form-control" placeholder="Організація">
+                    </div>
+
+                    <div style="font-size: small; margin-bottom: 20px"><span style="color: red">*</span> — поля, які потрібно обов'язково заповнити</div>
+
+                    <button style="width: 120px" ng-click="saveUserInfo()" class="btn btn-success">Зберегти</button>
+                    <a href="#main"><button style="width: 120px" class="btn btn-primary">На головну</button></a>
+
+                    <div id="messageBox" style="display: none; margin-top: 20px" ng-class="messageBoxClass">
+                        <button id="closeMessageBoxButton" type="button" class="close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4><b ng-bind="messageTitleText"></b></h4>
+                        <p ng-bind="messageText"></p>
                     </div>
                 </div>
-                <button style="margin-bottom: 20px" class="btn btn-primary" ng-click="show=!show; onChangePasswordButtonClick()">{{buttonText}}</button>
-
-                <div class="form-group">
-                    <label>Ім'я *</label>
-                    <input type="text" ng-model="user.firstName" class="form-control" placeholder="Ім'я">
-                </div>
-                <div class="form-group">
-                    <label>Прізвище *</label>
-                    <input type="text" ng-model="user.secondName" class="form-control" placeholder="Прізвище">
-                </div>
-                <div class="form-group">
-                    <label>Організація</label>
-                    <input type="text" ng-model="user.organization" class="form-control" placeholder="Організація">
-                </div>
-
-                <button ng-click="saveUserInfo()" class="btn btn-primary">Зберегти</button>
-                <a href="#main"><button class="btn btn-primary">На головну</button></a>
             </div>
-        </div>
-        <div ng-if="!$user">
-            <div class="alert alert-info">
-                <h4><b>Попередження!</b></h4>
-                <p style="margin-bottom: 20px">Вибачте, дана сторінка не доступна для Вас. Щоб переглянути її, увійдіть в систему.</p>
-                <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+
+            <div ng-if="!$user" style="margin: 20px">
+                <div class="alert alert-info">
+                    <h4><b>Попередження!</b></h4>
+                    <p style="margin-bottom: 10px">Вибачте, дана сторінка не доступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
+                    <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-2 col-xs-0"></div>
+    <div class="col-lg-4 col-md-3 col-sm-2 col-xs-0"></div>
 </div>
 </body>
 </html>

@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<div class="row">
+    <div class="col-xs-0 col-md-1 col-lg-2"></div>
+    <div class="col-xs-12 col-md-10 col-lg-8">
+        <div class="thumbnail">
+            <div ng-if="$user" style="margin: 10px; margin-left: 20px; margin-right: 20px">
+                <div ng-controller="ActionsCtrl">
+                    <div ng-init="preparePageForAction()"></div>
+                    <div ng-if="actionData != null && actionData != -1">
+                        <div ng-controller="IndicatorsCtrl" ng-init="getIndicator(getItemID());">
+                            <h2 style="text-align: center">Видалення індикатору</h2>
+                            <h3>Запропоновані зміни користувачем:</h3>
+                            <h3 style="margin-top: 5px; margin-bottom: 10px" ng-bind="actionData[0].user"></h3>
+                            <h4 style="margin-bottom: 10px" ng-if="actionData[0].state == -1">Статус: <span style="color: red">відхилено</span></h4>
+                            <h4 style="margin-bottom: 10px" ng-if="actionData[0].state == 0">Статус: очікується</h4>
+                            <h4 style="margin-bottom: 10px" ng-if="actionData[0].state == 1">Статус: <span style="color: green">прийнято</span></h4>
+
+                            <div ng-show="indicatorData != null && indicatorData != -1">
+                                <h3 ng-bind="'Компетенція: ' + actionData[0].skill_name"></h3>
+                                <h4 ng-bind="'Шлях: ' + actionData[0].path"></h4>
+
+                                <h3 ng-bind="'Назва: ' + indicatorData[0].indicator_name"></h3>
+                                <h4 ng-if="indicatorData[0].description" ng-bind="'Опис: ' + indicatorData[0].description"></h4>
+
+                                <div style="margin-top: 20px">
+                                    <a href="" ng-show="actionData[0].state == 0 && actionData[0].user_id != $user.id"><button style="margin-bottom: 5px" class="btn btn-success" type="button" ng-click="rejectOrAcceptTheAction(actionData[0].id, 1); removeIndicator(actionData[0].item_id);">Прийняти</button></a>
+                                    <a href="" ng-show="actionData[0].state == 0 && actionData[0].user_id != $user.id"><button style="margin-bottom: 5px" class="btn btn-danger" type="button" ng-click="rejectOrAcceptTheAction(getActionID(), -1);">Скасувати</button></a>
+                                    <a href="#actions"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">До списку дій</button></a>
+                                </div>
+
+                                <div id="messageBox" style="display: none; margin-top: 20px" ng-class="messageBoxClass">
+                                    <button id="closeMessageBoxButton" type="button" class="close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    <h4><b ng-bind="messageTitleText"></b></h4>
+                                    <p ng-bind="messageText"></p>
+                                </div>
+                            </div>
+                            <div ng-if="indicatorData==null" style="text-align: center">
+                                <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
+                            </div>
+
+                            <div ng-if="indicatorData == -1">
+                                <div class="alert alert-warning">
+                                    <h4><b>Увага!</b></h4>
+                                    <p style="margin-bottom: 10px">Не вдалося отримати індикатор (id=<span ng-bind="getItemID()"></span>)!</p>
+                                    <a href="#actions"><button class="btn btn-primary" type="button">До списку дій</button></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-if="actionData==null" style="text-align: center">
+                        <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
+                    </div>
+                    <div ng-if="actionData == -1">
+                        <div class="alert alert-warning">
+                            <h4><b>Увага!</b></h4>
+                            <p style="margin-bottom: 10px">Не вдалося отримати дію (id=<span ng-bind="getActionID()"></span>)!</p>
+                            <a href="#actions"><button class="btn btn-primary" type="button">До списку дій</button></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="!$user" style="margin: 20px">
+                <div class="alert alert-info">
+                    <h4><b>Попередження!</b></h4>
+                    <p style="margin-bottom: 10px">Вибачте, дана сторінка не доступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
+                    <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-0 col-md-1 col-lg-2"></div>
+</div>
+</body>
+</html>

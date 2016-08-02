@@ -4,41 +4,53 @@
 <head></head>
 
 <body>
+<div class="thumbnail">
+    <div ng-if="$user" style="margin: 10px; margin-left: 20px; margin-right: 20px">
+        <div ng-controller="GroupsCtrl">
+            <!-- Додання нової групи -->
+            <h2>Створення нової групи:</h2>
 
-<div ng-controller="GroupsCtrl">
+            <div ng-init="getGroupTree();";></div>
 
-    <div ng-if="$user">
-        <!-- Додання нової групи -->
-        <h2>Створення нової групи:</h2>
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Назва групи" ng-model="nameText">
+            <textarea class="form-control" rows="5" style="margin-bottom: 10px" placeholder="Опис" ng-model="descriptionText"></textarea>
 
-        <div ng-init="getGroupTree();";></div>
+            <div class="input-group" style="margin-bottom: 10px">
+                <input type="text" readonly class="form-control" placeholder="Коренева група" ng-model="groupText">
+                <div class="input-group-btn">
+                    <button id="toggleButton" class="btn btn-primary" ng-click="show=!show"><span ng-bind="onClickSelectCurrentGroup(show)"></span></button>
+                </div>
+            </div>
 
-        <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Назва групи" ng-model="nameText">
-        <textarea class="form-control" rows="5" style="margin-bottom: 10px" placeholder="Опис" ng-model="descriptionText"></textarea>
+            <div  id="toggleBox" style="display: none; overflow-y: scroll; height: 200px"><div id="tree"></div></div>
 
-        <div class="input-group" style="margin-bottom: 10px">
-            <input type="text" readonly class="form-control" placeholder="Коренева група" ng-model="groupText">
-            <div class="input-group-btn">
-                <button class="btn btn-primary" ng-click="show=!show">{{onClickSelectCurrentGroup(show)}}</button>
+            <div style="margin-bottom: 20px"></div>
+
+            <div class="row">
+                <div class="col-sm-12 col-md-8" style="margin-bottom: 10px">
+                    <button style="width: 150px" ng-controller="ActionsCtrl" ng-click="prepareGroupToCreate(nameText, descriptionText, $currentGroup.id, $currentGroup.user_id, $user.id);" class="btn btn-success" type="button">Створити</button>
+                </div>
+                <div class="col-sm-12 col-md-4" style="margin-bottom: 20px">
+                    <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+                    <a href="#editLibrary"><button ng-click="" class="btn btn-primary" type="button">До редактору</button></a>
+                </div>
+            </div>
+
+            <div id="messageBox" style="display: none" ng-class="messageBoxClass">
+                <button id="closeMessageBoxButton" type="button" class="close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4><b ng-bind="messageTitleText"></b></h4>
+                <p ng-bind="messageText"></p>
             </div>
         </div>
 
-        <div style="overflow-y: scroll; height: 200px" ng-show="show"><div id="tree"></div></div>
-
-        <div style="margin-bottom: 20px"></div>
-
-        <div style="margin-bottom: 20px" class="btn-group">
-            <a href="#main"><button ng-controller="ActionsCtrl" ng-click="prepareGroupToCreate(nameText, descriptionText, $currentGroup.id, $currentGroup.user_id, $user.id);" class="btn btn-primary" type="button">Створити</button></a>
-            <a href="#main"><button ng-click="" class="btn btn-primary" type="button">Назад</button></a>
-        </div>
-
-    </div>
-
-    <div ng-if="!$user">
-        <div class="alert alert-info">
-            <h4><b>Попередження!</b></h4>
-            <p style="margin-bottom: 20px">Вибачте, дана сторінка не доступна для Вас. Щоб переглянути її, увійдіть в систему.</p>
-            <a href="#main"><button class="btn btn-primary" type="button">Назад</button></a>
+        <div ng-if="!$user" style="margin: 20px">
+            <div class="alert alert-info">
+                <h4><b>Попередження!</b></h4>
+                <p style="margin-bottom: 10px">Вибачте, дана сторінка не доступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
+                <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+            </div>
         </div>
     </div>
 

@@ -4,57 +4,83 @@
 <head></head>
 
 <body>
+<div class="thumbnail">
+    <div ng-if="$user" style="margin: 10px; margin-left: 20px; margin-right: 20px">
+        <div ng-controller="GroupsCtrl">
+            <div ng-init="getGroupTree(); getGroup(getCurrentGroupId(), 1);"></div>
 
-<div ng-controller="GroupsCtrl">
-
-    <div ng-if="$user">
-
-        <div ng-init="getGroupTree(); getGroup(getCurrentGroupId(), 1);"></div>
-
-        <div ng-show="data[0].skill_name">
-            <!-- Редагування групи -->
-            <h2>Редагування групи:</h2>
-            <h3 ng-bind="data[0].skill_name"></h3>
-            <h4>Користувач: {{data[0].user}}</h4>
-            <h4>Група: {{data[0].path}}</h4>
-
-            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Назва групи" ng-model="nameText">
-            <textarea class="form-control" rows="5" style="margin-bottom: 10px" placeholder="Опис" ng-model="descriptionText"></textarea>
-            <div class="input-group" style="margin-bottom: 10px">
-                <input type="text" readonly class="form-control" placeholder="Коренева група" ng-model="groupText">
-                <div class="input-group-btn">
-                    <button class="btn btn-primary" ng-click="show=!show">{{onClickSelectCurrentGroup(show)}}</button>
+            <div ng-if="data[0].node_level == 1">
+                <div class="alert alert-info">
+                    <h4><b>Увага!</b></h4>
+                    <p style="margin-bottom: 10px">Не можливо редагувати кореневу групу!</p>
+                    <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+                    <a href="#editLibrary"><button ng-click="" class="btn btn-primary" type="button">До редактору</button></a>
                 </div>
             </div>
 
-            <div style="overflow-y: scroll; height: 200px" ng-show="show"><div id="tree"></div></div>
+            <div ng-show="data != null && data != -1 && data[0].node_level != 1">
+                <!-- Редагування групи -->
+                <h2>Редагування групи:</h2>
+                <h3 ng-bind="data[0].skill_name"></h3>
+                <h4 ng-bind="'Користувач: ' + data[0].user"></h4>
+                <h4 ng-bind="'Група: ' + data[0].path"></h4>
 
-            <div style="margin-bottom: 20px"></div>
+                <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Назва групи" ng-model="nameText">
+                <textarea class="form-control" rows="5" style="margin-bottom: 10px" placeholder="Опис" ng-model="descriptionText"></textarea>
 
-            <div style="margin-bottom: 20px" class="btn-group">
-                <a href="#main"><button ng-controller="ActionsCtrl" ng-click="prepareGroupToUpdate(data[0].id, data[0].skill_name, nameText, descriptionText, $currentGroup.id, data[0].user_id, $user.id);" class="btn btn-primary" type="button">Зберегти</button></a>
-                <a href="#main"><button ng-click="" class="btn btn-primary" type="button">Скасувати</button></a>
+                <div class="input-group" style="margin-bottom: 10px">
+                    <input type="text" readonly class="form-control" placeholder="Коренева група" ng-model="groupText">
+                    <div class="input-group-btn">
+                        <button id="toggleButton" class="btn btn-primary" ng-click="show=!show"><span ng-bind="onClickSelectCurrentGroup(show)"></span></button>
+                    </div>
+                </div>
+
+                <div id="toggleBox" style="display: none; overflow-y: scroll; height: 200px"><div id="tree"></div></div>
+
+                <div style="margin-bottom: 20px"></div>
+
+                <div class="row">
+                    <div class="col-sm-12 col-md-8" style="margin-bottom: 10px">
+                        <button style="width: 150px" ng-controller="ActionsCtrl" ng-click="prepareGroupToUpdate(data[0].id, data[0].skill_name, nameText, descriptionText, $currentGroup.id, data[0].user_id, $user.id);" class="btn btn-success" type="button">Зберегти</button>
+                    </div>
+                    <div class="col-sm-12 col-md-4" style="margin-bottom: 20px">
+                        <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+                        <a href="#editLibrary"><button ng-click="" class="btn btn-primary" type="button">До редактору</button></a>
+                    </div>
+                </div>
+
+                <div id="messageBox" style="display: none" ng-class="messageBoxClass">
+                    <button id="closeMessageBoxButton" type="button" class="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4><b ng-bind="messageTitleText"></b></h4>
+                    <p ng-bind="messageText"></p>
+                </div>
+
+            </div>
+
+            <div ng-if="data==null" style="text-align: center">
+                <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
+            </div>
+
+            <div ng-if="data == -1">
+                <div class="alert alert-warning">
+                    <h4><b>Увага!</b></h4>
+                    <p style="margin-bottom: 10px">Не вдалося отримати групу (id=<span ng-bind="getCurrentGroupId()"></span>)!</p>
+                    <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+                    <a href="#editLibrary"><button ng-click="" class="btn btn-primary" type="button">До редактору</button></a>
+                </div>
             </div>
         </div>
 
-        <div ng-show="data==null" style="text-align: center">
-            <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
-        </div>
-
-        <div ng-show="data == -1">
-            <h4>Групу (id={{getCurrentGroupId()}}) не знайдено!</h4>
-            <a href="#main"><button class="btn btn-primary" type="button">Назад</button></a>
-        </div>
-    </div>
-
-    <div ng-if="!$user">
-        <div class="alert alert-info">
-            <h4><b>Попередження!</b></h4>
-            <p style="margin-bottom: 20px">Вибачте, дана сторінка не доступна для Вас. Щоб переглянути її, увійдіть в систему.</p>
-            <a href="#main"><button class="btn btn-primary" type="button">Назад</button></a>
+        <div ng-if="!$user" style="margin: 20px">
+            <div class="alert alert-info">
+                <h4><b>Попередження!</b></h4>
+                <p style="margin-bottom: 10px">Вибачте, дана сторінка не доступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
+                <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+            </div>
         </div>
     </div>
-
 </div>
 
 </body>

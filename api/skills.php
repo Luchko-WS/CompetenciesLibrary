@@ -42,6 +42,10 @@ function getParentID($leftKey, $rightKey){
 
 function getIndicators($skillID){
     $indicators = DB::fetchAll("SELECT * FROM indicators WHERE skill_id=" . $skillID);
+    for($i=0; $i<count($indicators); $i++){
+        $indicators[$i]['user'] = getUserName($indicators[$i]['user_id']);
+    }
+
     return $indicators;
 }
 
@@ -56,7 +60,7 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
     $input = json_decode($args['id'], true);
 
     if($input == null){
-        file_put_contents('NULL_ADD.txt', "NULL");
+        //file_put_contents('NULL_ADD.txt', "NULL");
         return $response;
     }
     //отримуємо всі компетенції і їх критерії
@@ -74,7 +78,6 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
     }
     //отримуємо компетенцію по групі
     else if($input["skillID"] == "BY_GROUP"){
-
         $rowsSkills = DB::fetchAll("SELECT * FROM skill_tree WHERE left_key >= ".$input['left_key']." AND right_key <= ".
             $input['right_key']." AND node_type=1;");
         //file_put_contents('SKILLS BY GROUP', count($rowsSkills));
@@ -108,6 +111,9 @@ $app->post('/params', function (Request $request, Response $response, $args) {
     $groupID = $input['groupID'];
     $skillDescription = $input['skillDescription'];
     $userID = $input['userID'];
+    $skillID = $input['skillID'];
+    $isCopy = $input['isCopy'];
+
 
     $groupInfo = DB::fetchAll("SELECT * FROM skill_tree WHERE id=" . $groupID . ";");
     $groupRightKey = $groupInfo[0]['right_key'];
@@ -123,11 +129,29 @@ $app->post('/params', function (Request $request, Response $response, $args) {
       "WHERE right_key>=".$groupRightKey." AND left_key<".$groupRightKey.";";
     DB::exec($sql);
 
+    //копіюємо вузол
+    if($isCopy){
+        $sql = "INSERT INTO skill_tree SET left_key = $groupRightKey, right_key = " . ($groupRightKey + 1) .
+            ", node_level=" . ($groupLevel + 1) . ", skill_name='" . $skillName . "', description='" .
+            $skillDescription . "', node_type=1, user_id=" . $userID . ";";
+        DB::exec($sql);
+
+        $newSkill = DB::fetchAll("SELECT * FROM skill_tree WHERE left_key = $groupRightKey AND right_key = ".($groupRightKey + 1).";");
+        $newSkillID = $newSkill[0]['id'];
+        $indicators = DB::fetchAll("SELECT * FROM indicators WHERE skill_id = $skillID;");
+        for($i = 0; $i < count($indicators); $i++){
+            $sql = "INSERT INTO indicators (skill_id, indicator_name, description, user_id) ".
+                "VALUES ($newSkillID, '".$indicators[$i]['indicator_name']."', '".$indicators[$i]['description']."', $userID);";
+            DB::exec($sql);
+        }
+    }
     //додаємо новий вузол
-    $sql = "INSERT INTO skill_tree SET left_key=".$groupRightKey.", right_key=".($groupRightKey + 1).
-        ", node_level=".($groupLevel + 1).", skill_name='".$skillName."', description='".
-        $skillDescription."', node_type=1, user_id=".$userID.";";
-    DB::exec($sql);
+    else {
+        $sql = "INSERT INTO skill_tree SET left_key=" . $groupRightKey . ", right_key=" . ($groupRightKey + 1) .
+            ", node_level=" . ($groupLevel + 1) . ", skill_name='" . $skillName . "', description='" .
+            $skillDescription . "', node_type=1, user_id=" . $userID . ";";
+        DB::exec($sql);
+    }
     //file_put_contents('add_skill 3.txt', $sql);
 
     return $this->response->withJson($input);
