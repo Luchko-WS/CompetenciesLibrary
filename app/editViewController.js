@@ -1,29 +1,34 @@
 mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location', '$routeParams', 'GroupsModel',
     function ($scope, $rootScope, $http, $location, $routeParams, GroupsModel) {
 
+    /**
+     БЛОК КОНСТАНТ
+     **/
+    //Тип форматування дерева для Bootstrap Tree View
     const GROUPS_AND_SKILLS = 0;
     const ONLY_GROUPS = 1;
-
+    //Тип операції, що викликала друге дерево Bootstrap Tree View
     const SKILL_MOVE = 2;
     const SKILL_COPY = 3;
     const GROUP_MOVE = 4;
     const GROUP_COPY = 5;
-
-    $scope.data = null;
+    /**
+     КІНЕЦЬ БЛОКУ КОНСТАНТ
+     **/
+    //Змінна для збереження типу операції
     $scope.command = null;
 
+    /**
+     БЛОК ОТРИМАННЯ ТА ФОРМАТУВАННЯ ДЕРЕВ
+     **/
     $rootScope.getTree = function () {
         $rootScope.$tree = null;
-
         var params =  {
-            skill: 'NONE',
-            indicator: 'NONE',
-            exportToFile: 'NONE',
             tree: 'GROUPS AND SKILLS'
         };
         GroupsModel.get({'id':JSON.stringify(params)}, function (res) {
             if(res.data === undefined) {
-                console.log('ERROR IN GET GROUP TREE');
+                console.log('Не вдалося отримати дерево! (res.data === undefined)');
                 $rootScope.$tree = -1;
             }
             else {
@@ -49,8 +54,9 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
                     //$('#infoBox').hide("normal");
                     $('#infoBox').show("normal");
 
-                    $('#name').text("Назва: " + data.skill_name);
+                    $('#name').text("Назва: " + data.name);
                     if(data.node_type == 0) {
+                        $("#importButton").show();
                         $('#item_type').text("Тип: група");
                         $('#child_item_count').text("Кількість груп: " + data.count_of_child_groups + ", кількість компетенцій: " + data.count_of_child_skills);
 
@@ -72,6 +78,7 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
 
                     }
                     else{
+                        $("#importButton").hide();
                         $('#item_type').text("Тип: компетенція");
                         $('#child_item_count').text("Кількість індикаторів: " + data.count_of_indicators);
 
@@ -146,7 +153,7 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
                     $('#infoBox2').show("normal");
                     $('#acceptButton').show();
 
-                    $('#name2').text("Назва: " + data.skill_name);
+                    $('#name2').text("Назва: " + data.name);
                     $('#item_type2').text("Тип: група");
                     if(data.description != null && data.description.length != 0) {
                         $('#description2').text("Опис: " + data.description);
@@ -158,14 +165,19 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
                     $('#user2').text("Власник: " + data.user);
                 });
             }
+        }, function (err) {
+            console.log('Не вдалося отримати дерево! (res.data === undefined)');
+            console.log(err);
         });
     };
 
+    //Підготовка до показу другого дерева
     var showSecondTree = function () {
         //$('#tree1').treeview('disableAll');
         $('#tree2').treeview('disableAll');
         $('#tree2').treeview('enableAll');
 
+        $("#controlPanel").hide();
         $("#boxWithTree1").hide('normal');
         $("#boxWithTree2").animate({width : '100%'}, 'normal');
         $("#boxWithTree2").show('normal');
@@ -182,8 +194,10 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
         $('#copyGroupButton').hide();
     };
 
+    //Підготовка до приховування другого дерева
     var hideSecondTree = function (item_type) {
         //$('#tree1').treeview('enableAll');
+        $("#controlPanel").show();
         $("#boxWithTree2").hide('normal');
         $("#boxWithTree1").animate({width : '100%'}, 'normal');
         $("#boxWithTree1").show('normal');
@@ -191,13 +205,12 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
         $('#editItemButton').show();
         $('#acceptButton').hide();
         $('.cancelButton').hide();
-        if(item_type == 1) {
 
+        if(item_type == 1) {
             $('#showSkillButton').show();
             $('#removeSkillButton').show();
             $('#moveSkillButton').show();
             $('#copySkillButton').show();
-
         }
         else {
             $('#removeGroupButton').show();
@@ -206,9 +219,10 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
         }
     };
 
+    //Форматування дерева
     $scope.formatDataToTree = function(param) {
         var root = $rootScope.$tree[0];
-        root.text = $rootScope.$tree[0].skill_name;
+        root.text = $rootScope.$tree[0].name;
         root.node_id = 0;
         root.tags = [$rootScope.$tree[0].count_of_child_skills, $rootScope.$tree[0].count_of_child_groups];
         var stack = [0];
@@ -218,7 +232,7 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
         for(var i = 1; i < $rootScope.$tree.length; i++) {
             $rootScope.$tree[i].node_id = i;
             $rootScope.$tree[i].nodes = null;
-            $rootScope.$tree[i].text = $rootScope.$tree[i].skill_name;
+            $rootScope.$tree[i].text = $rootScope.$tree[i].name;
 
             if($rootScope.$tree[i].node_type == 0) {
                 $rootScope.$tree[i].tags = [$rootScope.$tree[i].count_of_child_skills, $rootScope.$tree[i].count_of_child_groups];
@@ -286,7 +300,13 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
         root.nodes = roots;
         return [root];
     };
+    /**
+     КІНЕЦЬ БЛОКУ ОТРИМАННЯ ТА ФОРМАТУВАННЯ ДЕРЕВ
+     **/
 
+    /**
+     БЛОК ОПЕРАЦІЙ З ЕЛЕМЕНТАМИ ДЕРЕВА
+     **/
     $scope.openItem = function () {
         if($scope.currentItem1.node_type == 1){
             $location.path('/skill/' + $scope.currentItem1.id + '/show');
@@ -305,22 +325,24 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
     $scope.moveOrCopyItem = function () {
         switch ($scope.command){
             case SKILL_COPY:
-                $rootScope.prepareSkillToCopy($scope.currentItem1.id, $scope.currentItem1.skill_name, $scope.currentItem1.description,
+                $rootScope.prepareSkillToCopy($scope.currentItem1.id, $scope.currentItem1.name, $scope.currentItem1.description,
                     $scope.currentItem2.id, $scope.currentItem2.user_id, $rootScope.$user.id);
                 break;
             case SKILL_MOVE:
-                $rootScope.prepareSkillToMove($scope.currentItem1.id, $scope.currentItem1.skill_name, $scope.currentItem1.skill_name,
+                $rootScope.prepareSkillToMove($scope.currentItem1.id, $scope.currentItem1.name, $scope.currentItem1.name,
                     $scope.currentItem1.description, $scope.currentItem2.id, $scope.currentItem1.user_id, $rootScope.$user.id);
                 break;
             case GROUP_COPY:
-                $rootScope.prepareGroupToCopy($scope.currentItem1.id, $scope.currentItem1.skill_name, $scope.currentItem1.description,
+                $rootScope.prepareGroupToCopy($scope.currentItem1.id, $scope.currentItem1.name, $scope.currentItem1.description,
                     $scope.currentItem2.id, $scope.currentItem2.user_id, $rootScope.$user.id);
                 break;
             case GROUP_MOVE:
-                $rootScope.prepareGroupToMove($scope.currentItem1.id, $scope.currentItem1.skill_name, $scope.currentItem1.skill_name,
+                $rootScope.prepareGroupToMove($scope.currentItem1.id, $scope.currentItem1.name, $scope.currentItem1.name,
                     $scope.currentItem1.description, $scope.currentItem2.id, $scope.currentItem1.user_id, $rootScope.$user.id);
                 break;
         }
-    }
-
+    };
+    /**
+     КІНЕЦЬ БЛОКУ ОПЕРАЦІЙ З ЕЛЕМЕНТАМИ ДЕРЕВА
+     **/
 }]);

@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head></head>
+
+<body>
+<div class="thumbnail">
+    <div ng-show="$user" style="margin: 10px; margin-left: 20px; margin-right: 20px">
+        <div ng-controller="SkillsCtrl">
+            <!-- Редагування компетенції -->
+            <div ng-controller="GroupsCtrl">
+                <div ng-init="getGroupTree();"></div>
+            </div>
+
+            <div ng-init="getSkill(getRouteParamSkillID_SkillCtrl(), 1); show=0"></div>
+
+            <div ng-show="skillData != null && skillData != -1">
+                <h2>Редагування компетенції:</h2>
+                <h3 ng-bind="skillData[0].name"></h3>
+                <h4 ng-bind="'Користувач: ' + skillData[0].user"></h4>
+                <h4 ng-bind="'Група: ' + skillData[0].path"></h4>
+
+                <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Компетенція" ng-model="nameText">
+                <textarea class="form-control" rows="5" style="margin-bottom: 10px" placeholder="Опис" ng-model="descriptionText"></textarea>
+
+                <div class="input-group" style="margin-bottom: 10px">
+                    <input type="text" readonly class="form-control" type="text" class="form-control" placeholder="Група" ng-model="groupText">
+                    <div class="input-group-btn">
+                        <button class="btn btn-primary" id="toggleButton" ng-click="show=!show"><span ng-bind="onClickSelectCurrentGroup(show)"></span></button>
+                    </div>
+                </div>
+                <div id="toggleBox" style="display: none; overflow-y: scroll; height: 200px"><div id="tree"></div></div>
+
+                <div style="margin-bottom: 20px"></div>
+
+                <div class="row">
+                    <div class="col-sm-12 col-md-8" style="margin-bottom: 10px">
+                        <button style="width: 150px" ng-controller="ActionsCtrl" ng-click="prepareSkillToUpdate(skillData[0].id, skillData[0].name, nameText, descriptionText, $currentGroup.id, skillData[0].user_id, $user.id)" class="btn btn-success" type="button">Зберегти</button>
+                    </div>
+                    <div class="col-sm-12 col-md-4" style="margin-bottom: 20px">
+                        <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+                        <a href="#editLibrary"><button ng-click="" class="btn btn-primary" type="button">До редактору</button></a>
+                    </div>
+                </div>
+
+                <div id="messageBox" ng-class="messageBoxClass" style="display: none">
+                    <button id="closeMessageBoxButton" type="button" class="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4><b ng-bind="messageTitleText"></b></h4>
+                    <p ng-bind="messageText"></p>
+                </div>
+
+                <div ng-controller="IndicatorsCtrl">
+                    <h3>Список індикаторів:</h3>
+                    <a href="#skill/{{skillData[0].id}}/indicator/create"><button style="margin-bottom: 10px" class="btn btn-primary" type="button">Додати індикатор</button></a>
+
+                    <div id="indicatorMessageBox" ng-class="messageBoxClass" style="display: none">
+                        <button id="closeIndicatorMessageBoxButton" type="button" class="close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4><b ng-bind="messageTitleText"></b></h4>
+                        <p ng-bind="messageText"></p>
+                    </div>
+
+                    <div class="thumbnail">
+                        <div style="margin: 10px">
+                            <div ng-if="skillData[0].indicators.length == 0">
+                                <h5>Дана компетенція не містить в собі індикаторів</h5>
+                            </div>
+
+                            <div ng-repeat="item_indicator in skillData[0].indicators">
+                                <div class="panel panel-info">
+                                    <div class="panel-body" style="padding: 5px">
+                                        <div class="row">
+                                            <div class="col-md-10 col-xs-12">
+                                                <h4><span ng-bind="($index+1) + '. '"></span><a href="#skill/{{skillData[0].id}}/indicator/{{item_indicator.id}}/show"><span ng-bind="item_indicator.name"></span></a></h4>
+                                            </div>
+                                            <div class="col-md-2 col-xs-12">
+                                                <a href="#skill/{{getRouteParamSkillID_SkillCtrl()}}/indicator/{{item_indicator.id}}/edit"><button class="btn btn-primary" type="button"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button></a>
+                                                <button ng-click="prepareIndicatorToRemove(item_indicator.id, item_indicator.name, getRouteParamSkillID_SkillCtrl(), item_indicator.user_id, $user.id);" class="btn btn-danger" type="button"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-footer">
+                                        <p ng-if="item_indicator.description" style="margin-left: 15px"><b>Опис: </b><span ng-bind="item_indicator.description"></span></p>
+                                        <p style="margin-left: 15px"><b>Користувач: </b><span ng-bind="item_indicator.user"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="skillData==null" style="text-align: center">
+                <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
+            </div>
+
+            <div ng-if="skillData == -1">
+                <div class="alert alert-warning">
+                    <h4><b>Увага!</b></h4>
+                    <p style="margin-bottom: 10px">Не вдалося отримати компетенцію (id=<span ng-bind="getRouteParamSkillID_SkillCtrl()"></span>)!</p>
+                    <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+                    <a href="#editLibrary"><button ng-click="" class="btn btn-primary" type="button">До редактору</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div ng-if="!$user" style="margin: 20px">
+        <div class="alert alert-info">
+            <h4><b>Попередження!</b></h4>
+            <p style="margin-bottom: 10px">Вибачте, дана сторінка недоступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
+            <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

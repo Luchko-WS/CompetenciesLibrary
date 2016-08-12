@@ -11,7 +11,7 @@ DB::init('mysql:dbname=prozorro;host=127.0.0.1;port=3306', 'root', 'WhiteShark28
 
 $app = new \Slim\App;
 
-$app->options('/{routes:.+}', function ($request, $response, $args) {
+$app->options('/{routes:.+}', function (Request $request, Response $response, $args) {
     return $response;
 });
 
@@ -37,14 +37,15 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
     ]
 ]));
 
-$app->put('/auth/{id}', function ($request, $response, $args) {
+//file_put_contents(filename, body);
+//Вхід користувача в систему
+$app->put('/auth/{id}', function (Request $request, Response $response, $args) {
     $data = json_decode($args['id'], true);
     $expireTime = 60 * 60;
     $login = isset($data['login']) ? $data['login'] : '';
     $password = isset($data['password']) ? $data['password'] : '';
 
-    $userData = DB::fetchAll("SELECT * FROM users WHERE login='".$login."' AND password='".$password."';");
-
+    $userData = DB::fetchAll("SELECT * FROM users WHERE login='$login' AND password='$password';");
     if ($userData) {
         $token = JWT::encode([
             "iss" => 1,
@@ -53,34 +54,31 @@ $app->put('/auth/{id}', function ($request, $response, $args) {
         ],
             0
         );
-
         $response->getBody()->write(json_encode([
             'user' => [
                 'id' => $userData[0]['id'],
                 'login' => $userData[0]['login'],
-                'firstName' => $userData[0]['firstname'],
-                'secondName' => $userData[0]['secondname'],
+                'firstName' => $userData[0]['first_name'],
+                'secondName' => $userData[0]['second_name'],
                 'organization' => $userData[0]['organization'],
-                'lastActionID' => $userData[0]['lastActionID']
+                'firstActionID' => $userData[0]['first_action_id'],
+                'lastActionID' => $userData[0]['last_action_id']
             ],
             'token' => $token
         ]));
-
     } else {
         $response = $response->withStatus(400);
         $response->getBody()->write(json_encode([
             'error' => 'Invalid login'
         ]));
     }
-
-    //file_put_contents('LOGIN.txt', $response);
     return $response;
 });
 
+//Збереження/редагування даних користувача
 $app->post("/auth", function (Request $request, Response $response, $args) {
 
     $input = $request->getParsedBody();
-
     $id = $input['userID'];
     $login = $input['login'];
     $password = $input['password'];
@@ -88,34 +86,50 @@ $app->post("/auth", function (Request $request, Response $response, $args) {
     $secondName = $input['secondName'];
     $organization = $input['organization'];
     $changePassword = $input['changePassword'];
+    $firstActionID = $input['firstActionID'];
     $lastActionID = $input['lastActionID'];
 
-    if($lastActionID){
-        $sql = "UPDATE users SET lastActionID = $lastActionID WHERE id = $id;";
+    //Встановлення першої дії для користувача
+    if($firstActionID){
+        $sql = "UPDATE users SET first_action_id = $firstActionID WHERE id = $id;";
+        DB::exec($sql);
+        $sql = "DELETE FROM actions WHERE id <= $firstActionID AND user_id=$id;";
         DB::exec($sql);
     }
-    //create
+    //Встановлення останньої дії для користувача
+    else if($lastActionID){
+        $sql = "UPDATE users SET last_action_id = $lastActionID WHERE id = $id;";
+        DB::exec($sql);
+    }
+    //Створення користувача
     else if($id == -1) {
-        $sql = "INSERT INTO users SET login='" . $login . "', password='" . $password . "', firstName='" .
-            $firstName . "', secondName='" . $secondName . "', organization='" . $organization . "';";
+        $sql = "INSERT INTO users SET login = '$login', password = '$password', first_name = '$firstName', ".
+            "second_name = '$secondName', organization = '$organization';";
         DB::exec($sql);
     }
-    //edit
+    //Редагування користувача
     else{
+        //Змнений пароль
         if($changePassword) {
-            $sql = "UPDATE users SET password='" . $password . "', firstName='" .
-                $firstName . "', secondName='" . $secondName . "', organization='" . $organization .
-                "' WHERE id=" . $id . ";";
-            //file_put_contents('EDIT_USER.txt', $sql);
+            $sql = "UPDATE users SET password = '$password', first_name = '$firstName', ".
+                "second_name = '$secondName', organization = '$organization' WHERE id = $id;";
         }
         else{
-            $sql = "UPDATE users SET firstName='" . $firstName . "', secondName='" .
-                $secondName . "', organization='" . $organization .
-                "' WHERE id=" . $id . ";";
+            $sql = "UPDATE users SET first_name = '$firstName', second_name = '$secondName', ".
+                "organization = '$organization' WHERE id = $id;";
         }
         DB::exec($sql);
     }
     return $response;
+});
+
+//Видалення користувача
+$app->delete('/auth/[{id}]', function (Request $request, Response $response, $args) {
+    $input = $request->getAttribute('id');
+    $id = $input;
+    $sql = "DELETE FROM users WHERE id = $id;";
+    DB::exec($sql);
+    return $this->response->true;
 });
 
 $app->run();

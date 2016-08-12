@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<div class="row">
+    <div class="col-xs-0 col-sm-0 col-md-1 col-lg-2"></div>
+    <div class="col-xs-12 col-sm-12 col-md-10 col-lg-8">
+        <div class="thumbnail" style="padding: 10px">
+            <div ng-if="$user">
+                <h3 style="text-align: center">Імпорт файлу в бібліотеку</h3>
+                <div ng-controller="MainCtrl">
+                    <h4 id="uploadStatus" style="display: none">Завантаження...</h4>
+                    <h4 id="list">Файл не обрано</h4>
+                    <div class="progress" style="display: none">
+                        <div id="progressBar" class="progress-bar progress-bar-striped active" role = "progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 0%; text-align: center">
+                            <span id="progressBarText">0%</span>
+                        </div>
+                    </div>
+                    <button id="cancelUpload" class="btn btn-danger" style="display: none">Скасувати</button>
+
+                    <div id="messageBox" style="display: none" ng-class="messageBoxClass">
+                        <button id="closeMessageBoxButton" type="button" class="close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4><b ng-bind="messageTitleText"></b></h4>
+                        <p ng-bind="messageText"></p>
+                    </div>
+
+                    <div id="selectFile">
+                        <div id="drop_zone" style="margin-bottom: 10px; border: 2px dashed #bbbbbb; border-radius: 5px; padding-top: 50px; padding-bottom: 50px; height: 130px; text-align: center; color: #bbbbbb">Перетягніть JSON-файл сюди</div>
+                        <input type="file" id="files" name="file" style="display: none" accept=".json">
+                        <label for="files" style="float: right; -webkit-appearance: button; -moz-appearance: button; padding: 5px; padding-left: 15px; padding-right: 15px" class="btn btn-primary">Вибрати файл</label>
+                        <div style="margin-bottom: 40px"></div>
+                    </div>
+
+                    <div id="selectGroup" style="display: none;">
+                        <h5>Виберіть каталог, в який потрібно імпортувати дані.</h5>
+                        <div ng-controller="GroupsCtrl" ng-init="getGroupTree()">
+                            <div style="overflow-y: scroll; height: 400px; margin-bottom: 10px" id="tree"></div>
+                        </div>
+                        <button ng-click="test($currentGroup)" class="btn btn-success">Імпортувати</button>
+                        <button id="cancelImportFileButton" class="btn btn-danger">Скасувати</button>
+
+                    </div>
+                </div>
+            </div>
+            <div ng-if="!$user" style="margin: 20px">
+                <div class="alert alert-info">
+                    <h4><b>Попередження!</b></h4>
+                    <p style="margin-bottom: 10px">Вибачте, дана сторінка недоступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
+                    <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-0 col-sm-0 col-md-1 col-lg-2"></div>
+</div>
+</body>
+</html>

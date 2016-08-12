@@ -21,10 +21,10 @@
                             <h4 style="margin-bottom: 10px" ng-if="actionData[0].state == 0">Статус: очікується</h4>
                             <h4 style="margin-bottom: 10px" ng-if="actionData[0].state == 1">Статус: <span style="color: green">прийнято</span></h4>
 
-                            <div ng-show="data != null && data != -1">
-                                <h3 ng-bind="'Назва: ' + data[0].skill_name"></h3>
-                                <h3 ng-if="data[0].description" ng-bind="'Опис: ' + data[0].description"></h3>
-                                <h3 ng-bind="'Група: ' + data[0].path"></h3>
+                            <div ng-show="skillData != null && skillData != -1">
+                                <h3 ng-bind="'Назва: ' + skillData[0].name"></h3>
+                                <h3 ng-if="skillData[0].description" ng-bind="'Опис: ' + skillData[0].description"></h3>
+                                <h3 ng-bind="'Група: ' + skillData[0].path"></h3>
 
                                 <div style="margin-top: 20px">
                                     <a href="" ng-show="actionData[0].state == 0 && actionData[0].user_id != $user.id"><button style="margin-bottom: 5px" class="btn btn-success" type="button" ng-click="rejectOrAcceptTheAction(actionData[0].id, 1); removeSkill(actionData[0].item_id);">Прийняти</button></a>
@@ -40,10 +40,10 @@
                                     <p ng-bind="messageText"></p>
                                 </div>
                             </div>
-                            <div ng-if="data==null" style="text-align: center">
+                            <div ng-if="skillData==null" style="text-align: center">
                                 <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
                             </div>
-                            <div ng-if="data == -1">
+                            <div ng-if="skillData == -1">
                                 <div class="alert alert-warning">
                                     <h4><b>Увага!</b></h4>
                                     <p style="margin-bottom: 10px">Не вдалося отримати компетенцію (id=<span ng-bind="getItemID()"></span>)!</p>
@@ -69,7 +69,7 @@
             <div ng-if="!$user" style="margin: 20px">
                 <div class="alert alert-info">
                     <h4><b>Попередження!</b></h4>
-                    <p style="margin-bottom: 10px">Вибачте, дана сторінка не доступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
+                    <p style="margin-bottom: 10px">Вибачте, дана сторінка недоступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
                     <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
                 </div>
             </div>

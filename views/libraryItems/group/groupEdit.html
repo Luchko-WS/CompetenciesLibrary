@@ -7,9 +7,9 @@
 <div class="thumbnail">
     <div ng-if="$user" style="margin: 10px; margin-left: 20px; margin-right: 20px">
         <div ng-controller="GroupsCtrl">
-            <div ng-init="getGroupTree(); getGroup(getCurrentGroupId(), 1);"></div>
+            <div ng-init="getGroupTree(); getGroup(getRouteParamGroupID_GroupCtrl(), 1);"></div>
 
-            <div ng-if="data[0].node_level == 1">
+            <div ng-if="groupData[0].node_level == 1">
                 <div class="alert alert-info">
                     <h4><b>Увага!</b></h4>
                     <p style="margin-bottom: 10px">Не можливо редагувати кореневу групу!</p>
@@ -18,12 +18,12 @@
                 </div>
             </div>
 
-            <div ng-show="data != null && data != -1 && data[0].node_level != 1">
+            <div ng-show="groupData != null && groupData != -1 && groupData[0].node_level != 1">
                 <!-- Редагування групи -->
                 <h2>Редагування групи:</h2>
-                <h3 ng-bind="data[0].skill_name"></h3>
-                <h4 ng-bind="'Користувач: ' + data[0].user"></h4>
-                <h4 ng-bind="'Група: ' + data[0].path"></h4>
+                <h3 ng-bind="groupData[0].name"></h3>
+                <h4 ng-bind="'Користувач: ' + groupData[0].user"></h4>
+                <h4 ng-bind="'Група: ' + groupData[0].path"></h4>
 
                 <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Назва групи" ng-model="nameText">
                 <textarea class="form-control" rows="5" style="margin-bottom: 10px" placeholder="Опис" ng-model="descriptionText"></textarea>
@@ -41,7 +41,7 @@
 
                 <div class="row">
                     <div class="col-sm-12 col-md-8" style="margin-bottom: 10px">
-                        <button style="width: 150px" ng-controller="ActionsCtrl" ng-click="prepareGroupToUpdate(data[0].id, data[0].skill_name, nameText, descriptionText, $currentGroup.id, data[0].user_id, $user.id);" class="btn btn-success" type="button">Зберегти</button>
+                        <button style="width: 150px" ng-controller="ActionsCtrl" ng-click="prepareGroupToUpdate(groupData[0].id, groupData[0].name, nameText, descriptionText, $currentGroup.id, groupData[0].user_id, $user.id);" class="btn btn-success" type="button">Зберегти</button>
                     </div>
                     <div class="col-sm-12 col-md-4" style="margin-bottom: 20px">
                         <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
@@ -59,14 +59,14 @@
 
             </div>
 
-            <div ng-if="data==null" style="text-align: center">
+            <div ng-if="groupData==null" style="text-align: center">
                 <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
             </div>
 
-            <div ng-if="data == -1">
+            <div ng-if="groupData == -1">
                 <div class="alert alert-warning">
                     <h4><b>Увага!</b></h4>
-                    <p style="margin-bottom: 10px">Не вдалося отримати групу (id=<span ng-bind="getCurrentGroupId()"></span>)!</p>
+                    <p style="margin-bottom: 10px">Не вдалося отримати групу (id=<span ng-bind="getSelectGroupID()"></span>)!</p>
                     <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
                     <a href="#editLibrary"><button ng-click="" class="btn btn-primary" type="button">До редактору</button></a>
                 </div>
@@ -76,7 +76,7 @@
         <div ng-if="!$user" style="margin: 20px">
             <div class="alert alert-info">
                 <h4><b>Попередження!</b></h4>
-                <p style="margin-bottom: 10px">Вибачте, дана сторінка не доступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
+                <p style="margin-bottom: 10px">Вибачте, дана сторінка недоступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
                 <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
             </div>
         </div>

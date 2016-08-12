@@ -1,7 +1,7 @@
 mainApp.factory('IOModel', ['$resource', function ($resource) {
     return $resource('http://localhost:8088/api/io.php/params/:id', {'id':'@id'}, {
         'export' : {method: 'GET'},
-        'import': {method: 'PUT'}
+        'import': {method: 'POST'}
     });
 }]);
 

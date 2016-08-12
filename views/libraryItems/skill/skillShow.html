@@ -12,32 +12,32 @@
             <div ng-controller="GroupsCtrl">
                 <div ng-init="getGroupTree();"></div>
             </div>
-            <div ng-init="getSkill(getCurrentSkillIdSkillCtrl(), 1)"></div>
+            <div ng-init="getSkill(getRouteParamSkillID_SkillCtrl(), 1)"></div>
 
-            <div ng-if="data != null && data != -1">
+            <div ng-if="skillData != null && skillData != -1">
                 <h2>Інформація про компетенцію:</h2>
-                <h3 ng-bind="data[0].skill_name"></h3>
+                <h3 ng-bind="skillData[0].name"></h3>
 
                 <h4 ng-if="descriptionText" ng-bind="'Опис: ' + descriptionText"></h4>
                 <h4 ng-bind="'Група: ' + groupText"></h4>
-                <p ng-bind="data[0].path"></p>
-                <h4 ng-bind="'Користувач: ' + data[0].user"></h4>
+                <p ng-bind="skillData[0].path"></p>
+                <h4 ng-bind="'Користувач: ' + skillData[0].user"></h4>
 
-                <a ng-if="$user" href="#skill/{{getCurrentSkillIdSkillCtrl()}}/edit"><button class="btn btn-primary" type="button">Редагувати компетенцію</button></a>
+                <a ng-if="$user" href="#skill/{{getRouteParamSkillID_SkillCtrl()}}/edit"><button class="btn btn-primary" type="button">Редагувати компетенцію</button></a>
                 <a href="#main"><button ng-click="" class="btn btn-primary" type="button">На головну</button></a>
                 <a ng-if="$user" href="#editLibrary"><button ng-click="" class="btn btn-primary" type="button">До редактору</button></a>
 
                 <h3>Список індикаторів:</h3>
                 <div class="thumbnail">
                     <div style="margin: 10px">
-                        <div ng-if="data[0].indicators.length == 0">
+                        <div ng-if="skillData[0].indicators.length == 0">
                             <h5>Дана компетенція не містить в собі індикаторів</h5>
                         </div>
 
-                        <div ng-repeat="item_indicator in data[0].indicators">
+                        <div ng-repeat="item_indicator in skillData[0].indicators">
                             <div class="panel panel-info">
                                 <div class="panel-body" style="padding: 5px">
-                                    <h4><span ng-bind="($index+1) + '. '"></span><a href="#skill/{{data[0].id}}/indicator/{{item_indicator.id}}/show"><span ng-bind="item_indicator.indicator_name"></span></a></h4>
+                                    <h4><span ng-bind="($index+1) + '. '"></span><a href="#skill/{{skillData[0].id}}/indicator/{{item_indicator.id}}/show"><span ng-bind="item_indicator.name"></span></a></h4>
                                 </div>
                                 <div class="panel-footer">
                                     <p ng-if="item_indicator.description" style="margin-left: 15px"><b>Опис: </b><span ng-bind="item_indicator.description"></span></p>
@@ -49,14 +49,14 @@
                 </div>
             </div>
 
-            <div ng-if="data==null" style="text-align: center">
+            <div ng-if="skillData==null" style="text-align: center">
                 <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
             </div>
 
-            <div ng-show="data == -1">
+            <div ng-show="skillData == -1">
                 <div class="alert alert-warning">
                     <h4><b>Увага!</b></h4>
-                    <p style="margin-bottom: 10px">Не вдалося отримати компетенцію (id=<span ng-bind="getCurrentSkillIdSkillCtrl()"></span>)!</p>
+                    <p style="margin-bottom: 10px">Не вдалося отримати компетенцію (id=<span ng-bind="getRouteParamSkillID_SkillCtrl()"></span>)!</p>
                     <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
                     <a ng-if="$user" href="#editLibrary"><button ng-click="" class="btn btn-primary" type="button">До редактору</button></a>
                 </div>

@@ -10,7 +10,7 @@ DB::init('mysql:dbname=prozorro;host=127.0.0.1;port=3306', 'root', 'WhiteShark28
 
 $app = new \Slim\App;
 
-$app->options('/{routes:.+}', function ($request, $response, $args) {
+$app->options('/{routes:.+}', function (Request $request, Response $response, $args) {
     return $response;
 });
 
@@ -26,19 +26,24 @@ $app->add(function ($req, $res, $next) {
 $app->get('/params/{id}', function (Request $request, Response $response, $args) {
 
     $input = json_decode($args['id'], true);
-
-    if($input['id']) {
-        $item = DB::fetchAll("SELECT * FROM skill_tree WHERE id=" . $input['id'] . ";");
+    $itemID = $input['id'];
+    if($itemID) {
+        $item = DB::fetchAll("SELECT * FROM skill_tree WHERE id = $itemID;");
         $leftKey = $item[0]['left_key'];
         $rightKey = $item[0]['right_key'];
-        $rows = DB::fetchAll("SELECT * FROM skill_tree WHERE left_key>=" . $leftKey . " AND right_key<=" . $rightKey . " ORDER BY left_key");
+        $rows = DB::fetchAll("SELECT *, IF((SELECT COUNT(*) FROM users u WHERE u.id = s.user_id) <> 0, ".
+            "(SELECT CONCAT(first_name, ' ', second_name) FROM users u WHERE u.id = s.user_id), 'невідомий') AS user ".
+            "FROM skill_tree s WHERE s.left_key >= $leftKey AND s.right_key <= $rightKey ORDER BY s.left_key;");
     }
     else{
-        $rows = DB::fetchAll("SELECT * FROM skill_tree ORDER BY left_key");
+        $rows = DB::fetchAll("SELECT *, IF((SELECT COUNT(*) FROM users u WHERE u.id = s.user_id) <> 0, ".
+            "(SELECT CONCAT(first_name, ' ', second_name) FROM users u WHERE u.id = s.user_id), 'невідомий') AS user ".
+            "FROM skill_tree s ORDER BY s.left_key;");
     }
-
     for($i = 0; $i < count($rows); $i++) {
-        $rowIndicators = DB::fetchAll("SELECT * FROM indicators WHERE skill_id=".$rows[$i]['id']);
+        $rowIndicators = DB::fetchAll("SELECT *, IF((SELECT COUNT(*) FROM users u WHERE u.id = i.user_id) <> 0, ".
+            "(SELECT CONCAT(first_name, ' ', second_name) FROM users u WHERE u.id = i.user_id), 'невідомий') AS user ".
+            "FROM indicators i WHERE i.skill_id = ".$rows[$i]['id'].";");
         $rows[$i]['indicators'] = $rowIndicators;
     }
 
@@ -50,7 +55,6 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
         $xls->setActiveSheetIndex(0);
         $sheet = $xls->getActiveSheet();
         $sheet->setTitle('Бібліотека компетенцій');
-
         $sheet->setCellValue("A1", 'Бібліотека компетенцій');
         $sheet->getStyle('A1')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
         $sheet->mergeCells('A1:D1');
@@ -63,23 +67,20 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
 
         $rowId = 3;
         for($i = 0; $i < count($rows); $i++) {
-
             if(count($rows[$i]['indicators']) == 0){
-
                 if($rows[$i]['node_type'] == 0){
-                    $sheet->setCellValueByColumnAndRow(0, $rowId, $rows[$i]['skill_name']." (ГРУПА)");
+                    $sheet->setCellValueByColumnAndRow(0, $rowId, $rows[$i]['name']." (ГРУПА)");
                 }
                 else{
-                    $sheet->setCellValueByColumnAndRow(0, $rowId, $rows[$i]['skill_name']);
+                    $sheet->setCellValueByColumnAndRow(0, $rowId, $rows[$i]['name']);
                 }
                 $sheet->setCellValueByColumnAndRow(1, $rowId, $rows[$i]['description']);
                 $rowId++;
             }
-
             for($j = 0; $j < count($rows[$i]['indicators']); $j++) {
-                $sheet->setCellValueByColumnAndRow(0, $rowId, $rows[$i]['skill_name']);
+                $sheet->setCellValueByColumnAndRow(0, $rowId, $rows[$i]['name']);
                 $sheet->setCellValueByColumnAndRow(1, $rowId, $rows[$i]['description']);
-                $sheet->setCellValueByColumnAndRow(2, $rowId, $rows[$i]['indicators'][$j]['indicator_name']);
+                $sheet->setCellValueByColumnAndRow(2, $rowId, $rows[$i]['indicators'][$j]['name']);
                 $sheet->setCellValueByColumnAndRow(3, $rowId, $rows[$i]['indicators'][$j]['description']);
                 $rowId++;
             }
@@ -87,26 +88,23 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
         $objWriter = new PHPExcel_Writer_Excel5($xls);
         $objWriter->save('ExportFile.xls');
     }
-
     return $response;
 });
 
 //import
-$app->put('/params/{id}', function ($request, $response, $args) {
+$app->put('/params/{id}', function (Request $request, Response $response, $args) {
     $input = json_decode($args['id'], true);
-
-    $groupID = $input['groupID'];
-    $parentGroupID = $input['parentGroupID'];
-    $groupName = $input['groupName'];
-    $groupDescription = $input['groupDescription'];
-    $isMove = $input['isMove'];
-
     return $this->response->withJson($input);
 
 });
 
 $app->post('/params', function (Request $request, Response $response, $args) {
     $input = $request->getParsedBody();
+    //file_put_contents('import1.txt', $input['itemID']);
+    //file_put_contents('import2.txt', $input['data'][0]['name']);
+    /**
+     * Потрібно перевіряти чи правильна структура даних
+     */
     return $this->response->withJson($input);
 });
 

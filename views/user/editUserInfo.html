@@ -47,8 +47,9 @@
 
                     <div style="font-size: small; margin-bottom: 20px"><span style="color: red">*</span> — поля, які потрібно обов'язково заповнити</div>
 
-                    <button style="width: 120px" ng-click="saveUserInfo()" class="btn btn-success">Зберегти</button>
-                    <a href="#main"><button style="width: 120px" class="btn btn-primary">На головну</button></a>
+                    <button style="width: 120px; margin-bottom: 5px" ng-click="saveUserInfo()" class="btn btn-success">Зберегти</button>
+                    <button ng-click="removeUser()" style="margin-bottom: 5px" class="btn btn-danger">Видалити користувача</button>
+                    <a href="#main"><button style="width: 120px; margin-bottom: 5px" class="btn btn-primary">На головну</button></a>
 
                     <div id="messageBox" style="display: none; margin-top: 20px" ng-class="messageBoxClass">
                         <button id="closeMessageBoxButton" type="button" class="close">
@@ -63,7 +64,7 @@
             <div ng-if="!$user" style="margin: 20px">
                 <div class="alert alert-info">
                     <h4><b>Попередження!</b></h4>
-                    <p style="margin-bottom: 10px">Вибачте, дана сторінка не доступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
+                    <p style="margin-bottom: 10px">Вибачте, дана сторінка недоступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
                     <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
                 </div>
             </div>

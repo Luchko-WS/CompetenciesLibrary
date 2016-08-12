@@ -19,7 +19,7 @@
                     <h4 style="margin-bottom: 10px" ng-if="actionData[0].state == 1">Статус: <span style="color: green">прийнято</span></h4>
 
                     <div ng-show="indicatorData != null && indicatorData != -1">
-                        <h3 ng-bind="'Компетенція: ' + actionData[0].skill_name"></h3>
+                        <h3 ng-bind="'Компетенція: ' + actionData[0].skillName"></h3>
                         <h4 ng-bind="'Шлях: ' + actionData[0].path"></h4>
 
                         <div class="row padded">
@@ -27,7 +27,7 @@
                                 <div class="thumbnail" style="padding: 5px; margin-bottom: 0px">
                                     <div style="margin: 5px">
                                         <h3 style="margin-top: 5px">Попередня інформація:</h3>
-                                        <h3 ng-bind="'Назва: ' + indicatorData[0].indicator_name"></h3>
+                                        <h3 ng-bind="'Назва: ' + indicatorData[0].name"></h3>
                                         <h4 ng-if="indicatorData[0].description" ng-bind="'Опис: ' + indicatorData[0].description"></h4>
                                     </div>
                                 </div>
@@ -44,7 +44,7 @@
                         </div>
 
                         <div style="margin-top: 20px">
-                            <a href="" ng-show="actionData[0].state == 0 && actionData[0].user_id != $user.id"><button style="margin-bottom: 5px" class="btn btn-success" type="button" ng-click="rejectOrAcceptTheAction(actionData[0].id, 1); updateIndicator(actionData[0].new_item_name, actionData[0].new_parent_id, actionData[0].new_item_description, actionData[0].item_id);">Прийняти</button></a>
+                            <a href="" ng-show="actionData[0].state == 0 && actionData[0].user_id != $user.id"><button style="margin-bottom: 5px" class="btn btn-success" type="button" ng-click="rejectOrAcceptTheAction(actionData[0].id, 1); updateIndicator(actionData[0].item_id, actionData[0].new_item_name, actionData[0].new_parent_id, actionData[0].new_item_description);">Прийняти</button></a>
                             <a href="" ng-show="actionData[0].state == 0 && actionData[0].user_id != $user.id"><button style="margin-bottom: 5px" class="btn btn-danger" type="button" ng-click="rejectOrAcceptTheAction(getActionID(), -1);">Скасувати</button></a>
                             <a href="#actions"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">До списку дій</button></a>
                         </div>
@@ -86,7 +86,7 @@
     <div ng-if="!$user" style="margin: 20px">
         <div class="alert alert-info">
             <h4><b>Попередження!</b></h4>
-            <p style="margin-bottom: 10px">Вибачте, дана сторінка не доступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
+            <p style="margin-bottom: 10px">Вибачте, дана сторінка недоступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
             <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
         </div>
     </div>

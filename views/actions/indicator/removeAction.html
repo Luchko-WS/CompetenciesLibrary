@@ -22,10 +22,10 @@
                             <h4 style="margin-bottom: 10px" ng-if="actionData[0].state == 1">Статус: <span style="color: green">прийнято</span></h4>
 
                             <div ng-show="indicatorData != null && indicatorData != -1">
-                                <h3 ng-bind="'Компетенція: ' + actionData[0].skill_name"></h3>
+                                <h3 ng-bind="'Компетенція: ' + actionData[0].skillName"></h3>
                                 <h4 ng-bind="'Шлях: ' + actionData[0].path"></h4>
 
-                                <h3 ng-bind="'Назва: ' + indicatorData[0].indicator_name"></h3>
+                                <h3 ng-bind="'Назва: ' + indicatorData[0].name"></h3>
                                 <h4 ng-if="indicatorData[0].description" ng-bind="'Опис: ' + indicatorData[0].description"></h4>
 
                                 <div style="margin-top: 20px">
@@ -70,7 +70,7 @@
             <div ng-if="!$user" style="margin: 20px">
                 <div class="alert alert-info">
                     <h4><b>Попередження!</b></h4>
-                    <p style="margin-bottom: 10px">Вибачте, дана сторінка не доступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
+                    <p style="margin-bottom: 10px">Вибачте, дана сторінка недоступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
                     <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
                 </div>
             </div>

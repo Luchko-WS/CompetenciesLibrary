@@ -10,7 +10,7 @@ DB::init('mysql:dbname=prozorro;host=127.0.0.1;port=3306', 'root', 'WhiteShark28
 
 $app = new \Slim\App;
 
-$app->options('/{routes:.+}', function ($request, $response, $args) {
+$app->options('/{routes:.+}', function (Request $request, Response $response, $args) {
     return $response;
 });
 
@@ -22,58 +22,52 @@ $app->add(function ($req, $res, $next) {
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
 });
 
+//file_put_contents(filename, body);
+//Отримання індикатору
 $app->get('/params/{id}', function (Request $request, Response $response, $args) {
-
     $input = json_decode($args['id'], true);
-
-    $rowIndicator = DB::fetchAll("SELECT * FROM indicators WHERE id = ".$input['indicatorId'].";");
-    file_put_contents('INDICATOR!!!!!!!!!!.txt', "SELECT * FROM indicators WHERE id = ".$input['indicatorId'].";");
-
-    $user = DB::fetchAll("SELECT * FROM users WHERE id=" . $rowIndicator[0]['user_id'].";");
-    $userName = $user[0]['firstname']." ".$user[0]['secondname'];
-    $rowIndicator[0]['user'] = $userName;
-
+    $id = $input['indicatorID'];
+    $rowIndicator = DB::fetchAll("SELECT *, IF((SELECT COUNT(*) FROM users u WHERE u.id=i.user_id)<>0, ".
+        "(SELECT CONCAT(first_name, ' ', second_name) FROM users u WHERE u.id=i.user_id), \"невідомий\") AS user ".
+        "FROM indicators i WHERE id = $id;");
     $response->getBody()->write('{"data":'.json_encode($rowIndicator).'}');
     return $response;
 });
 
-//створення індикатору
+//Створення індикатору
 $app->post('/params', function (Request $request, Response $response, $args) {
     $input = $request->getParsedBody();
-    $skillId = $input['skillId'];
+    $skillId = $input['skillID'];
     $indicatorName = $input['indicatorName'];
     $indicatorDescription = $input['indicatorDescription'];
-    $userId = $input['userId'];
-
-    $sql = "INSERT INTO indicators (skill_id, indicator_name, description, user_id) ".
-      "VALUES ($skillId, '$indicatorName', '$indicatorDescription', $userId);";
+    $userID = $input['userID'];
+    $sql = "INSERT INTO indicators (skill_id, name, description, user_id) ".
+      "VALUES ($skillId, '$indicatorName', '$indicatorDescription', $userID);";
     DB::exec($sql);
-    //file_put_contents('OOOOO.txt', $sql);
-
     return $this->response->withJson($input);
 });
 
-//редагування індикатору
-$app->put('/params/{id}', function ($request, $response, $args) {
+//Редагування індикатору
+$app->put('/params/{id}', function (Request $request, Response $response, $args) {
     $input = json_decode($args['id'], true);
-    $skillId = $input['skillId'];
-    $indicatorId = $input['indicatorId'];
+    $skillID = $input['skillID'];
+    $indicatorID = $input['indicatorID'];
     $indicatorName = $input['indicatorName'];
     $indicatorDescription = $input['indicatorDescription'];
-
-    $sql = "UPDATE indicators SET indicator_name = '$indicatorName', ".
-        "description = '$indicatorDescription', skill_id = $skillId WHERE id = $indicatorId;";
-    //file_put_contents('indicator.txt', $sql);
+    $sql = "UPDATE indicators SET name = '$indicatorName', ".
+        "description = '$indicatorDescription', skill_id = $skillID WHERE id = $indicatorID;";
     DB::exec($sql);
-
     return $this->response->withJson($input);
-
 });
 
+//Видалення індикатору
 $app->delete('/params/[{id}]', function (Request $request, Response $response, $args) {
     $input = $request->getAttribute('id');
     $id = $input;
     $sql = "DELETE FROM indicators WHERE id = $id;";
+    DB::exec($sql);
+    //видалення дій над даним індикатором
+    $sql = "DELETE FROM actions WHERE item_id = $id;";
     DB::exec($sql);
     return $this->response->true;
 });

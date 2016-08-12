@@ -1,31 +1,47 @@
-
 mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', '$routeParams', 'GroupsModel',
     function ($scope, $rootScope, $http, $location, $routeParams, GroupsModel) {
 
-    //Init group data values block
-    //begin
-    $scope.data = null;
+    ///Змінна даних групи
+    $scope.groupData = null;
+    //Змінні форми (моделі)
     $scope.nameText = null;
     $scope.groupText = null;
     $scope.descriptionText = null;
+    //Змінна для збереження попередньої батьківської групи
+    //(для перевірки чи відбувається переміщення)
     $scope.oldGroupID = null;
-    //end
 
-    ///////////////////////////////////
-    //INTERFACE BLOCK
-    ///////////////////////////////////
-    //Message block
-    //begin
+    /**
+    БЛОК РОБОТИ З ПАРАМЕТРАМИ АДРЕСНОГО РЯДКА
+     **/
+    $scope.getRouteParamGroupID_GroupCtrl = function () {
+        return $routeParams.id;
+    };
+    /**
+    КІНЕЦЬ БЛОКУ РОБОТИ З ПАРАМЕТРАМИ АДРЕСНОГО РЯДКА
+    **/
+
+    /**
+    БЛОК ІНТЕРФЕЙСУ
+     **/
+    //ПОВІДОМЛЕННЯ
+    $scope.messageBoxClass = null;
     $scope.messageTitleText = null;
     $scope.messageText = null;
+    //Виведення повідомлення
+    function showMessageWindow(messageClass, messageTittle, messageBody) {
+        $scope.messageTitleText = messageTittle;
+        $scope.messageText = messageBody;
+        $scope.messageBoxClass = messageClass;
+        $('#messageBox').fadeIn("slow");
+    }
+    //Кнопка закриття повідомлення
     $("#closeMessageBoxButton").click(function () {
         $('#messageBox').fadeOut("slow");
     });
-    $scope.messageBoxClass = null;
-    //end
 
-    //Select node from tree
-    //begin
+    //ДЕРЕВО ГРУП
+    //Вибір групи з дерева
     $scope.show = false;
     $scope.onClickSelectCurrentGroup = function(isHide){
         if(isHide){
@@ -33,65 +49,97 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
         }
         else {
             if($rootScope.$currentGroup!=null) {
-                $scope.groupText = $rootScope.$currentGroup.skill_name;
+                $scope.groupText = $rootScope.$currentGroup.name;
             }
             return "Обрати групу з дерева";
         }
     };
-    //end
-    ///////////////////////////////////
-    //END INTERFACE BLOCK
-    ///////////////////////////////////
 
-    //Get routeParams block
-    //begin
-    $scope.getCurrentGroupId = function () {
-        return $routeParams.id;
-    };
+    $("#toggleButton").click(function () {
+        $("#toggleBox").slideToggle("normal");
+    });
+
+    //Отримання ID вибраного елемента в дереві
     $scope.getSelectGroupID = function () {
         if($rootScope.$currentGroup!=null){
             return $rootScope.$currentGroup.id;
         }
     };
-    //end
+    /**
+    КІНЕЦЬ БЛОКУ ІНТЕРФЕЙСУ
+     **/
 
-    ///////////////////////////////////
-    //GET AND FORMAT TREE BLOCK
-    ///////////////////////////////////
-    $rootScope.getGroupTree = function () {
-        var params =  {
-            skill: 'NONE',
-            indicator: 'NONE',
-            exportToFile: 'NONE',
+    /**
+    БЛОК МАНІПУЛЯЦЇ ГРУПАМИ
+     **/
+    //GETTERS
+    //ОТРИМАННЯ ТА ПІДГОТОВКИ ДЕРЕВА ДЛЯ ГОЛОВНОЇ СТОРІНКИ
+    //Отримання дерева для головної сторінки
+    $rootScope.getGroupTreeForMainPage = function () {
+        $rootScope.$tree = null;
+        $rootScope.$currentGroup = null;
+        var params = {
             tree: 'GROUPS'
         };
-        GroupsModel.get({'id':JSON.stringify(params)}, function (res) {
-            if(res.data === undefined) {
-                console.log('ERROR IN GET GROUP TREE');
+        GroupsModel.get({'id': JSON.stringify(params)}, function (res) {
+            if (res.data === undefined) {
+                console.log('Не вдалося отримати дерево (res.data === undefined)');
             }
             else {
                 $rootScope.$tree = res.data;
                 $('#tree').treeview({data: $rootScope.formatDataToTree()});
-                $('#tree').on('nodeSelected', function(event, data) {
+                $('#tree').on('nodeUnselected', function (event, data) {
+                    $rootScope.$currentGroup = null;
+                    $('#editTreeNodeButtons').hide();
+                });
+                $('#tree').on('nodeSelected', function (event, data) {
                     $rootScope.$currentGroup = data;
-                    if(data.node_level == 1) {
+                    $rootScope.getSkillsByGroup($rootScope.$currentGroup.id);
+                    $rootScope.$pagination.page = 1;
+                    $('#editTreeNodeButtons').show();
+                    if (data.node_level == 1) {
                         $('#editItemButton').hide();
                     }
-                    else{
+                    else {
                         $('#editItemButton').show();
                     }
-
-                });
-                $("#toggleButton").click(function () {
-                    $("#toggleBox").slideToggle("normal");
                 });
             }
+        }, function (err) {
+            console.log('Не вдалося отримати дерево');
+            console.log(err);
         });
     };
-
+    //Отримання дерева (при редагуванні груп, компетенцій, імпорті файлів)
+    $rootScope.getGroupTree = function () {
+        $rootScope.$tree = null;
+        $rootScope.$currentGroup = null;
+        var params =  {
+            tree: 'GROUPS'
+        };
+        GroupsModel.get({'id':JSON.stringify(params)}, function (res) {
+            if(res.data === undefined) {
+                console.log('Не вдалося отримати дерево (res.data === undefined)');
+            }
+            else {
+                $rootScope.$tree = res.data;
+                $('#tree').treeview({data: $rootScope.formatDataToTree()});
+                $('#tree').on('nodeUnselected', function(event, data) {
+                    $rootScope.$currentGroup = null;
+                });
+                $('#tree').on('nodeSelected', function(event, data) {
+                    $rootScope.$currentGroup = data;
+                });
+            }
+        }, function (err) {
+            console.log('Не вдалося отримати дерево');
+            console.log(err);
+        });
+    };
+    //Форматування отриманих даних під Bootstrap Tree View
     $rootScope.formatDataToTree = function() {
         var root = $rootScope.$tree[0];
-        root.text = $rootScope.$tree[0].skill_name;
+        root.text = $rootScope.$tree[0].name;
         root.node_id = 0;
         var stack = [0];
         var currentLevel = 2;
@@ -99,7 +147,7 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
         for(var i = 1; i < $rootScope.$tree.length; i++) {
             $rootScope.$tree[i].node_id = i;
             $rootScope.$tree[i].nodes = null;
-            $rootScope.$tree[i].text = $rootScope.$tree[i].skill_name;
+            $rootScope.$tree[i].text = $rootScope.$tree[i].name;
 
             if(currentLevel == $rootScope.$tree[i].node_level){
                 $rootScope.$tree[i].parentId = stack[0];
@@ -136,78 +184,54 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
         return [root];
     };
 
-    $rootScope.getCurrentGroup = function (left_key, right_key, level) {
-        if($scope.$tree != null) {
-            for (var i = 0; i < $rootScope.$tree.length; i++) {
-                if (Number($rootScope.$tree[i].node_level) == (level - 1) &&
-                    Number($rootScope.$tree[i].left_key) < left_key && Number($rootScope.$tree[i].right_key) > right_key) {
-                    return $rootScope.$tree[i];
-                }
-            }
-        }
-    };
-    ///////////////////////////////////
-    //END GET AND FORMAT TREE BLOCK
-    ///////////////////////////////////
-
-    ////////////////////////
-    //MANIPULATE GROUP DATA BLOCK
-    ////////////////////////
-    //Get group data
-    //begin
-    $scope.getGroup = function (groupId, setDataIntoForm) {
+    //Отримання групи
+    $scope.getGroup = function (groupID, setDataIntoForm) {
         $scope.oldGroupID = null;
-        $scope.data = null;
+        $scope.groupData = null;
         $rootScope.$currentGroup = null;
         var params =  {
             tree: false,
-            groupId: groupId
+            groupID: groupID
         };
         GroupsModel.get({'id':JSON.stringify(params)}, function (res) {
             if(res.data === undefined) {
+                console.log("Помилка при отриманні групи! (res.data === undefined)");
                 console.log(res);
-                console.log("Помилка при отриманні групи!");
-                $scope.data = -1;
+                $scope.groupData = -1;
             }
             else {
-                $scope.data = res.data;
+                $scope.groupData = res.data;
                 if(setDataIntoForm) {
-                    $scope.nameText = $scope.data[0].skill_name;
-                    $rootScope.$currentGroup = $rootScope.getCurrentGroup($scope.data[0].left_key,
-                        $scope.data[0].right_key, $scope.data[0].node_level);
-                    if ($rootScope.$currentGroup) {
-                        $scope.oldGroupID = $rootScope.$currentGroup.id;
-                        $scope.groupText = $rootScope.$currentGroup.skill_name;
-                    }
-                    $scope.descriptionText = $scope.data[0].description;
+                    $scope.nameText = $scope.groupData[0].name;
+                    $rootScope.$currentGroup = $scope.groupData[0].parent_node;
+                    $scope.oldGroupID = $rootScope.$currentGroup.id;
+                    $scope.groupText = $rootScope.$currentGroup.name;
+                    $scope.descriptionText = $scope.groupData[0].description;
                 }
             }
-        }, function (res) {
-            console.log(res);
+        }, function (err) {
             console.log("Помилка при отриманні групи!");
-            $scope.data = -1;
+            console.log(err);
+            $scope.groupData = -1;
         });
     };
 
+    //СТВОРЕННЯ ГРУПИ
+    //Підготовка до створення групи
     $scope.prepareGroupToCreate = function (groupName, groupDescription, parentGroupID, parentGroupUserID, currentUserID) {
         if (!parentGroupID || !groupName) {
-            $scope.messageTitleText = "Увага!";
-            $scope.messageText = "Заповніть поля назви і групи!";
-            $scope.messageBoxClass = "alert alert-danger";
-            $('#messageBox').fadeIn("slow");
+            showMessageWindow("alert alert-danger", "Увага!", "Заповніть поля назви і групи!");
             return;
         }
         if (currentUserID != parentGroupUserID && parentGroupID != 1) {
             $rootScope.saveAction('create', 'group', -1, groupName, null, groupDescription, parentGroupID, currentUserID);
-            $scope.messageTitleText = "Увага!";
-            $scope.messageText = "Дану дію додано до списку.";
-            $scope.messageBoxClass = "alert alert-info";
-            $('#messageBox').fadeIn("slow");
+            showMessageWindow("Увага!", "Дану дію додано до списку.", "alert alert-info");
             return;
         }
         $scope.createGroup(groupName, parentGroupID, groupDescription, currentUserID);
     };
 
+    //Створення групи
     $scope.createGroup = function(groupName, parentGroupID, groupDescription, userID){
         var params =  {
             groupName: groupName,
@@ -216,34 +240,27 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
             userID: userID
         };
         GroupsModel.create(params, function(res){
-            console.log(res);
             console.log("Групу створено!");
-            $scope.messageTitleText = "Групу створено!";
-            $scope.messageText = "Дію успішно виконано. Групу створено.";
-            $scope.messageBoxClass = "alert alert-success";
-            $('#messageBox').fadeIn("slow");
-        },function (res) {
             console.log(res);
+            showMessageWindow("alert alert-success", "Групу створено!", "Дію успішно виконано. Групу створено.");
+        },function (err) {
             console.log("Групу не створено!");
-            $scope.messageTitleText = "Помилка!";
-            $scope.messageText = "Не вдалося створити групу.";
-            $scope.messageBoxClass = "alert alert-danger";
-            $('#messageBox').fadeIn("slow");
+            console.log(err);
+            showMessageWindow("alert alert-danger", "Помилка!", "Не вдалося створити групу.");
         });
     };
 
+    //Підготовка до копіювання групи
     $rootScope.prepareGroupToCopy = function (groupID, groupName, groupDescription, parentGroupID, parentGroupUserID, currentUserID) {
         if (currentUserID != parentGroupUserID) {
             $rootScope.saveAction('copy', 'group', groupID, groupName, null, groupDescription, parentGroupID, currentUserID);
-            $scope.messageTitleText = "Увага!";
-            $scope.messageText = "Дану дію додано до списку.";
-            $scope.messageBoxClass = "alert alert-info";
-            $('#messageBox').fadeIn("slow");
+            alert("Дану дію додано до списку.");
             return;
         }
         $scope.copyGroup(groupID, groupName, parentGroupID, groupDescription, currentUserID, 1);
     };
 
+    //Копіювання групи
     $scope.copyGroup = function(groupID, groupName, parentGroupID, descriptionValue, userID, reloadEditView){
         var params =  {
             groupID: groupID,
@@ -254,131 +271,117 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
             userID: userID
         };
         GroupsModel.create(params, function(res){
-            console.log(res);
             console.log("Групу скопійовано!");
-            $scope.messageTitleText = "Групу скопійовано!";
-            $scope.messageText = "Дію успішно виконано. Групу скопійовано.";
-            $scope.messageBoxClass = "alert alert-success";
-            $('#messageBox').fadeIn("slow");
-        },function (res) {
             console.log(res);
-            console.log("Групу не скопійовано!!");
-            $scope.messageTitleText = "Помилка!";
-            $scope.messageText = "Не вдалося скопіювати групу.";
-            $scope.messageBoxClass = "alert alert-danger";
-            $('#messageBox').fadeIn("slow");
-        });
-        if(reloadEditView) {
+            alert("Дію успішно виконано. Групу скопійовано.");
             $rootScope.getTree();
-        }
+        },function (res) {
+            console.log("Групу не скопійовано!!");
+            console.log(res);
+            alert("Не вдалося скопіювати групу.");
+        });
     };
 
+    //РЕДАГУВАННЯ ГРУПИ
+    //Підготовка групи до оновлення
     $scope.prepareGroupToUpdate = function (groupID, groupName, newGroupName, newGroupDescription, newParentGroupID, userID, currentUserID) {
         var isMove = false;
         if (newParentGroupID != $scope.oldGroupID) {
             isMove = true;
-            if ($scope.data != null && $rootScope.$currentGroup != null) {
-                if (Number($rootScope.$currentGroup.left_key) >= Number($scope.data[0].left_key) && ($rootScope.$currentGroup.right_key <= $scope.data[0].right_key)) {
-                    isMove = false;
-                    $scope.messageTitleText = "Увага!";
-                    $scope.messageText = "Не можливо перемістити дану групу в підлеглу їй групу!";
-                    $scope.messageBoxClass = "alert alert-danger";
-                    $('#messageBox').fadeIn("slow");
-                    return;
-                }
+            if (Number($rootScope.$currentGroup.left_key) >= Number($scope.groupData[0].left_key) && ($rootScope.$currentGroup.right_key <= $scope.groupData[0].right_key)) {
+                isMove = false;
+                showMessageWindow("alert alert-danger", "Увага!", "Не можливо перемістити дану групу в підлеглу їй групу!");
+                return;
             }
         }
         if (userID != currentUserID) {
             $rootScope.saveAction('edit', 'group', groupID, groupName, newGroupName, newGroupDescription, newParentGroupID, currentUserID);
-            $scope.messageTitleText = "Увага!";
-            $scope.messageText = "Дану дію додано до списку.";
-            $scope.messageBoxClass = "alert alert-info";
-            $('#messageBox').fadeIn("slow");
+            showMessageWindow("alert alert-info", "Увага!", "Дану дію додано до списку.");
             return;
         }
-        $scope.updateGroup(newGroupName, newParentGroupID, newGroupDescription, groupID, isMove);
+        $scope.updateGroup(groupID, newGroupName, newParentGroupID, newGroupDescription, isMove);
     };
 
+    //Підготовка групи до переміщення
     $rootScope.prepareGroupToMove = function (groupID, groupName, newGroupName, newGroupDescription, newParentGroupID, userID, currentUserID) {
         if (userID != currentUserID) {
             $rootScope.saveAction('edit', 'group', groupID, groupName, newGroupName, newGroupDescription, newParentGroupID, currentUserID);
-            $scope.messageTitleText = "Увага!";
-            $scope.messageText = "Дану дію додано до списку.";
-            $scope.messageBoxClass = "alert alert-info";
-            $('#messageBox').fadeIn("slow");
+            alert("Дану дію додано до списку.");
             return;
         }
-        $scope.updateGroup(newGroupName, newParentGroupID, newGroupDescription, groupID, 1, 1);
+        $scope.updateGroup(groupID, newGroupName, newParentGroupID, newGroupDescription, 1, 1);
     };
 
-    $scope.updateGroup = function(groupName, parentGroupID, descriptionValue, groupID, isMove, reloadEditView){
+    //Оновлення групи
+    $scope.updateGroup = function(groupID, groupName, parentGroupID, groupDescription, isMove, reloadEditView){
         var params =  {
             groupID: groupID,
             groupName: groupName,
             parentGroupID: parentGroupID,
-            groupDescription: descriptionValue,
+            groupDescription: groupDescription,
             isMove: isMove
         };
         GroupsModel.update({'id':JSON.stringify(params)}, function(res){
-            console.log(res);
             console.log("Групу оновлено!");
-            $scope.messageTitleText = "Групу оновлено!";
-            $scope.messageText = "Дію успішно виконано. Групу оновлено.";
-            $scope.messageBoxClass = "alert alert-success";
-            $('#messageBox').fadeIn("slow");
-        }, function(res){
             console.log(res);
-            console.log("Групу не оновлено!!");
-            $scope.messageTitleText = "Помилка!";
-            $scope.messageText = "Не вдалося оновити групу.";
-            $scope.messageBoxClass = "alert alert-danger";
-            $('#messageBox').fadeIn("slow");
-        });
-
-        if(reloadEditView){
-            $rootScope.getTree();
-        }
-    };
-
-    $scope.prepareGroupToRemove = function (groupID, groupName, parentGroupID, userID, currentUserID, reloadEditView) {
-        if (userID != currentUserID) {
-            var answer = confirm("Ви дійсно бажаєте видалити групу? ");
-            if (answer === true) {
-                $rootScope.saveAction('remove', 'group', groupID, groupName, null, null, parentGroupID, currentUserID);;
-                $scope.groupCtrlMessageTitleText = "Увага!";
-                $scope.groupCtrlMessageText = "Дану дію додано до списку.";
-                $scope.messageBoxClass = "alert alert-info";
-                $('#messageBox').fadeIn("slow");
+            if(reloadEditView){
+                alert("Дію успішно виконано. Групу оновлено.");
+                $rootScope.getTree();
             }
-            return;
-        }
-        $scope.removeGroup(groupID, reloadEditView);
+            else {
+                showMessageWindow("alert alert-success", "Групу оновлено!", "Дію успішно виконано. Групу оновлено.");
+            }
+        }, function(err){
+            console.log("Групу не оновлено!!");
+            console.log(err);
+            if(reloadEditView){
+                alert("Не вдалося оновити групу.");
+            }
+            else {
+                showMessageWindow("alert alert-danger", "Помилка!", "Не вдалося оновити групу.");
+            }
+        });
     };
 
+    //ВИДАЛЕННЯ ГРУПИ
+    //Підготовка до видалення групи
+    $scope.prepareGroupToRemove = function (groupID, groupName, parentGroupID, userID, currentUserID, reloadEditView) {
+        var answer = confirm("Ви дійсно бажаєте видалити групу? ");
+        if (answer === true) {
+            if (userID != currentUserID) {
+                $rootScope.saveAction('remove', 'group', groupID, groupName, null, null, parentGroupID, currentUserID);;
+                alert("Дану дію додано до списку.");
+                return;
+            }
+            $scope.removeGroup(groupID, reloadEditView);
+        }
+    };
+
+    //Видалення групи
     $scope.removeGroup = function(groupID, reloadEditView){
         var params = groupID;
         GroupsModel.delete({id:params}, function (res) {
-            console.log(res);
+            if(!reloadEditView){
+                $rootScope.$currentGroup = null;
+                $('#editTreeNodeButtons').hide();
+            }
             console.log("Групу видалено!");
-            $scope.messageTitleText = "Групу видалено!";
-            $scope.messageText = "Дію успішно виконано. Групу видалено.";
-            $scope.messageBoxClass = "alert alert-success";
-            $('#messageBox').fadeIn("slow");
+            console.log(res);
 
             if(reloadEditView){
                 $rootScope.getTree();
             }
             else {
                 $rootScope.getAllSkills();
-                $rootScope.getGroupTree();
+                $rootScope.getGroupTreeForMainPage();
             }
-        }, function (res){
-            console.log(res);
+        }, function (err){
             console.log("Групу не видалено!!");
-            $scope.messageTitleText = "Помилка!";
-            $scope.messageText = "Не вдалося видалити групу.";
-            $scope.messageBoxClass = "alert alert-danger";
-            $('#messageBox').fadeIn("slow");
+            console.log(err);
+            alert("Не вдалося видалити групу.");
         });
     };
+    /**
+     КІНЕЦЬ БЛОКУ МАНІПУЛЯЦІЇ ГРУПАМИ
+     **/
 }]);

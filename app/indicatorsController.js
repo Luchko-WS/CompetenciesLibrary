@@ -1,180 +1,178 @@
 mainApp.controller('IndicatorsCtrl', ['$scope', '$rootScope', '$http', '$location', '$routeParams', 'IndicatorsModel',
     function ($scope, $rootScope, $http, $location, $routeParams, IndicatorsModel) {
 
+    //Змінна даних індикатору
     $scope.indicatorData = null;
+    //Змінні форми (моделі)
     $scope.nameText = null;
     $scope.descriptionText = null;
 
-    //Message block
-    //begin
-    $scope.messageTitleText = null;
-    $scope.messageText = null;
-    $("#closeMessageBoxButton").click(function () {
-        $('#messageBox').fadeOut("slow");
-    });
-    $scope.messageBoxClass = null;
-    //end
-
-    $scope.getCurrentSkillIdIndicatorCtrl = function () {
-        return $routeParams.skillId;
+    /**
+    БЛОК РОБОТИ З ПАРАМЕТРАМИ АДРЕСНОГО РЯДКА
+     **/
+    $scope.getRouteParamSkillID_IndicatorCtrl = function () {
+        return $routeParams.skillID;
     };
-
-    $scope.getCurrentIndicatorId = function () {
+    $scope.getRouteParamIndicatorID_IndicatorCtrl = function () {
         return $routeParams.id;
     };
+    /**
+    КІНЕЦЬ БЛОКУ РОБОТИ З ПАРАМЕТРАМИ АДРЕСНОГО РЯДКА
+    **/
 
-    $scope.getIndicator = function (indicatorId, currentSkillID, setDataIntoForm) {
+    ///////////////////////////////////
+    //БЛОК ІНТЕРФЕЙСУ
+    ///////////////////////////////////
+    //ПОВІДОМЛЕННЯ
+    $scope.messageBoxClass = null;
+    $scope.messageTitleText = null;
+    $scope.messageText = null;
+    //Виведення повідомлення
+    function showMessageWindow(messageClass, messageTittle, messageBody) {
+        $scope.messageTitleText = messageTittle;
+        $scope.messageText = messageBody;
+        $scope.messageBoxClass = messageClass;
+        $('#indicatorMessageBox').fadeIn("slow");
+    }
+    //Кнопка закриття повідомлення
+    $("#closeIndicatorMessageBoxButton").click(function () {
+        $('#indicatorMessageBox').fadeOut("slow");
+    });
+    /**
+    КІНЕЦЬ БЛОКУ ІНТЕРФЕЙСУ
+    **/
+
+    /**
+    БЛОК МАНІПУЛЯЦІЇ ІНДИКАТОРАМИ
+    **/
+    //Отримання індикатору
+    $scope.getIndicator = function (indicatorID, setDataIntoForm) {
         $scope.indicatorData = null;
         var params =  {
-            indicatorId: indicatorId
+            indicatorID: indicatorID
         };
-
         IndicatorsModel.get({'id':JSON.stringify(params)}, function (res) {
             if(res.data === undefined) {
-                console.log('ERROR IN GET INDICATOR');
+                console.log('Не вдалося отримати індикатор! (res.data === undefined)');
                 $scope.indicatorData = -1;
             }
             else {
                 if(res.data[0].skill_id != $routeParams.skillId && $routeParams.skillId != undefined){
-                    console.log('ERROR IN GET INDICATOR');
+                    console.log('Не вдалося отримати індикатор! (res.data[0].skill_id != $routeParams.skillId)');
                     $scope.indicatorData = -1;
                 }
                 else {
                     $scope.indicatorData = res.data;
-
                     if (setDataIntoForm) {
-                        $scope.nameText = $scope.indicatorData[0].indicator_name;
+                        $scope.nameText = $scope.indicatorData[0].name;
                         $scope.descriptionText = $scope.indicatorData[0].description;
-
-                        if ($scope.getCurrentSkillIdIndicatorCtrl() != $scope.indicatorData[0].skill_id) {
-                            $scope.indicatorData = null;
-                        }
                     }
                 }
             }
-        })
+        }, function (err) {
+            console.log('Не вдалося отримати індикатор!');
+            console.log(err);
+        });
     };
 
+    //СТВОРЕННЯ ІНДИКАТОРУ
+    //Підготовка до створення індикатору
     $scope.prepareIndicatorToCreate = function (indicatorName, indicatorDescription, parentSkillID, skillUserID, currentUserID) {
         if(!indicatorName){
-            $scope.messageTitleText = "Увага!";
-            $scope.messageText = "Заповніть поле назви!";
-            $scope.messageBoxClass = "alert alert-danger";
-            $('#messageBox').fadeIn("slow");
+            showMessageWindow("alert alert-danger", "Увага!", "Заповніть поле назви!");
             return;
         }
         if (currentUserID != skillUserID) {
             $rootScope.saveAction('create', 'indicator', -1, indicatorName, null, indicatorDescription, parentSkillID, currentUserID);
-            $scope.messageTitleText = "Увага!";
-            $scope.messageText = "Дану дію додано до списку.";
-            $scope.messageBoxClass = "alert alert-info";
-            $('#messageBox').fadeIn("slow");
+            showMessageWindow("alert alert-info", "Увага!", "Дану дію додано до списку.");
             return;
         }
         $scope.createIndicator(indicatorName, parentSkillID, indicatorDescription, currentUserID);
     };
 
-    $scope.createIndicator = function(nameValue, skillIDValue, descriptionValue, userId){
+    //Створення індикатору
+    $scope.createIndicator = function(indicatorName, skillID, indicatorDescription, userID){
         var params =  {
-            indicatorName: nameValue,
-            indicatorDescription: descriptionValue,
-            skillId: skillIDValue,
-            userId: userId
+            indicatorName: indicatorName,
+            indicatorDescription: indicatorDescription,
+            skillID: skillID,
+            userID: userID
         };
         IndicatorsModel.create(params, function(res){
-            console.log(res);
             console.log("Індикатор створено!");
-            $scope.messageTitleText = "Увага!";
-            $scope.messageText = "Дію успішно виконано. Індикатор створено.";
-            $scope.messageBoxClass = "alert alert-success";
-            $('#messageBox').fadeIn("slow");
-        }, function (res) {
             console.log(res);
+            showMessageWindow("alert alert-success", "Увага!", "Дію успішно виконано. Індикатор створено.");
+        }, function (err) {
             console.log("Індикатор не створено!");
-            $scope.messageTitleText = "Помилка!";
-            $scope.messageText = "Не вдалося створити індикатор.";
-            $scope.messageBoxClass = "alert alert-danger";
-            $('#messageBox').fadeIn("slow");
+            console.log(err);
+            showMessageWindow("alert alert-danger", "Помилка!", "Не вдалося створити індикатор.");
         });
     };
 
+    //РЕДАГУВАННЯ ІНДИКАТОРУ
+    //Підготовка індикатору до оновлення
     $scope.prepareIndicatorToUpdate = function (indicatorID, indicatorName, newIndicatorName, newIndicatorDescription, newParentSkillID, userID, currentUserID) {
         if(!indicatorName){
-            $scope.messageTitleText = "Увага!";
-            $scope.messageText = "Заповніть поле назви!";
-            $scope.messageBoxClass = "alert alert-danger";
-            $('#messageBox').fadeIn("slow");
+            showMessageWindow("alert alert-danger", "Увага!", "Заповніть поле назви!");
             return;
         }
         if (userID != currentUserID) {
             $rootScope.saveAction('edit', 'indicator', indicatorID, indicatorName, newIndicatorName, newIndicatorDescription, newParentSkillID, currentUserID);
-            $scope.messageTitleText = "Увага!";
-            $scope.messageText = "Дану дію додано до списку.";
-            $scope.messageBoxClass = "alert alert-info";
-            $('#messageBox').fadeIn("slow");
+            showMessageWindow("alert alert-info", "Увага!", "Дану дію додано до списку.");
             return;
         }
-        $scope.updateIndicator(newIndicatorName, newParentSkillID, newIndicatorDescription, indicatorID);
+        $scope.updateIndicator(indicatorID, newIndicatorName, newParentSkillID, newIndicatorDescription);
     };
 
-    $scope.updateIndicator = function(nameValue, skillIdValue, descriptionValue, indicatorId){
+    //Оновлення індикатору
+    $scope.updateIndicator = function(indicatorID, indicatorName, skillID, descriptionValue){
         var params =  {
-            indicatorId: indicatorId,
-            indicatorName: nameValue,
+            indicatorID: indicatorID,
+            indicatorName: indicatorName,
             indicatorDescription: descriptionValue,
-            skillId: skillIdValue
+            skillID: skillID
         };
         IndicatorsModel.update({'id':JSON.stringify(params)}, function(res){
             console.log(res);
             console.log("Індикатор оновлено!");
-            $scope.messageTitleText = "Увага!";
-            $scope.messageText = "Дію успішно виконано. Індикатор оновлено.";
-            $scope.messageBoxClass = "alert alert-success";
-            $('#messageBox').fadeIn("slow");
-        }, function (res) {
-            console.log(res);
+            showMessageWindow("alert alert-success", "Увага!", "Дію успішно виконано. Індикатор оновлено.");
+        }, function (err) {
+            console.log(err);
             console.log("Індикатор не оновлено!");
-            $scope.messageTitleText = "Помилка!";
-            $scope.messageText = "Не вдалося оновити індикатор.";
-            $scope.messageBoxClass = "alert alert-danger";
-            $('#messageBox').fadeIn("slow");
+            showMessageWindow("alert alert-danger", "Помилка!", "Не вдалося оновити індикатор.");
         });
     };
 
+    //ВИДАЛЕННЯ ІНДИКАТОРУ
+    //Підготовка до видалення індикатору
     $scope.prepareIndicatorToRemove = function (indicatorID, indicatorName, parentSkillID, userID, currentUserID) {
-        if (userID != currentUserID) {
-            var answer = confirm("Ви дійсно бажаєте видалити індикатор? ");
-            if (answer === true) {
+        var answer = confirm("Ви дійсно бажаєте видалити індикатор? ");
+        if (answer === true) {
+            if (userID != currentUserID) {
                 $rootScope.saveAction('remove', 'indicator', indicatorID, indicatorName, null, null, parentSkillID, currentUserID);
-                $scope.messageTitleText = "Увага!";
-                $scope.messageText = "Дану дію додано до списку.";
-                $scope.messageBoxClass = "alert alert-info";
-                $('#messageBox').fadeIn("slow");
+                showMessageWindow("alert alert-info", "Увага!", "Дану дію додано до списку.");
+                return;
             }
-            return;
+            $scope.removeIndicator(indicatorID, parentSkillID);
         }
-        $scope.removeIndicator(indicatorID, parentSkillID);
     };
 
-    $scope.removeIndicator = function(indicatorId, skillID){
-        var params = indicatorId;
+    //Видалення індикатору
+    $scope.removeIndicator = function(indicatorID, skillID){
+        var params = indicatorID;
         IndicatorsModel.delete({id:params}, function (res) {
-            console.log(res);
             console.log("Індикатор видалено!");
-            $scope.messageTitleText = "Увага!";
-            $scope.messageText = "Дію успішно виконано. Індикатор видалено.";
-            $scope.messageBoxClass = "alert alert-success";
-            $('#messageBox').fadeIn("slow");
+            console.log(res);
             if(skillID) {
                 $rootScope.getSkill(skillID, 1);
             }
-        }, function (res) {
-            console.log(res);
+        }, function (err) {
             console.log("Індикатор не видалено!");
-            $scope.messageTitleText = "Помилка!";
-            $scope.messageText = "Не вдалося видалити індикатор.";
-            $scope.messageBoxClass = "alert alert-danger";
-            $('#messageBox').fadeIn("slow");
+            console.log(err);
+            showMessageWindow("alert alert-danger", "Помилка!", "Не вдалося видалити індикатор.");
         });
     };
+    /**
+     КІНЕЦЬ БЛОКУ МАНІПУЛЯЦІЇ ІНДИКАТОРАМИ
+     **/
 }]);

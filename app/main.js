@@ -1,30 +1,23 @@
-var additionalData = "";
-
-var A = null;
-//APP
 var mainApp = angular.module('MainApp', ['ngRoute', 'ngResource']);
 
 mainApp.config(['$routeProvider', function ($routeProvider){
     $routeProvider
+        //TEST PAGE
         .when('/test', {
             templateUrl: 'views//testView.html'
         })
+        //MAIN PAGE
         .when('/main', {
             templateUrl: 'views//main.html'
         })
-        .when('/main/group/:id', {
-            templateUrl: 'views//main.html',
-            controller: 'SkillCtrl'
-        })
-        /*
-         .when('/main/page/:page', {
-         templateUrl: 'views//main.html',
-         controller: 'MainCtrl'
-         })
-         */
+        //IMPORT/EXPORT
         .when('/download', {
-            templateUrl: 'views//downloadPage.html'
+            templateUrl: 'views//io//downloadPage.html'
         })
+        .when('/upload', {
+            templateUrl: 'views//io//uploadPage.html'
+        })
+        //EDIT VIEW
         .when('/editLibrary', {
             templateUrl: 'views//editView.html'
         })
@@ -91,34 +84,37 @@ mainApp.config(['$routeProvider', function ($routeProvider){
             controller: 'ActionsCtrl'
         })
         //ITEMS
+        //SKILL
         .when('/skill/create', {
-            templateUrl: 'views//skill//skillCreate.html'
+            templateUrl: 'views//libraryItems//skill//skillCreate.html'
         })
         .when('/skill/:id/edit', {
-            templateUrl: 'views//skill//skillEdit.html',
+            templateUrl: 'views//libraryItems//skill//skillEdit.html',
             controller: 'SkillsCtrl'
         })
         .when('/skill/:id/show', {
-            templateUrl: 'views//skill//skillShow.html',
+            templateUrl: 'views//libraryItems//skill//skillShow.html',
             controller: 'SkillsCtrl'
         })
-        .when('/skill/:skillId/indicator/create', {
-            templateUrl: 'views//indicator//indicatorCreate.html',
+        //INDICATOR
+        .when('/skill/:skillID/indicator/create', {
+            templateUrl: 'views//libraryItems//indicator//indicatorCreate.html',
             controller: 'IndicatorsCtrl'
         })
-        .when('/skill/:skillId/indicator/:id/edit', {
-            templateUrl: 'views//indicator//indicatorEdit.html',
+        .when('/skill/:skillID/indicator/:id/edit', {
+            templateUrl: 'views//libraryItems//indicator//indicatorEdit.html',
             controller: 'IndicatorsCtrl'
         })
-        .when('/skill/:skillId/indicator/:id/show', {
-            templateUrl: 'views//indicator//indicatorShow.html',
+        .when('/skill/:skillID/indicator/:id/show', {
+            templateUrl: 'views//libraryItems//indicator//indicatorShow.html',
             controller: 'IndicatorsCtrl'
         })
+        //GROUP
         .when('/group/create', {
-            templateUrl: 'views//group//groupCreate.html'
+            templateUrl: 'views//libraryItems//group//groupCreate.html'
         })
         .when('/group/:id/edit', {
-            templateUrl: 'views//group//groupEdit.html',
+            templateUrl: 'views//libraryItems//group//groupEdit.html',
             controller: 'GroupsCtrl'
         })
         .otherwise({
@@ -127,6 +123,58 @@ mainApp.config(['$routeProvider', function ($routeProvider){
         });
 }]);
 
+mainApp.config(['$httpProvider', function ($httpProvider) {
+    $httpProvider.interceptors.push('jwtInterceptor');
+}]);
+
+/**
+ БЛОК ІНІЦІАЛІЗАЦІЇ ВЕБ-ДОДАТКУ
+ **/
+mainApp.run(['$rootScope', 'ActionModel', 'AuthModel', function ($rootScope, ActionModel) {
+    //Змінні дерева та поточної групи
+    //Використовуються в головній сторінці, створенні, редагуванні компетенцій та груп
+    $rootScope.$tree = null;
+    $rootScope.$currentGroup = null;
+
+    //Отримання даних про користувача зі сховища браузера
+    var authUser = window.localStorage.getItem('authUser');
+    $rootScope.$user = authUser ? JSON.parse(authUser) : null;
+    //Кількість нових дій
+    $rootScope.$countOfActions = '';
+
+    //Отримання кількості нових дій для поточного користувача
+    $rootScope.initActionDataForUser = function () {
+        if($rootScope.$user) {
+            var params = {
+                actionID: 'init',
+                userID: $rootScope.$user.id
+            };
+            ActionModel.get({'id': JSON.stringify(params)}, function (res) {
+                if (res.data === undefined) {
+                    console.log('Не вдалось ініціалізувати список дій для користувача (res.data === undefined)');
+                }
+                else {
+                    console.log(res.data);
+                    if (Number(res.data.count) != 0) {
+                        $rootScope.$countOfActions = res.data.count;
+                    }
+                    $rootScope.$user.firstActionID = Number(res.data.firstActionID);
+                    $rootScope.$user.lastActionID = Number(res.data.lastActionID);
+                    window.localStorage.setItem('authUser', JSON.stringify($rootScope.$user));
+                }
+            }, function (err) {
+                console.log('Не вдалось ініціалізувати список дій для користувача');
+                console.log(err);
+            });
+        }
+    };
+    $rootScope.initActionDataForUser();
+}]);
+/**
+ КІНЕЦЬ БЛОКУ ІНІЦІАЛІЗАЦІЇ ВЕБ-ДОДАТКУ
+ **/
+
+//Кнопка перегортання сторінки вверх
 $(document).ready(function () {
     $(window).scroll(function () {
         if($(this).scrollTop() != 0){

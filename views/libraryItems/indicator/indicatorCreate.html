@@ -7,12 +7,12 @@
 <div class="thumbnail">
     <div ng-if="$user" style="margin: 10px; margin-left: 20px; margin-right: 20px">
         <div ng-controller="SkillsCtrl">
-            <div ng-init="getSkill(getCurrentSkillIdIndicatorCtrl())"></div>
-            <div ng-if="data[0].skill_name">
+            <div ng-init="getSkill(getRouteParamSkillID_IndicatorCtrl())"></div>
+            <div ng-if="skillData[0].name">
                 <h2>Компетенція:</h2>
-                <h3 ng-bind="data[0].skill_name"></h3>
-                <h4 ng-bind="'Група: ' + data[0].path"></h4>
-                <h4 ng-bind="'Користувач: ' + data[0].user"></h4>
+                <h3 ng-bind="skillData[0].name"></h3>
+                <h4 ng-bind="'Група: ' + skillData[0].path"></h4>
+                <h4 ng-bind="'Користувач: ' + skillData[0].user"></h4>
 
                 <div ng-controller="IndicatorsCtrl">
                     <!-- Додання індикатору -->
@@ -22,17 +22,17 @@
 
                     <div class="row">
                         <div class="col-sm-12 col-lg-7" style="margin-bottom: 10px">
-                            <button style="width: 150px" ng-controller="ActionsCtrl" ng-click="prepareIndicatorToCreate(nameText, descriptionText, data[0].id, data[0].user_id, $user.id)" class="btn btn-success" type="button">Створити</button>
+                            <button style="width: 150px" ng-controller="ActionsCtrl" ng-click="prepareIndicatorToCreate(nameText, descriptionText, skillData[0].id, skillData[0].user_id, $user.id)" class="btn btn-success" type="button">Створити</button>
                         </div>
                         <div class="col-sm-12 col-lg-5" style="margin-bottom: 15px">
-                            <a href="#skill/{{getCurrentSkillIdIndicatorCtrl()}}/edit"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">До компетенції</button></a>
+                            <a href="#skill/{{getRouteParamSkillID_IndicatorCtrl()}}/edit"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">До компетенції</button></a>
                             <a href="#main"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">На головну</button></a>
                             <a href="#editLibrary"><button ng-click="" style="margin-bottom: 5px" class="btn btn-primary" type="button">До редактору</button></a>
                         </div>
                     </div>
 
-                    <div id="messageBox" ng-class="messageBoxClass" style="display: none">
-                        <button id="closeMessageBoxButton" type="button" class="close">
+                    <div id="indicatorMessageBox" ng-class="messageBoxClass" style="display: none">
+                        <button id="closeIndicatorMessageBoxButton" type="button" class="close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                         <h4><b ng-bind="messageTitleText"></b></h4>
@@ -41,14 +41,14 @@
                 </div>
             </div>
 
-            <div ng-if="data==null" style="text-align: center">
+            <div ng-if="skillData==null" style="text-align: center">
                 <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
             </div>
 
-            <div ng-if="data == -1">
+            <div ng-if="skillData == -1">
                 <div class="alert alert-warning">
                     <h4><b>Увага!</b></h4>
-                    <p style="margin-bottom: 10px">Не вдалося отримати компетенцію (id=<span ng-bind="getCurrentSkillIdIndicatorCtrl()"></span>)!</p>
+                    <p style="margin-bottom: 10px">Не вдалося отримати компетенцію (id=<span ng-bind="getRouteParamSkillID_IndicatorCtrl()"></span>)!</p>
                     <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
                     <a href="#editLibrary"><button ng-click="" class="btn btn-primary" type="button">До редактору</button></a>
                 </div>
@@ -60,7 +60,7 @@
     <div ng-if="!$user" style="margin: 20px">
         <div class="alert alert-info">
             <h4><b>Попередження!</b></h4>
-            <p style="margin-bottom: 10px">Вибачте, дана сторінка не доступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
+            <p style="margin-bottom: 10px">Вибачте, дана сторінка недоступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
             <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
         </div>
     </div>

@@ -18,15 +18,15 @@
                     <h4 style="margin-bottom: 10px" ng-if="actionData[0].state == 0">Статус: очікується</h4>
                     <h4 style="margin-bottom: 10px" ng-if="actionData[0].state == 1">Статус: <span style="color: green">прийнято</span></h4>
 
-                    <div ng-show="data != null && data != -1">
+                    <div ng-show="groupData != null && groupData != -1">
                         <div class="row padded">
                             <div class="col-md-6 col-xs-12" style="padding: 5px">
                                 <div class="thumbnail" style="padding: 5px; margin-bottom: 0px">
                                     <div style="margin: 5px">
                                         <h3 style="margin-top: 5px">Попередня інформація:</h3>
-                                        <h3 ng-bind="'Назва: ' + data[0].skill_name"></h3>
-                                        <h4 ng-if="data[0].description" ng-bind="'Опис: ' + data[0].description"></h4>
-                                        <h4 ng-bind="'Група: ' + data[0].path"></h4>
+                                        <h3 ng-bind="'Назва: ' + groupData[0].name"></h3>
+                                        <h4 ng-if="groupData[0].description" ng-bind="'Опис: ' + groupData[0].description"></h4>
+                                        <h4 ng-bind="'Група: ' + groupData[0].path"></h4>
                                     </div>
                                 </div>
                             </div>
@@ -41,7 +41,7 @@
                         </div>
 
                         <div style="margin-top: 20px">
-                            <a href="" ng-show="actionData[0].state == 0 && actionData[0].user_id != $user.id"><button style="margin-bottom: 5px" class="btn btn-success" type="button" ng-click="rejectOrAcceptTheAction(actionData[0].id, 1); updateGroup(actionData[0].new_item_name, actionData[0].new_parent_id, actionData[0].new_item_description, actionData[0].item_id, actionData[0].new_parent_id != data[0].parent_id);">Прийняти</button></a>
+                            <a href="" ng-show="actionData[0].state == 0 && actionData[0].user_id != $user.id"><button style="margin-bottom: 5px" class="btn btn-success" type="button" ng-click="rejectOrAcceptTheAction(actionData[0].id, 1); updateGroup(actionData[0].item_id, actionData[0].new_item_name, actionData[0].new_parent_id, actionData[0].new_item_description, actionData[0].new_parent_id != groupData[0].parent_node.id);">Прийняти</button></a>
                             <a href="" ng-show="actionData[0].state == 0 && actionData[0].user_id != $user.id"><button style="margin-bottom: 5px" class="btn btn-danger" type="button" ng-click="rejectOrAcceptTheAction(getActionID(), -1);">Скасувати</button></a>
                             <a href="#actions"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">До списку дій</button></a>
                         </div>
@@ -55,11 +55,11 @@
                         </div>
                     </div>
 
-                    <div ng-if="data==null" style="text-align: center">
+                    <div ng-if="groupData==null" style="text-align: center">
                         <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
                     </div>
 
-                    <div ng-if="data == -1">
+                    <div ng-if="groupData == -1">
                         <div class="alert alert-warning">
                             <h4><b>Увага!</b></h4>
                             <p style="margin-bottom: 10px">Не вдалося отримати групу (id=<span ng-bind="getItemID()"></span>)!</p>
@@ -83,7 +83,7 @@
     <div ng-if="!$user" style="margin: 20px">
         <div class="alert alert-info">
             <h4><b>Попередження!</b></h4>
-            <p style="margin-bottom: 10px">Вибачте, дана сторінка не доступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
+            <p style="margin-bottom: 10px">Вибачте, дана сторінка недоступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
             <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
         </div>
     </div>
