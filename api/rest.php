@@ -5,7 +5,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 require 'vendor/autoload.php';
 require 'db.php';
 
-DB::init('mysql:dbname=test;host=127.0.0.1;port=3306', 'root', 'WhiteShark28021995');
+DB::init('mysql:dbname=prozorro;host=127.0.0.1;port=3306', 'root', 'WhiteShark28021995');
 
 $app = new \Slim\App;
 
@@ -20,7 +20,7 @@ $app->add(function ($req, $res, $next) {
         ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
 });
-
+/*
 $app->get('/params/{id}', function (Request $request, Response $response, $args) {
 
     $input = json_decode($args['id'], true);
@@ -38,7 +38,7 @@ WHERE city = '".$input["cityName"]."' AND date >= '".$input["minDate"]."' AND da
     return $response;
 });
 
-$app->post('/params', function ($request, $response, $args) {
+$app->post('/main', function ($request, $response, $args) {
     $input = $request->getParsedBody();
 
     $cityID = $input['city']['id'];
@@ -94,13 +94,29 @@ $app->delete('/params', function ($request, $response, $args) {
 
     $sql = "DELETE FROM weather WHERE id > 0;";
     $params = DB::exec($sql);
-    //file_put_contents('delete.txt', $input);
+    //
 
     return $this->response->true;
 });
+*/
 
+$app->get('/params/{id}', function (Request $request, Response $response, $args) {
 
-$app->get('/sendRequest/{city}', function (Request $request, Response $response, $args) {
+    $input = json_decode($args['id'], true);
+    //file_put_contents('request.txt', $input['indicator']);
+
+    if($input["skill"] == "ALL_SKILLS" && $input['indicator'] == 'ALL_INDICATORS') {
+        $rowsSkills = DB::fetchAll("SELECT * FROM skill_tree WHERE node_type=1;");
+        $rowsIndicators = DB::fetchAll("SELECT * FROM indicators");
+
+        $response->getBody()->write('{"skills":'.json_encode($rowsSkills).',
+            "indicators":'.json_encode($rowsIndicators).'}');
+        return $response;
+    }
+});
+
+/*
+$app->get('/main/{city}', function (Request $request, Response $response, $args) {
     header('Content-Type: text/html;charset=UTF-8');
     $city = $args['city'];
     $url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=".$args['city']."&units=metric&cnt=7&APPID=531d4a54f4acb25f72b62eab815bc362";
@@ -111,6 +127,6 @@ $app->get('/sendRequest/{city}', function (Request $request, Response $response,
     else
         $response = 'Not found!';
     return $response;
-});
+});*/
 
 $app->run();
