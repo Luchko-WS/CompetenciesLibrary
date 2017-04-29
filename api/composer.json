@@ -1,0 +1,15 @@
+{
+    "name": "temp",
+    "require": {
+        "slim/slim": "^3.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "5.5.*"
+    },
+    "authors": [
+        {
+            "name": "Andrii Luchko",
+            "email": "andriyluchko@gmail.com"
+        }
+    ]
+}
