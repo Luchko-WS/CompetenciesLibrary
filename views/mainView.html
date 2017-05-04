@@ -9,21 +9,64 @@
 
         <h1>Main page</h1>
 
-        <div ng-init="getAllData()"></div>
-
-        <div ng-repeat="item_skill in skills">
-            <h4>{{item_skill.skill_name}}</h4>
-            <div ng-repeat="item_indicator in indicators">
-                <div ng-if="item_indicator.skill_id == item_skill.id">{{item_indicator.indicator_name}}</ng-if>
-            </div>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Додати
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a href="#Dowland_news">Новини</a></li>
+                <li><a href="#Dowland_match">Матч</a></li>
+            </ul>
         </div>
 
+        <div class="btn-group">
+            <a href="#"><button ng-click="" class="btn btn-primary" type="button">Import</button></a>
+            <a href="#"><button ng-click="" class="btn btn-primary" type="button">Export</button></a>
+        </div>
+
+        <div ng-init="getAllData()"></div>
+
+        <div class="row padded">
+            <div class="col-lg-8 col-xs-8">
+                <div ng-repeat="item_skill in data">
+                    <div class="row padded">
+
+                        <div class="col-lg-5 col-xs-5">
+                            <h4>{{item_skill.skill_name}}</h4>
+                        </div>
+
+                        <div class="col-lg-5 col-xs-5">
+                            <div ng-repeat="item_indicator in data[$index].indicators">
+                                {{item_indicator.indicator_name}}
+                            </div>
+                        </div>
+
+                        <div class="col-lg-1 col-xs-1">
+                            <div class="input-group-btn">
+                                <a href="#editSkill"><button ng-click="setGlobalEditParams(item_skill.id, 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">Edt</button></a>
+                                <a href="#"><button ng-click="" class="btn btn-danger" type="button">Del</button></a>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-1 col-xs-1"></div>
+                    </div>
+
+                    <div style="height: 20px"></div>
+
+                </div>
+            </div>
+
+            <div style="background-color: #2aabd2" class="col-lg-4 col-xs-4">TREE</div>
+        </div>
     </div>
 
+    <script src="bower_components/jquery/dist/jquery-1.11.1.min.js"></script>
     <script src="bower_components/angular/angular.min.js"></script>
     <script src="bower_components/angular-resource/angular-resource.min.js"></script>
     <script src="bower_components/angular-route/angular-route.min.js"></script>
     <script src="bower_components/angular-animate/angular-animate.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 
     <script src="app/main.js"></script>
     <script src="app/factories.js"></script>

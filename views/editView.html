@@ -5,9 +5,70 @@
     <link rel="stylesheet" href="bower_components/bootstrap-select/dist/css/bootstrap-select.min.css">
 
 </head>
-<body ng-controller="EditCtrl">
-    <div>
-        <h2>Edit page</h2>
+<body>
+
+    <div ng-controller="MainCtrl">
+
+        <div ng-init="getGlobalEditMode()"></div>
+
+        <!-- Редагування компетенції -->
+        <div ng-if="edit_mode==1">
+
+            <div ng-init="getSkill()"></div>
+            <h2>Edit skill:</h2>
+            <h3 ng-bind="data[0].skill_name"></h3>
+
+            <div class="input-group-btn">
+                <a href="#main"><button ng-click="" class="btn btn-primary" type="button">Back</button></a>
+            </div>
+
+            <input type="text" class="form-control" placeholder="Компетенція" ng-model="nameText">
+            <input type="text" class="form-control" placeholder="Група" ng-model="groupText">
+            <input type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
+
+            <div class="btn-group">
+                <button ng-click="saveSkill(nameText, groupText, descriptionText, data[0].id)" class="btn btn-primary" type="button">Save</button>
+                <a href="#"><button ng-click="" class="btn btn-primary" type="button">Cancel</button></a>
+            </div>
+
+            <div ng-repeat="item_indicator in data[0].indicators">
+                <div class="row padded">
+                    <div class="col-lg-6 col-xs-6">
+                        {{item_indicator.indicator_name}}
+                    </div>
+                    <div class="col-lg-6 col-xs-6">
+                        <div class="input-group-btn">
+                            <a href="#editIndicator"><button ng-click="setGlobalEditParams(data[0].id, item_indicator.id, 'ALL_GROUPS', 2)" class="btn btn-primary" type="button">Edt</button></a>
+                            <a href="#"><button ng-click="" class="btn btn-danger" type="button">Del</button></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Редагування індикатору -->
+        <div ng-if="edit_mode==2">
+
+            <div ng-init="getIndicator()"></div>
+            <h2>Edit indicator:</h2>
+            <h3 ng-bind="data[0].indicators[0].indicator_name"></h3>
+
+            <div class="input-group-btn">
+                <a href="#editSkill"><button ng-click="setGlobalEditParams(data[0].id, 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">Back</button></a>
+            </div>
+
+            <input type="text" class="form-control" placeholder="Індикатор" ng-model="nameText">
+            <input type="text" class="form-control" placeholder="Компетенція" ng-model="groupText">
+            <input type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
+
+            <div class="btn-group">
+                <button ng-click="saveIndicator(nameText, groupText, descriptionText, data[0].indicators[0].id)" class="btn btn-primary" type="button">Save</button>
+                <a href="#"><button ng-click="" class="btn btn-primary" type="button">Cancel</button></a>
+            </div>
+
+        </div>
+
+
     </div>
 
     <script src="bower_components/angular/angular.min.js"></script>

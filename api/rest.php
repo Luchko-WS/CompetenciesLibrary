@@ -20,113 +20,118 @@ $app->add(function ($req, $res, $next) {
         ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
 });
-/*
-$app->get('/params/{id}', function (Request $request, Response $response, $args) {
-
-    $input = json_decode($args['id'], true);
-
-    if($input["cityName"]=="ALL")
-        $rows = DB::fetchAll("SELECT c.id, c.city, w.date, w.dayOfWeek, w.weather, w.temp 
-FROM cities AS c RIGHT JOIN weather AS w ON (c.id=w.id) 
-WHERE date >= '".$input["minDate"]."' AND date <= '".$input["maxDate"]."';");
-    else
-        $rows = DB::fetchAll("SELECT c.id, c.city, w.date, w.dayOfWeek, w.weather, w.temp 
-FROM cities AS c RIGHT JOIN weather AS w ON (c.id=w.id) 
-WHERE city = '".$input["cityName"]."' AND date >= '".$input["minDate"]."' AND date <= '".$input["maxDate"]."';");
-
-    $response->getBody()->write('{"data":'.json_encode($rows).'}');
-    return $response;
-});
-
-$app->post('/main', function ($request, $response, $args) {
-    $input = $request->getParsedBody();
-
-    $cityID = $input['city']['id'];
-    $cityName = $input['inputCityName'];
-
-    //перевіряємо чи є таке місто
-    $rows = DB::fetchAll("SELECT COUNT(*) FROM cities WHERE cityID=".$cityID.";");
-    //якщо немає
-    if($rows[0]["COUNT(*)"] == 0) {
-        $sql = "INSERT INTO cities (city, cityID) VALUES ('".$cityName."', '".$cityID."');";
-        $params = DB::exec($sql);
-    }
-    //якщо є, то оновлюємо його назву
-    else{
-        $sql = "UPDATE cities SET city='".$cityName."' WHERE  cityID=".$cityID.";";
-        $params = DB::exec($sql);
-    }
-
-    //отримуємо ідентифікатор міста SELECT id FROM cities WHERE city='London'
-    $rows = DB::fetchAll("SELECT id FROM cities WHERE city='".$cityName."'");
-    $id = $rows[0]['id'];
-
-    //записуємо прогноз
-    for($i=0; $i<7; $i++){
-
-        $weather = $input['list'][$i]['weather'][0]['main'];
-        $dayOfWeek = $input['convertDay'][$i];
-        $date = $input['convertDate'][$i];
-        $temp = $input['list'][$i]['temp']['day'];
-
-        //перевіряємо, чи є запис з такою датою
-        $rows = DB::fetchAll("SELECT COUNT(*) FROM weather WHERE id=".$id." AND date='".$date."';");
-
-        //якщо немає, то додаємо
-        if($rows[0]["COUNT(*)"] == 0) {
-            $sql = "INSERT INTO weather (id, date, dayOfWeek, weather, temp) 
-VALUES ('" . $id . "', '" . $date . "', '" . $dayOfWeek . "', '" . $weather . "', '" . $temp . "');";
-            $params = DB::exec($sql);
-        }
-        //якщо є, то оновлюємо
-        else {
-            $sql = "UPDATE weather SET weather='".$weather."', temp='".$temp."' WHERE  id=".$id." AND date='".$date."';";
-            $params = DB::exec($sql);
-        }
-    }
-    //file_put_contents('log.txt', $sql);
-
-    return $this->response->withJson($input);
-});
-
-$app->delete('/params', function ($request, $response, $args) {
-    $input = $request->getParsedBody();
-
-    $sql = "DELETE FROM weather WHERE id > 0;";
-    $params = DB::exec($sql);
-    //
-
-    return $this->response->true;
-});
-*/
 
 $app->get('/params/{id}', function (Request $request, Response $response, $args) {
 
     $input = json_decode($args['id'], true);
     //file_put_contents('request.txt', $input['indicator']);
 
+    //отримуємо всі компетенції і їх критерії
     if($input["skill"] == "ALL_SKILLS" && $input['indicator'] == 'ALL_INDICATORS') {
         $rowsSkills = DB::fetchAll("SELECT * FROM skill_tree WHERE node_type=1;");
-        $rowsIndicators = DB::fetchAll("SELECT * FROM indicators");
 
-        $response->getBody()->write('{"skills":'.json_encode($rowsSkills).',
-            "indicators":'.json_encode($rowsIndicators).'}');
-        return $response;
+        for($i = 0; $i < count($rowsSkills); $i++) {
+            $rowIndicators = DB::fetchAll("SELECT * FROM indicators WHERE skill_id=".$rowsSkills[$i]['id']);
+            $rowsSkills[$i]['indicators'] = $rowIndicators;
+        }
+        //file_put_contents('request.txt', '{"data":'.json_encode($rowsSkills).'}');
+        $response->getBody()->write('{"data":'.json_encode($rowsSkills).'}');
     }
+    //отримуємо конкретну компетенцію і її критерії
+    else if($input["skill"] != "ALL_SKILLS" && $input['indicator'] == 'ALL_INDICATORS') {
+
+        $rowsSkills = DB::fetchAll("SELECT * FROM skill_tree WHERE node_type=1 && id=".$input["skill"]);
+        $rowIndicators = DB::fetchAll("SELECT * FROM indicators WHERE skill_id=".$input["skill"]);
+        $rowsSkills[0]['indicators'] = $rowIndicators;
+
+        $response->getBody()->write('{"data":'.json_encode($rowsSkills).'}');
+    }
+    //отримуємо конкретний критерій
+    else if($input["skill"] != "ALL_SKILLS" && $input['indicator'] != 'ALL_INDICATORS') {
+
+        $rowsSkills = DB::fetchAll("SELECT * FROM skill_tree WHERE node_type=1 && id=".$input["skill"]);
+        $rowIndicators = DB::fetchAll("SELECT * FROM indicators WHERE id="
+            .$input['indicator']." AND skill_id=".$input["skill"]);
+        $rowsSkills[0]['indicators'] = $rowIndicators;
+
+        $response->getBody()->write('{"data":'.json_encode($rowsSkills).'}');
+    }
+    return $response;
+});
+
+$app->post('/params', function (Request $request, Response $response, $args) {
+    $input = $request->getParsedBody();
+
+    //працюємо з компетенціями
+    if($input['obj'] == 'SKILL') {
+
+        $skillId = $input['skillId'];
+        $skillName = $input['skillName'];
+        //$skillGroup !!!!!!!!!!!!!!
+        $skillDescription = $input['skillDescription'];
+
+        //редагування компетенції
+        if ($skillId != -1) {
+            $sql = "UPDATE skill_tree SET skill_name='".$skillName.
+                "', description='".$skillDescription."' WHERE  id=".$skillId.";";
+            DB::exec($sql);
+        }
+        //створення компетенції
+        else {
+            /*
+            $sql = "UPDATE skill_tree SET skill_name='".$skillName.
+                "', description='".$skillDescription."' WHERE  id=".$skillId.";";
+            DB::exec($sql);
+            */
+        }
+    }
+    //працюємо з критеріями
+    else if($input['obj'] == 'INDICATOR'){
+        $skillId = $input['skillId'];
+        $indicatorId = $input['indicatorId'];
+        $indicatorName = $input['indicatorName'];
+        $indicatorDescription = $input['indicatorDescription'];
+
+        //редагування індикатору
+        if ($indicatorId != -1) {
+            $sql = "UPDATE indicators SET indicator_name='".$indicatorName.
+                "', description='".$indicatorDescription.
+                "', skill_id=".$skillId." WHERE  id=".$indicatorId.";";
+            DB::exec($sql);
+        }
+        //створення індикатору
+        else {
+            $sql = "INSERT INTO indicators (skill_id, indicator_name, description) 
+              VALUES (".$skillId.", '".$indicatorName."', '".$indicatorDescription."');";
+            DB::exec($sql);
+        }
+    }
+    return $this->response->withJson($input);
 });
 
 /*
-$app->get('/main/{city}', function (Request $request, Response $response, $args) {
-    header('Content-Type: text/html;charset=UTF-8');
-    $city = $args['city'];
-    $url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=".$args['city']."&units=metric&cnt=7&APPID=531d4a54f4acb25f72b62eab815bc362";
-    $data = @file_get_contents($url);
+$app->put('/params/[{id}]', function (Request $request, Response $response, $args) {
+    $input = $request->getParsedBody();
+    file_put_contents('put.txt', $input);
 
-    if($data)
-        $response = '{"data":'.$data.'}';
-    else
-        $response = 'Not found!';
-    return $response;
-});*/
+    //$cityID = $input['city']['id'];
+    //$cityName = $input['inputCityName'];
+    //$sql = "UPDATE `params` SET `name`='" . $input['name'] . "' WHERE  `id`=" . $args['id'] . ";";
+    //$params = DB::exec($sql);
+    //$input['id'] = $args['id'];
+    return $this->response->withJson($input);
+});
+*/
+
+$app->delete('/params', function (Request $request, Response $response, $args) {
+    /*
+     *
+     *
+     *
+     */
+    $input = $request->getParsedBody();
+    file_put_contents('delete.txt', $input);
+    return $this->response->true;
+});
 
 $app->run();
