@@ -8,7 +8,9 @@
     "angular-route": "1.5.8",
     "angular-animate":"",
     "bootstrap": "^3.3.7",
-    "bootstrap-select": "^1.11.2"
+    "bootstrap-select": "^1.11.2",
+    "jquery": ">=1.8",
+    "fuelux":""
   },
   "resolutions": {
     "angular": "^1.5.8"
