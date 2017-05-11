@@ -9,71 +9,131 @@
 
     <div ng-controller="MainCtrl">
 
-        <div ng-init="getGlobalEditMode()"></div>
-
         <!-- Редагування компетенції -->
-        <div ng-if="edit_mode==1">
+        <div ng-if="getGlobalEditMode()==1">
 
-            <div ng-init="getSkill()"></div>
+            <div ng-init="getGroupTree(); getSkill()"></div>
             <h2>Edit skill:</h2>
             <h3 ng-bind="data[0].skill_name"></h3>
 
-            <div class="input-group-btn">
-                <a href="#main"><button ng-click="" class="btn btn-primary" type="button">Back</button></a>
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Компетенція" ng-model="nameText">
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Група" ng-model="groupText">
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
+
+            <div style="margin-bottom: 20px" class="btn-group">
+                <a href="#main"><button ng-click="saveSkill(nameText, 100, 100, descriptionText, data[0].id)" class="btn btn-primary" type="button">Save</button></a>
+                <a href="#main"><button ng-click="" class="btn btn-primary" type="button">Cancel</button></a>
             </div>
 
-            <input type="text" class="form-control" placeholder="Компетенція" ng-model="nameText">
-            <input type="text" class="form-control" placeholder="Група" ng-model="groupText">
-            <input type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
-
-            <div class="btn-group">
-                <button ng-click="saveSkill(nameText, groupText, descriptionText, data[0].id)" class="btn btn-primary" type="button">Save</button>
-                <a href="#"><button ng-click="" class="btn btn-primary" type="button">Cancel</button></a>
-            </div>
-
-            <div ng-repeat="item_indicator in data[0].indicators">
-                <div class="row padded">
-                    <div class="col-lg-6 col-xs-6">
-                        {{item_indicator.indicator_name}}
-                    </div>
-                    <div class="col-lg-6 col-xs-6">
-                        <div class="input-group-btn">
-                            <a href="#editIndicator"><button ng-click="setGlobalEditParams(data[0].id, item_indicator.id, 'ALL_GROUPS', 2)" class="btn btn-primary" type="button">Edt</button></a>
-                            <a href="#"><button ng-click="" class="btn btn-danger" type="button">Del</button></a>
+            <div class="thumbnail">
+                <div ng-repeat="item_indicator in data[0].indicators">
+                    <div style="margin: 5px">
+                        <div class="row padded">
+                            <div class="col-lg-10 col-xs-10">
+                                <h4>{{item_indicator.indicator_name}}</h4>
+                                <h5>{{item_indicator.description}}</h5>
+                            </div>
+                            <div class="col-lg-2 col-xs-2">
+                                <div class="input-group-btn">
+                                    <a href="#editIndicator"><button ng-click="setGlobalEditParams(data[0].id, item_indicator.id, 'ALL_GROUPS', 2)" class="btn btn-primary" type="button">Edt</button></a>
+                                    <a href="#editSkill"><button ng-click="removeIndicator(item_indicator.id); getSkill()" class="btn btn-danger" type="button">Del</button></a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <a href="#editIndicator"><button ng-click="setGlobalEditParams(getGlobalSkillId(), -1, 'ALL_GROUPS', 5); saveAdditionalData(data[0].skill_name)" class="btn btn-primary" type="button">Add</button></a>
         </div>
 
         <!-- Редагування індикатору -->
-        <div ng-if="edit_mode==2">
+        <div ng-if="getGlobalEditMode()==2">
 
-            <div ng-init="getIndicator()"></div>
+            <div ng-init="getSkillList(); getIndicator()"></div>
             <h2>Edit indicator:</h2>
             <h3 ng-bind="data[0].indicators[0].indicator_name"></h3>
 
-            <div class="input-group-btn">
-                <a href="#editSkill"><button ng-click="setGlobalEditParams(data[0].id, 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">Back</button></a>
-            </div>
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Індикатор" ng-model="nameText">
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Компетенція" ng-model="groupText">
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
 
-            <input type="text" class="form-control" placeholder="Індикатор" ng-model="nameText">
-            <input type="text" class="form-control" placeholder="Компетенція" ng-model="groupText">
-            <input type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
-
-            <div class="btn-group">
-                <button ng-click="saveIndicator(nameText, groupText, descriptionText, data[0].indicators[0].id)" class="btn btn-primary" type="button">Save</button>
-                <a href="#"><button ng-click="" class="btn btn-primary" type="button">Cancel</button></a>
+            <div style="margin-bottom: 20px" class="btn-group">
+                <a href="#editSkill"><button ng-click="saveIndicator(nameText, groupText, descriptionText, data[0].indicators[0].id); setGlobalEditParams(getGlobalSkillId(), 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">Save</button></a>
+                <a href="#editSkill"><button ng-click="setGlobalEditParams(getGlobalSkillId(), 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">Cancel</button></a>
             </div>
 
         </div>
 
+        <!-- Редагування групи (НЕ ГОТОВО) -->
+        <div ng-if="getGlobalEditMode()==3">
+
+            <h2>Edit group:</h2>
+
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Індикатор" ng-model="nameText">
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Компетенція" ng-model="groupText">
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
+
+            <div style="margin-bottom: 20px" class="btn-group">
+                <button ng-click="" class="btn btn-primary" type="button">Save</button>
+                <a href="#main"><button ng-click="" class="btn btn-primary" type="button">Cancel</button></a>
+            </div>
+
+        </div>
+
+        <!-- Додання нової компетенції -->
+        <div ng-if="getGlobalEditMode()==4">
+
+            <div ng-init=""></div>
+            <h2>Add skill:</h2>
+            <h3>New skill</h3>
+
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Компетенція" ng-model="nameText">
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Група" ng-model="groupText">
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
+
+            <div style="margin-bottom: 20px" class="btn-group">
+                <a href="#main"><button ng-click="saveSkill(nameText, 100, 100, descriptionText, -1); getAllData()" class="btn btn-primary" type="button">Create</button></a>
+                <a href="#main"><button ng-click="" class="btn btn-primary" type="button">Cancel</button></a>
+            </div>
+
+        </div>
+
+        <!-- Додання індикатору -->
+        <div ng-if="getGlobalEditMode()==5">
+
+            <h2>Add indicator:</h2>
+            <h3>New indicator for "{{getAdditionalData()}}"</h3>
+
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Індикатор" ng-model="nameText">
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
+
+            <div style="margin-bottom: 20px" class="btn-group">
+                <a href="#editSkill"><button ng-click="saveIndicator(nameText, getGlobalSkillId(), descriptionText, -1); setGlobalEditParams(getGlobalSkillId(), 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">Save</button> <a href="#editSkill">
+                <a href="#editSkill"><button ng-click="setGlobalEditParams(getGlobalSkillId(), 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">Cancel</button></a>
+            </div>
+
+        </div>
+
+        <!-- Додання нової групи (НЕ ГОТОВО) -->
+        <div ng-if="getGlobalEditMode()==6">
+
+            <h2>Add group:</h2>
+
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Назва групи" ng-model="nameText">
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Коренева група" ng-model="groupText">
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
+
+            <div style="margin-bottom: 20px" class="btn-group">
+                <button ng-click="" class="btn btn-primary" type="button">Save</button>
+                <a href="#main"><button ng-click="" class="btn btn-primary" type="button">Cancel</button></a>
+            </div>
+
+        </div>
 
     </div>
 
     <script src="bower_components/angular/angular.min.js"></script>
     <script src="bower_components/angular-resource/angular-resource.min.js"></script>
-    <script src="bower_components/angular-animate/angular-animate.js"></script>
     <script src="bower_components/jquery/dist/jquery.js"></script>
 
     <script src="app/main.js"></script>

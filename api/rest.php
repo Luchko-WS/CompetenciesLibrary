@@ -4,6 +4,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 require 'vendor/autoload.php';
 require 'db.php';
+//require 'PHPExcel.php';
 
 DB::init('mysql:dbname=prozorro;host=127.0.0.1;port=3306', 'root', 'WhiteShark28021995');
 
@@ -24,18 +25,47 @@ $app->add(function ($req, $res, $next) {
 $app->get('/params/{id}', function (Request $request, Response $response, $args) {
 
     $input = json_decode($args['id'], true);
-    //file_put_contents('request.txt', $input['indicator']);
 
+    if($input['exportToFile'] != "NONE") {
+
+        $rows = DB::fetchAll("SELECT * FROM skill_tree ORDER BY left_key");
+
+        for($i = 0; $i < count($rows); $i++) {
+            $rowIndicators = DB::fetchAll("SELECT * FROM indicators WHERE skill_id=".$rows[$i]['id']);
+            $rows[$i]['indicators'] = $rowIndicators;
+        }
+
+        if($input['exportToFile'] == "JSON") {
+            file_put_contents('exportFile.json', json_encode($rows));
+        }
+        else if($input['exportToFile'] == "XLSX") {
+            //file_put_contents('exportFile.json', json_encode($rows));
+        }
+    }
+    //отримуємо дерево (каталогів чи компетенцій)
+    else if($input['tree'] != 'NONE'){
+        if($input['tree'] == 'GROUPS'){
+            $rows = DB::fetchAll("SELECT * FROM skill_tree WHERE node_type=0 ORDER BY left_key");
+            $response->getBody()->write('{"data":'.json_encode($rows).'}');
+        }
+        else if($input['tree'] == 'SKILLS'){
+            $rows = DB::fetchAll("SELECT * FROM skill_tree WHERE node_type=1 ORDER BY left_key");
+            $response->getBody()->write('{"data":'.json_encode($rows).'}');
+        }
+    }
     //отримуємо всі компетенції і їх критерії
-    if($input["skill"] == "ALL_SKILLS" && $input['indicator'] == 'ALL_INDICATORS') {
+    else if($input["skill"] == "ALL_SKILLS" && $input['indicator'] == 'ALL_INDICATORS') {
         $rowsSkills = DB::fetchAll("SELECT * FROM skill_tree WHERE node_type=1;");
 
         for($i = 0; $i < count($rowsSkills); $i++) {
             $rowIndicators = DB::fetchAll("SELECT * FROM indicators WHERE skill_id=".$rowsSkills[$i]['id']);
             $rowsSkills[$i]['indicators'] = $rowIndicators;
         }
-        //file_put_contents('request.txt', '{"data":'.json_encode($rowsSkills).'}');
-        $response->getBody()->write('{"data":'.json_encode($rowsSkills).'}');
+
+        $data['rows'] = $rowsSkills;
+
+        //file_put_contents('request.txt', '{"data":'.json_encode($rows).'}');
+        $response->getBody()->write('{"data":'.json_encode($data).'}');
     }
     //отримуємо конкретну компетенцію і її критерії
     else if($input["skill"] != "ALL_SKILLS" && $input['indicator'] == 'ALL_INDICATORS') {
@@ -67,7 +97,8 @@ $app->post('/params', function (Request $request, Response $response, $args) {
 
         $skillId = $input['skillId'];
         $skillName = $input['skillName'];
-        //$skillGroup !!!!!!!!!!!!!!
+        $groupRightKey = 100; //$input['groupRightKey'];
+        $groupLevel = 100; //$input['groupLevel'];
         $skillDescription = $input['skillDescription'];
 
         //редагування компетенції
@@ -75,14 +106,28 @@ $app->post('/params', function (Request $request, Response $response, $args) {
             $sql = "UPDATE skill_tree SET skill_name='".$skillName.
                 "', description='".$skillDescription."' WHERE  id=".$skillId.";";
             DB::exec($sql);
+            //переміщення компетенції
         }
         //створення компетенції
         else {
-            /*
-            $sql = "UPDATE skill_tree SET skill_name='".$skillName.
-                "', description='".$skillDescription."' WHERE  id=".$skillId.";";
+            //оновлюємо вузли, що знаходяться правіше
+            $sql = "UPDATE skill_tree SET left_key=left_key+2, right_key=right_key+2 ".
+              "WHERE left_key > ".$groupRightKey.";";
             DB::exec($sql);
-            */
+            //file_put_contents('add_skill 1.txt', $sql);
+
+            //оновлюємо батьківську гілку
+            $sql = "UPDATE skill_tree SET right_key=right_key+2 ".
+              "WHERE right_key>=".$groupRightKey." AND left_key<".$groupRightKey.";";
+            DB::exec($sql);
+            //file_put_contents('add_skill 2.txt', $sql);
+
+            //додаємо новий вузол
+            $sql = "INSERT INTO skill_tree SET left_key=".$groupRightKey.", right_key=".($groupRightKey + 1).", node_level=".
+                ($groupLevel + 1).", skill_name='".$skillName."', description='".$skillDescription."', node_type=1;";
+            DB::exec($sql);
+            //file_put_contents('add_skill 3.txt', $sql);
+
         }
     }
     //працюємо з критеріями
@@ -101,8 +146,8 @@ $app->post('/params', function (Request $request, Response $response, $args) {
         }
         //створення індикатору
         else {
-            $sql = "INSERT INTO indicators (skill_id, indicator_name, description) 
-              VALUES (".$skillId.", '".$indicatorName."', '".$indicatorDescription."');";
+            $sql = "INSERT INTO indicators (skill_id, indicator_name, description)".
+              "VALUES (".$skillId.", '".$indicatorName."', '".$indicatorDescription."');";
             DB::exec($sql);
         }
     }
@@ -123,14 +168,32 @@ $app->put('/params/[{id}]', function (Request $request, Response $response, $arg
 });
 */
 
-$app->delete('/params', function (Request $request, Response $response, $args) {
-    /*
-     *
-     *
-     *
-     */
-    $input = $request->getParsedBody();
-    file_put_contents('delete.txt', $input);
+$app->delete('/params/[{id}]', function (Request $request, Response $response, $args) {
+    $input = $request->getAttribute('id');
+    $tokens = explode(",", $input);
+    $objType = $tokens[1];
+    $id = $tokens[0];
+
+    if($objType == "SKILL") {
+        $item = DB::fetchAll("SELECT * FROM skill_tree WHERE id=".$id.";");
+        $left_key = $item[0]['left_key'];
+        $right_key = $item[0]['right_key'];
+
+        $sql = "DELETE FROM skill_tree WHERE left_key >= ".$left_key." AND right_key <= ".$right_key.";";
+        DB::exec($sql);
+
+        $sql = "UPDATE skill_tree SET left_key = IF(left_key > ".$left_key.", left_key - (".$right_key." - ".
+            $left_key." + 1), left_key), right_key = right_key - (".$right_key." - ".
+            $left_key." + 1) WHERE right_key > ".$right_key.";";
+        DB::exec($sql);
+    }
+    else if($objType == "INDICATOR"){
+        $sql = "DELETE FROM indicators WHERE id=".$id.";";
+        DB::exec($sql);
+    }
+    else{
+
+    }
     return $this->response->true;
 });
 

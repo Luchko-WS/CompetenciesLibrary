@@ -3,3 +3,7 @@ mainApp.factory('RestModel', ['$resource', function ($resource) {
         'update': {method: 'PUT'}
     });
 }]);
+
+mainApp.factory('IOModel', ['$resource', function ($resource) {
+    return $resource('http://localhost:8088/api/rest.php/systemIO/:id', {'id':'@id'}, {});
+}]);
