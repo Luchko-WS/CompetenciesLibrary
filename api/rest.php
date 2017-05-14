@@ -4,7 +4,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 require 'vendor/autoload.php';
 require 'db.php';
-//require 'PHPExcel.php';
+require 'PHPExcel.php';
 
 DB::init('mysql:dbname=prozorro;host=127.0.0.1;port=3306', 'root', 'WhiteShark28021995');
 
@@ -38,14 +38,38 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
         if($input['exportToFile'] == "JSON") {
             file_put_contents('exportFile.json', json_encode($rows));
         }
-        else if($input['exportToFile'] == "XLSX") {
-            //file_put_contents('exportFile.json', json_encode($rows));
+        else if($input['exportToFile'] == "XLS") {
+            $xls = new PHPExcel();
+            $xls->setActiveSheetIndex(0);
+            $sheet = $xls->getActiveSheet();
+            $sheet->setTitle('Бібліотека компетенцій');
+
+            $sheet->setCellValue("A1", 'Бібліотека компетенцій');
+            $sheet->getStyle('A1')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+            $sheet->mergeCells('A1:C1');
+            $sheet->getStyle('A1')->getAlignment()->
+                setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+            $sheet->setCellValue("A2", 'Назва компетенцій');
+            $sheet->setCellValue("B2", 'Назва індикатору');
+            $sheet->setCellValue("C2", 'Опис індикатору');
+
+            $r = 3;
+            for($i = 0; $i < count($rows); $i++) {
+                $sheet->setCellValueByColumnAndRow(0, $r, $rows[$i]['skill_name']);
+                for($j = 0; $j < count($rows[$i]['indicators']); $j++) {
+                    $sheet->setCellValueByColumnAndRow(1, $r, $rows[$i]['indicators'][$j]['indicator_name']);
+                    $sheet->setCellValueByColumnAndRow(2, $r, $rows[$i]['indicators'][$j]['description']);
+                    $r++;
+                }
+            }
+            $objWriter = new PHPExcel_Writer_Excel5($xls);
+            $objWriter->save('TestExcel.xls');
         }
     }
     //отримуємо дерево (каталогів чи компетенцій)
     else if($input['tree'] != 'NONE'){
         if($input['tree'] == 'GROUPS'){
-            $rows = DB::fetchAll("SELECT * FROM skill_tree WHERE node_type=0 ORDER BY left_key");
+            $rows = DB::fetchAll("SELECT * FROM skill_tree WHERE node_type=0 AND node_level <> 1 ORDER BY left_key");
             $response->getBody()->write('{"data":'.json_encode($rows).'}');
         }
         else if($input['tree'] == 'SKILLS'){
