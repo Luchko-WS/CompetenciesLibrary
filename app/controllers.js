@@ -40,6 +40,15 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
             }
             else {
                 $scope.tree = res.data;
+                for(var i = 0; i < $scope.tree.length; i++){
+                    childNodesArray.push({ "name": $scope.tree[i].skill_name, "type": "folder" });
+                }
+                console.log(childNodesArray);
+                function staticDataSource(openedParentData, callback) {
+                    callback({
+                        data: childNodesArray
+                    });
+                }
             }
         });
     };
@@ -234,32 +243,5 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
     $scope.getAdditionalData = function () {
         return additionalData;
     };
-
-    /*
-    function staticDataSource(openedParentData, callback) {
-        var childNodesArray = [
-            { "name": "Ascending and Descending", "type": "folder" },
-            { "name": "Sky and Water I", "type": "item" },
-            { "name": "Drawing Hands", "type": "folder" },
-            { "name": "waterfall", "type": "item" },
-            { "name": "Belvedere", "type": "folder" },
-            { "name": "Relativity", "type": "item" },
-            { "name": "House of Stairs", "type": "folder" },
-            { "name": "Convex and Concave", "type": "item" }
-        ];
-
-        callback({
-            data: childNodesArray
-        });
-    };
-
-    $(function() {
-        $('#myTree').tree({
-            dataSource: staticDataSource,
-            multiSelect: false,
-            folderSelect: true
-        });
-    });
-    */
 
 }]);

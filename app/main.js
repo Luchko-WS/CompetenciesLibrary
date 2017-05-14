@@ -33,8 +33,30 @@ mainApp.config(['$routeProvider', function ($routeProvider){
         .when('/tree', {
             templateUrl: 'views//treeView.html'
         })
+        .when('/main', {
+            templateUrl: 'views//mainView.html'
+        })
         .otherwise({
-            templateUrl: 'views//mainView.html',
+            templateUrl: 'views//errorPage.html',
             controller: ''
         });
 }]);
+
+var childNodesArray = [
+    { "name": "Skills", "type": "folder" }
+];
+
+function staticDataSource(openedParentData, callback) {
+        callback({
+        data: childNodesArray
+    });
+    console.log(childNodesArray);
+}
+/*
+$(function() {
+    $('#myTree').tree({
+        dataSource: staticDataSource,
+        multiSelect: false,
+        folderSelect: true
+    });
+});*/
