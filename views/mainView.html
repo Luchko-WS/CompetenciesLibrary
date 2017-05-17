@@ -1,21 +1,5 @@
 <!DOCTYPE html>
 <head>
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="bower_components/bootstrap-select/dist/css/bootstrap-select.min.css">
-
-    <script type="text/javascript">
-        $(function() {
-            $('#myTree').tree({
-                dataSource: staticDataSource,
-                multiSelect: false,
-                folderSelect: true
-            });
-        });
-
-        $('#myTree').on('selected', function(evt, data) {
-            console.log('item selected: ', data);
-        });
-    </script>
 
 </head>
 <body>
@@ -26,7 +10,7 @@
 
         <div style="margin-bottom: 10px">
             <div class="btn-group">
-                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" type="button">Add skill<span class="caret"></span></button>
+                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" type="button">Add <span class="caret"></span></button>
                 <ul class="dropdown-menu">
                     <li><a href="#editSkill" ng-click="setGlobalEditParams('ALL_SKILLS', 'ALL_INDICATORS', 'ALL_GROUPS', 4)">Add skill</a></li>
                     <li><a href="#editGroup" ng-click="setGlobalEditParams('ALL_SKILLS', 'ALL_INDICATORS', 'ALL_GROUPS', 6)">Add group</a></li>
@@ -36,7 +20,7 @@
             <a href="#main"><button ng-click="" class="btn btn-primary" type="button">Import</button></a>
 
             <div class="btn-group">
-                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" type="button">Export<span class="caret"></span></button>
+                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" type="button">Export <span class="caret"></span></button>
                 <ul class="dropdown-menu">
                     <li><a href="#main" ng-click="exportAllData('JSON')">to JSON</a></li>
                     <li><a href="#main" ng-click="exportAllData('XLS')">to Excel</a></li>
@@ -52,19 +36,20 @@
                 <div ng-repeat="item_skill in data">
                     <div class="thumbnail">
                         <div class="row padded">
-
-                            <div class="col-lg-5 col-xs-5">
+                            <div class="col-lg-5 col-xs-12">
                                 <h4>{{item_skill.skill_name}}</h4>
                             </div>
-                            <div class="col-lg-5 col-xs-5">
+                            <div class="col-lg-5 col-xs-12">
                                 <div  ng-repeat="item_indicator in data[$index].indicators">
-                                    {{item_indicator.indicator_name}}
+                                    <ul>
+                                        <li>{{item_indicator.indicator_name}}</li>
+                                    </ul>
                                 </div>
                             </div>
-                            <div class="col-lg-2 col-xs-2">
+                            <div class="col-lg-2 col-xs-12">
                                 <div class="input-group-btn">
                                     <a href="#editSkill"><button ng-click="setGlobalEditParams(item_skill.id, 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">E</button></a>
-                                    <a href="#main"><button ng-click="removeSkill(item_skill.id)" class="btn btn-danger" type="button">D</button></a>
+                                    <a href="#main"><button ng-click="removeSkill(item_skill.id); getAllData(); getSkillList()" class="btn btn-danger" type="button">D</button></a>
                                 </div>
                             </div>
                         </div>
@@ -72,28 +57,12 @@
                 </div>
             </div>
 
-            <div class="col-lg-4 col-xs-4">TREE
+            <!--TREE-->
+            <div class="col-lg-4 col-xs-4">Дерево каталогів
+                <div id="tree"></div>
 
-                <ul id="myTree" class="tree tree-folder-select" role="tree" id="myTree">
-                    <li class="tree-branch hide" data-template="treebranch" role="treeitem" aria-expanded="false">
-                        <div class="tree-branch-header">
-                            <button class="glyphicon icon-caret glyphicon-play"><span class="sr-only">Open</span></button>
-                            <button class="tree-branch-name">
-                                <span class="glyphicon icon-folder glyphicon-folder-close"></span>
-                                <span class="tree-label"></span>
-                            </button>
-                        </div>
-                        <ul class="tree-branch-children" role="group"></ul>
-                        <div class="tree-loader" role="alert">Loading...</div>
-                    </li>
-                    <li class="tree-item hide" data-template="treeitem" role="treeitem">
-                        <button class="tree-item-name">
-                            <span class="glyphicon icon-item fueluxicon-bullet"></span>
-                            <span class="tree-label"></span>
-                        </button>
-                    </li>
-                </ul>
-
+                <a href="#"><button ng-click="" class="btn btn-primary" type="button">E</button></a>
+                <a href="#main"><button ng-click="removeGroup(currentGroup.id); getAllData(); getGroupTree(); getSkillList()" class="btn btn-danger" type="button">D</button></a>
             </div>
         </div>
     </div>

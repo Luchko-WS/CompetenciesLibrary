@@ -9,16 +9,21 @@
         <!-- Редагування компетенції -->
         <div ng-if="getGlobalEditMode()==1">
 
-            <div ng-init="getGroupTree(); getSkill()"></div>
+            <div ng-init="getGroupTree(); getSkill(); show=0"></div>
             <h2>Edit skill:</h2>
             <h3 ng-bind="data[0].skill_name"></h3>
 
             <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Компетенція" ng-model="nameText">
-            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Група" ng-model="groupText">
             <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
+            <input type="text" style="margin-bottom: 10px" type="text" class="form-control" placeholder="Група" ng-model="groupText">
+
+            <button class="btn btn-primary" ng-click="show=!show">{{changeButtonTextSelectFromTree(show)}}</button>
+            <div ng-show="show"><div id="tree"></div></div>
+
+            <div style="margin-bottom: 20px"></div>
 
             <div style="margin-bottom: 20px" class="btn-group">
-                <a href="#main"><button ng-click="saveSkill(nameText, 100, 100, descriptionText, data[0].id)" class="btn btn-primary" type="button">Save</button></a>
+                <a href="#main"><button ng-click="saveSkill(nameText, currentGroup.right_key, currentGroup.node_level, descriptionText, data[0].id)" class="btn btn-primary" type="button">Save</button></a>
                 <a href="#main"><button ng-click="" class="btn btn-primary" type="button">Cancel</button></a>
             </div>
 
@@ -51,8 +56,8 @@
             <h3 ng-bind="data[0].indicators[0].indicator_name"></h3>
 
             <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Індикатор" ng-model="nameText">
-            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Компетенція" ng-model="groupText">
             <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Компетенція" ng-model="groupText">
 
             <div style="margin-bottom: 20px" class="btn-group">
                 <a href="#editSkill"><button ng-click="saveIndicator(nameText, groupText, descriptionText, data[0].indicators[0].id); setGlobalEditParams(getGlobalSkillId(), 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">Save</button></a>
@@ -67,8 +72,8 @@
             <h2>Edit group:</h2>
 
             <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Індикатор" ng-model="nameText">
-            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Компетенція" ng-model="groupText">
             <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Компетенція" ng-model="groupText">
 
             <div style="margin-bottom: 20px" class="btn-group">
                 <button ng-click="" class="btn btn-primary" type="button">Save</button>
@@ -80,16 +85,21 @@
         <!-- Додання нової компетенції -->
         <div ng-if="getGlobalEditMode()==4">
 
-            <div ng-init=""></div>
+            <div ng-init="getGroupTree()"></div>
             <h2>Add skill:</h2>
             <h3>New skill</h3>
 
             <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Компетенція" ng-model="nameText">
-            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Група" ng-model="groupText">
             <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Група" ng-model="groupText">
+
+            <button class="btn btn-primary" ng-click="show=!show">{{changeButtonTextSelectFromTree(show)}}</button>
+            <div ng-show="show"><div id="tree"></div></div>
+
+            <div style="margin-bottom: 20px"></div>
 
             <div style="margin-bottom: 20px" class="btn-group">
-                <a href="#main"><button ng-click="saveSkill(nameText, 100, 100, descriptionText, -1); getAllData()" class="btn btn-primary" type="button">Create</button></a>
+                <a href="#main"><button ng-click="saveSkill(nameText, currentGroup.right_key, currentGroup.node_level, descriptionText, -1);" class="btn btn-primary" type="button">Create</button></a>
                 <a href="#main"><button ng-click="" class="btn btn-primary" type="button">Cancel</button></a>
             </div>
 
@@ -105,23 +115,30 @@
             <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
 
             <div style="margin-bottom: 20px" class="btn-group">
-                <a href="#editSkill"><button ng-click="saveIndicator(nameText, getGlobalSkillId(), descriptionText, -1); setGlobalEditParams(getGlobalSkillId(), 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">Save</button></a>
+                <a href="#editSkill"><button ng-click="saveIndicator(nameText, getGlobalSkillId(), descriptionText, -1); setGlobalEditParams(getGlobalSkillId(), 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">Create</button></a>
                 <a href="#editSkill"><button ng-click="setGlobalEditParams(getGlobalSkillId(), 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">Cancel</button></a>
             </div>
 
         </div>
 
-        <!-- Додання нової групи (НЕ ГОТОВО) -->
+        <!-- Додання нової групи -->
         <div ng-if="getGlobalEditMode()==6">
+
+            <div ng-init="getGroupTree()"></div>
 
             <h2>Add group:</h2>
 
             <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Назва групи" ng-model="nameText">
-            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Коренева група" ng-model="groupText">
             <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Коренева група" ng-model="groupText">
+
+            <button class="btn btn-primary" ng-click="show=!show">{{changeButtonTextSelectFromTree(show)}}</button>
+            <div ng-show="show"><div id="tree"></div></div>
+
+            <div style="margin-bottom: 20px"></div>
 
             <div style="margin-bottom: 20px" class="btn-group">
-                <button ng-click="" class="btn btn-primary" type="button">Save</button>
+                <a href="#main"><button ng-click="saveGroup(nameText, currentGroup.right_key, currentGroup.node_level, descriptionText, -1);" class="btn btn-primary" type="button">Create</button></a>
                 <a href="#main"><button ng-click="" class="btn btn-primary" type="button">Cancel</button></a>
             </div>
 

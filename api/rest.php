@@ -69,7 +69,7 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
     //отримуємо дерево (каталогів чи компетенцій)
     else if($input['tree'] != 'NONE'){
         if($input['tree'] == 'GROUPS'){
-            $rows = DB::fetchAll("SELECT * FROM skill_tree WHERE node_type=0 AND node_level <> 1 ORDER BY left_key");
+            $rows = DB::fetchAll("SELECT * FROM skill_tree WHERE node_type=0  ORDER BY left_key");
             $response->getBody()->write('{"data":'.json_encode($rows).'}');
         }
         else if($input['tree'] == 'SKILLS'){
@@ -121,8 +121,8 @@ $app->post('/params', function (Request $request, Response $response, $args) {
 
         $skillId = $input['skillId'];
         $skillName = $input['skillName'];
-        $groupRightKey = 100; //$input['groupRightKey'];
-        $groupLevel = 100; //$input['groupLevel'];
+        $groupRightKey = $input['groupRightKey'];
+        $groupLevel = $input['groupLevel'];
         $skillDescription = $input['skillDescription'];
 
         //редагування компетенції
@@ -149,6 +149,42 @@ $app->post('/params', function (Request $request, Response $response, $args) {
             //додаємо новий вузол
             $sql = "INSERT INTO skill_tree SET left_key=".$groupRightKey.", right_key=".($groupRightKey + 1).", node_level=".
                 ($groupLevel + 1).", skill_name='".$skillName."', description='".$skillDescription."', node_type=1;";
+            DB::exec($sql);
+            //file_put_contents('add_skill 3.txt', $sql);
+
+        }
+    }
+    else if($input['obj'] == 'GROUP'){
+        $groupId = $input['skillId'];
+        $groupName = $input['skillName'];
+        $groupRightKey = $input['groupRightKey'];
+        $groupLevel = $input['groupLevel'];
+        $groupDescription = $input['skillDescription'];
+
+        //редагування групт
+        if ($groupId != -1) {
+            $sql = "UPDATE skill_tree SET skill_name='".$groupName.
+                "', description='".$groupDescription."' WHERE  id=".$groupId.";";
+            DB::exec($sql);
+            //переміщення групи
+        }
+        //створення групи
+        else {
+            //оновлюємо вузли, що знаходяться правіше
+            $sql = "UPDATE skill_tree SET left_key=left_key+2, right_key=right_key+2 ".
+                "WHERE left_key > ".$groupRightKey.";";
+            DB::exec($sql);
+            //file_put_contents('add_skill 1.txt', $sql);
+
+            //оновлюємо батьківську гілку
+            $sql = "UPDATE skill_tree SET right_key=right_key+2 ".
+                "WHERE right_key>=".$groupRightKey." AND left_key<".$groupRightKey.";";
+            DB::exec($sql);
+            //file_put_contents('add_skill 2.txt', $sql);
+
+            //додаємо новий вузол
+            $sql = "INSERT INTO skill_tree SET left_key=".$groupRightKey.", right_key=".($groupRightKey + 1).", node_level=".
+                ($groupLevel + 1).", skill_name='".$groupName."', description='".$groupDescription."', node_type=0;";
             DB::exec($sql);
             //file_put_contents('add_skill 3.txt', $sql);
 
@@ -199,6 +235,19 @@ $app->delete('/params/[{id}]', function (Request $request, Response $response, $
     $id = $tokens[0];
 
     if($objType == "SKILL") {
+        $item = DB::fetchAll("SELECT * FROM skill_tree WHERE id=".$id.";");
+        $left_key = $item[0]['left_key'];
+        $right_key = $item[0]['right_key'];
+
+        $sql = "DELETE FROM skill_tree WHERE left_key >= ".$left_key." AND right_key <= ".$right_key.";";
+        DB::exec($sql);
+
+        $sql = "UPDATE skill_tree SET left_key = IF(left_key > ".$left_key.", left_key - (".$right_key." - ".
+            $left_key." + 1), left_key), right_key = right_key - (".$right_key." - ".
+            $left_key." + 1) WHERE right_key > ".$right_key.";";
+        DB::exec($sql);
+    }
+    else if($objType == "GROUP") {
         $item = DB::fetchAll("SELECT * FROM skill_tree WHERE id=".$id.";");
         $left_key = $item[0]['left_key'];
         $right_key = $item[0]['right_key'];

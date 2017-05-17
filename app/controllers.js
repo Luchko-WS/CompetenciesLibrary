@@ -1,11 +1,11 @@
 mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestModel) {
 
-    $scope.data = 'empty';
+    $scope.data = null;
 
-    $scope.tree = 'empty';
-    $scope.currentGroup = 'empty';
-    $scope.skills = 'empty';
-    $scope.currentSkill = 'empty';
+    $scope.tree = null;
+    $scope.currentGroup = null;
+    $scope.skills = null;
+    $scope.currentSkill = null;
 
     $scope.nameText = "";
     $scope.groupText = "";
@@ -40,18 +40,77 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
             }
             else {
                 $scope.tree = res.data;
-                for(var i = 0; i < $scope.tree.length; i++){
-                    childNodesArray.push({ "name": $scope.tree[i].skill_name, "type": "folder" });
-                }
-                console.log(childNodesArray);
-                function staticDataSource(openedParentData, callback) {
-                    callback({
-                        data: childNodesArray
-                    });
-                }
+                $('#tree').treeview({data: getTree()});
+
+                $('#tree').on('nodeSelected', function(event, data) {
+                    $scope.currentGroup = data;
+                    $scope.groupText = $scope.currentGroup.skill_name;
+                    console.log($scope.currentGroup);
+                });
             }
         });
     };
+
+    function getTree() {
+
+        var root = $scope.tree[0];
+        root.text = $scope.tree[0].skill_name;
+        root.node_id = 0;
+
+        var indexMap = [0];
+        var currentLevel = 2;
+
+        for(var i = 1; i < $scope.tree.length; i++) {
+
+            $scope.tree[i].node_id = i;
+            $scope.tree[i].nodes = null;
+            $scope.tree[i].text = $scope.tree[i].skill_name;
+            if($scope.tree[i].node_level == 2){
+                $scope.tree[i].parentId = indexMap[0];
+            }
+            else{
+                if(currentLevel == $scope.tree[i].node_level){
+                    $scope.tree[i].parentId = indexMap[$scope.tree[i].node_level - 2];
+                }
+                else if(currentLevel < $scope.tree[i].node_level){
+                    if($scope.tree[i].node_level - 1 > indexMap.length){
+                        indexMap.push(i-1);
+                        $scope.tree[i].parentId = indexMap[$scope.tree[i].node_level - 2];
+                        currentLevel = $scope.tree[i].node_level;
+                    }
+                    else{
+                        indexMap[$scope.tree[i].node_level - 2] = i-1;
+                        $scope.tree[i].parentId = indexMap[$scope.tree[i].node_level - 2];
+                        currentLevel = $scope.tree[i].node_level;
+                    }
+                }
+                else if(currentLevel > $scope.tree[i].node_level){
+                    $scope.tree[i].parentId = indexMap[$scope.tree[i].node_level - 2];
+                    currentLevel = $scope.tree[i].node_level;
+                }
+            }
+        }
+
+        console.log($scope.tree);
+
+        var map = {}, node, roots = [];
+        for (var i = 1; i < $scope.tree.length; i ++) {
+            node = $scope.tree[i];
+            node.nodes = [];
+            map[node.node_id] = i;
+            if (node.parentId !== 0) {
+                $scope.tree[map[node.parentId]].nodes.push(node);
+            } else {
+                roots.push(node);
+            }
+        }
+
+        root.nodes = roots;
+
+        console.log(root);
+
+        return [root];
+    }
 
     $scope.getCurrentGroup = function (left_key, right_key, level) {
         for(var i = 0; i < $scope.tree.length; i++){
@@ -127,6 +186,7 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
                     $scope.data[0].right_key, $scope.data[0].node_level);
                 $scope.groupText = $scope.currentGroup.skill_name;
                 $scope.descriptionText = res.data[0].description;
+                console.log($scope.currentGroup);
             }
         });
     };
@@ -158,6 +218,24 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
 
     };
 
+    $scope.saveGroup = function(nameValue, groupRightKeyValue, groupLevelValue, descriptionValue, skillId){
+
+        var value =  {
+            obj: "GROUP",
+            skillId: skillId,
+            skillName: nameValue,
+            groupRightKey: groupRightKeyValue,
+            groupLevel: groupLevelValue,
+            skillDescription: descriptionValue
+        };
+
+        RestModel.save(value, function(res){
+            console.log(res);
+       });
+
+        alert("Group is save!");
+    };
+
     $scope.saveSkill = function(nameValue, groupRightKeyValue, groupLevelValue, descriptionValue, skillId){
 
         var value =  {
@@ -171,9 +249,9 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
 
         RestModel.save(value, function(res){
             console.log(res);
-       });
+        });
 
-        alert("Data is overwriten!");
+        alert("Skill is save!");
     };
 
     $scope.saveIndicator = function(nameValue, skillIdValue, descriptionValue, indicatorId){
@@ -192,7 +270,7 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
             console.log(res);
         });
 
-        alert("Data is overwriten!");
+        alert("Indicator is save!");
     };
 
     $scope.removeSkill = function(skillId){
@@ -205,6 +283,20 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
                 console.log(res);
             });
             alert('Компетенцію видалено!');
+            $scope.getAllData();
+        }
+    };
+
+    $scope.removeGroup = function(skillId){
+
+        var params = [skillId, "GROUP"];
+
+        var answer = confirm("Ви дійсно бажаєте видалити групу? ");
+        if (answer === true) {
+            RestModel.delete({id:params}, function (res) {
+                console.log(res);
+            });
+            alert('Групу видалено!');
             $scope.getAllData();
         }
     };
@@ -234,6 +326,15 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
         RestModel.get({'id':JSON.stringify(params)}, function (res) {
             alert("Export data!");
         });
+    };
+
+    $scope.changeButtonTextSelectFromTree = function(flag){
+        if(flag){
+            return "Select node";
+        }
+        else {
+            return "SelectFromTree";
+        }
     };
 
     $scope.saveAdditionalData = function (value) {
