@@ -192,6 +192,7 @@ $app->post('/params', function (Request $request, Response $response, $args) {
     }
     //працюємо з критеріями
     else if($input['obj'] == 'INDICATOR'){
+
         $skillId = $input['skillId'];
         $indicatorId = $input['indicatorId'];
         $indicatorName = $input['indicatorName'];
@@ -199,9 +200,13 @@ $app->post('/params', function (Request $request, Response $response, $args) {
 
         //редагування індикатору
         if ($indicatorId != -1) {
+
             $sql = "UPDATE indicators SET indicator_name='".$indicatorName.
                 "', description='".$indicatorDescription.
-                "', skill_id=".$skillId." WHERE  id=".$indicatorId.";";
+                "', skill_id=".$skillId." WHERE id=".$indicatorId.";";
+
+            file_put_contents('indicator.txt', $sql);
+
             DB::exec($sql);
         }
         //створення індикатору

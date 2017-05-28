@@ -91,8 +91,6 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
             }
         }
 
-        console.log($scope.tree);
-
         var map = {}, node, roots = [];
         for (var i = 1; i < $scope.tree.length; i ++) {
             node = $scope.tree[i];
@@ -106,9 +104,6 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
         }
 
         root.nodes = roots;
-
-        console.log(root);
-
         return [root];
     }
 
@@ -186,7 +181,6 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
                     $scope.data[0].right_key, $scope.data[0].node_level);
                 $scope.groupText = $scope.currentGroup.skill_name;
                 $scope.descriptionText = res.data[0].description;
-                console.log($scope.currentGroup);
             }
         });
     };
@@ -214,10 +208,6 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
         })
     };
 
-    $scope.createNewSkill = function () {
-
-    };
-
     $scope.saveGroup = function(nameValue, groupRightKeyValue, groupLevelValue, descriptionValue, skillId){
 
         var value =  {
@@ -234,6 +224,10 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
        });
 
         alert("Group is save!");
+
+        $scope.getAllData();
+        $scope.getGroupTree();
+        $scope.getSkillList();
     };
 
     $scope.saveSkill = function(nameValue, groupRightKeyValue, groupLevelValue, descriptionValue, skillId){
@@ -252,6 +246,9 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
         });
 
         alert("Skill is save!");
+
+        $scope.getAllData();
+        $scope.getSkillList();
     };
 
     $scope.saveIndicator = function(nameValue, skillIdValue, descriptionValue, indicatorId){
@@ -263,8 +260,6 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
             indicatorId: indicatorId,
             indicatorDescription: descriptionValue
         };
-
-        console.log("SAVE INDICATOR");
 
         RestModel.save(value, function(res){
             console.log(res);
@@ -281,9 +276,11 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
         if (answer === true) {
             RestModel.delete({id:params}, function (res) {
                 console.log(res);
+                $scope.getAllData();
+                $scope.getSkillList();
             });
             alert('Компетенцію видалено!');
-            $scope.getAllData();
+
         }
     };
 
@@ -295,9 +292,11 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
         if (answer === true) {
             RestModel.delete({id:params}, function (res) {
                 console.log(res);
+                $scope.getAllData();
+                $scope.getGroupTree();
+                $scope.getSkillList();
             });
             alert('Групу видалено!');
-            $scope.getAllData();
         }
     };
 
@@ -309,9 +308,9 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
         if (answer === true) {
             RestModel.delete({id:params}, function (res) {
                 console.log(res);
+                $scope.getSkill();
             });
             alert('Індикатор видалено!');
-            $scope.getSkill();
         }
     };
 

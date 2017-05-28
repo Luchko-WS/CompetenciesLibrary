@@ -41,22 +41,3 @@ mainApp.config(['$routeProvider', function ($routeProvider){
             controller: ''
         });
 }]);
-
-var childNodesArray = [
-    { "name": "Skills", "type": "folder" }
-];
-
-function staticDataSource(openedParentData, callback) {
-        callback({
-        data: childNodesArray
-    });
-    console.log(childNodesArray);
-}
-/*
-$(function() {
-    $('#myTree').tree({
-        dataSource: staticDataSource,
-        multiSelect: false,
-        folderSelect: true
-    });
-});*/

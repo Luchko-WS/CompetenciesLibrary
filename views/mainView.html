@@ -49,7 +49,7 @@
                             <div class="col-lg-2 col-xs-12">
                                 <div class="input-group-btn">
                                     <a href="#editSkill"><button ng-click="setGlobalEditParams(item_skill.id, 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">E</button></a>
-                                    <a href="#main"><button ng-click="removeSkill(item_skill.id); getAllData(); getSkillList()" class="btn btn-danger" type="button">D</button></a>
+                                    <a href="#main"><button ng-click="removeSkill(item_skill.id);" class="btn btn-danger" type="button">D</button></a>
                                 </div>
                             </div>
                         </div>
@@ -62,7 +62,7 @@
                 <div id="tree"></div>
 
                 <a href="#"><button ng-click="" class="btn btn-primary" type="button">E</button></a>
-                <a href="#main"><button ng-click="removeGroup(currentGroup.id); getAllData(); getGroupTree(); getSkillList()" class="btn btn-danger" type="button">D</button></a>
+                <a href="#main"><button ng-click="removeGroup(currentGroup.id);" class="btn btn-danger" type="button">D</button></a>
             </div>
         </div>
     </div>
