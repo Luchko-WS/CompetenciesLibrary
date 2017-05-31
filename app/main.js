@@ -22,22 +22,51 @@ var additionalData = "";
 mainApp.config(['$routeProvider', function ($routeProvider){
     $routeProvider
         .when('/editSkill', {
-            templateUrl: 'views//editView.html'
+            templateUrl: 'views//adminEditView.html'
         })
         .when('/editIndicator', {
-            templateUrl: 'views//editView.html'
+            templateUrl: 'views//adminEditView.html'
         })
         .when('/editGroup', {
-            templateUrl: 'views//editView.html'
+            templateUrl: 'views//adminEditView.html'
         })
-        .when('/tree', {
-            templateUrl: 'views//treeView.html'
+        .when('/test', {
+            templateUrl: 'views//testView.html'
+        })
+        .when('/adminView', {
+            templateUrl: 'views//adminMainView.html'
         })
         .when('/main', {
-            templateUrl: 'views//mainView.html'
+            templateUrl: 'views//guestMainView.html'
+        })
+        .when('/skill', {
+            templateUrl: 'views//guestSkillAndIndicatorView.html'
+        })
+        .when('/indicator', {
+            templateUrl: 'views//guestSkillAndIndicatorView.html'
         })
         .otherwise({
             templateUrl: 'views//errorPage.html',
             controller: ''
         });
 }]);
+
+mainApp.filter('divideToPages', function () {
+    return function (item) {
+        var vector = [];
+        if(item!=null)
+        {
+            if (item.length % 5 == 0) {
+                for (var i = 1; i <= item.length / 5; i++) {
+                    vector.push(i);
+                }
+            }
+            else {
+                for (var i = 1; i <= item.length / 5 + 1; i++) {
+                    vector.push(i);
+                }
+            }
+        }
+        return vector;
+    };
+});

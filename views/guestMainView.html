@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<head>
+
+</head>
+<body>
+
+    <div ng-controller="MainCtrl">
+
+        <h1>Main page</h1>
+
+        <div style="margin-bottom: 10px">
+            <div class="btn-group">
+                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" type="button">Експортувати... <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    <li><a href="#main" ng-click="exportAllData('JSON')">в формат JSON</a></li>
+                    <li><a href="#main" ng-click="exportAllData('XLS')">в формат MS Excel</a></li>
+                </ul>
+            </div>
+        </div>
+
+
+        <div ng-init="getAllSkills(); getGroupTree();"></div>
+
+        <div class="row padded">
+            <div class="col-lg-8 col-xs-8">
+                <div ng-repeat="item_skill in data | limitTo:(5*(page+1)):(5*(page))">
+                    <div class="thumbnail">
+                        <div class="row padded">
+                            <div class="col-lg-5 col-xs-12">
+                                <h4>{{item_skill.skill_name}}</h4>
+                            </div>
+                            <div class="col-lg-5 col-xs-12">
+                                <div  ng-repeat="item_indicator in data[$index].indicators">
+                                    <ul>
+                                        <li>{{item_indicator.indicator_name}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-xs-12">
+                                <div class="input-group-btn">
+                                    <a href="#skill"><button ng-click="setGlobalEditParams(item_skill.id, 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!--TREE-->
+            <div class="col-lg-4 col-xs-4">Дерево каталогів
+                <div id="tree"></div>
+                <a href="#main"><button ng-click="getSkillsByGroup(currentGroup.left_key, currentGroup.right_key)" class="btn btn-success" type="button"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button></a>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <button ng-repeat="i in data | divideToPages" ng-click="setPage(i-1)" href="#test">{{i}}</button>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<head>
+
+</head>
+<body>
+
+    <div ng-controller="MainCtrl">
+
+        <!-- Перегляд компетенції -->
+        <div ng-if="getGlobalEditMode()==1">
+
+            <div ng-init="getGroupTree(); getSkill(); show=0"></div>
+            <h2>Інформація про компетенцію:</h2>
+            <h3 ng-bind="data[0].skill_name"></h3>
+
+            <h4>Опис: {{descriptionText}}</h4>
+            <h4>Група: {{groupText}}</h4>
+
+           <a href="#main"><button ng-click="" class="btn btn-primary" type="button">Назад</button></a>
+
+            <h3>Список індикаторів:</h3>
+
+            <div class="thumbnail">
+
+                <div ng-if="data[0].indicators.length == 0">
+                    <h5>Дана компетенція не містить в собі індикаторів</h5>
+                </div>
+
+                <div ng-repeat="item_indicator in data[0].indicators">
+                    <div style="margin: 5px">
+                        <div class="row padded">
+                            <div class="col-lg-10 col-xs-10">
+                                <h4>{{item_indicator.indicator_name}}</h4>
+                                <h5>{{item_indicator.description}}</h5>
+                            </div>
+                            <div class="col-lg-2 col-xs-2">
+                                <div class="input-group-btn">
+                                    <a href="#indicator"><button ng-click="setGlobalEditParams(data[0].id, item_indicator.id, 'ALL_GROUPS', 2);" class="btn btn-primary" type="button"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Перегляд індикатору -->
+        <div ng-if="getGlobalEditMode()==2">
+
+            <div ng-init="getIndicator()"></div>
+            <h2>Інформація про індикатор:</h2>
+            <h3 ng-bind="data[0].indicators[0].indicator_name"></h3>
+
+            <h4>Опис: {{descriptionText}}</h4>
+
+            <div style="margin-bottom: 20px" class="btn-group">
+                <a href="#skill"><button ng-click="setGlobalEditParams(getGlobalSkillId(), 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">Назад</button></a>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

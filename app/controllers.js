@@ -1,4 +1,4 @@
-mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestModel) {
+mainApp.controller('MainCtrl', ['$scope', 'MainModel', 'SkillsModel', 'IndicatorsModel', 'GroupsModel', function ($scope, MainModel, SkillsModel, IndicatorsModel, GroupsModel) {
 
     $scope.data = null;
 
@@ -6,10 +6,15 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
     $scope.currentGroup = null;
     $scope.skills = null;
     $scope.currentSkill = null;
+    $scope.page = 0;
 
     $scope.nameText = "";
     $scope.groupText = "";
     $scope.descriptionText = "";
+
+    $scope.setPage = function (page) {
+        $scope.page = page;
+    }
 
     $scope.setGlobalEditParams = function (par_skill, par_indicator, par_group, par_mode) {
         globalEditParams.skill = par_skill;
@@ -19,6 +24,7 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
     };
 
     $scope.getGlobalEditMode = function () {
+        console.log(globalEditParams.edit_mode);
         return globalEditParams.edit_mode;
     };
 
@@ -34,24 +40,24 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
             tree: 'GROUPS'
         };
 
-        RestModel.get({'id':JSON.stringify(params)}, function (res) {
+        GroupsModel.get({'id':JSON.stringify(params)}, function (res) {
             if(res.data === undefined) {
                 console.log('ERROR IN GET GROUP TREE');
             }
             else {
                 $scope.tree = res.data;
-                $('#tree').treeview({data: getTree()});
+                $('#tree').treeview({data: formatDataToTree()});
 
                 $('#tree').on('nodeSelected', function(event, data) {
                     $scope.currentGroup = data;
                     $scope.groupText = $scope.currentGroup.skill_name;
-                    console.log($scope.currentGroup);
+                    console.log($scope.currentGroup.id);
                 });
             }
         });
     };
 
-    function getTree() {
+    function formatDataToTree() {
 
         var root = $scope.tree[0];
         root.text = $scope.tree[0].skill_name;
@@ -94,9 +100,12 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
         var map = {}, node, roots = [];
         for (var i = 1; i < $scope.tree.length; i ++) {
             node = $scope.tree[i];
-            node.nodes = [];
+            node.nodes = null;
             map[node.node_id] = i;
             if (node.parentId !== 0) {
+                if($scope.tree[map[node.parentId]].nodes == null) {
+                    $scope.tree[map[node.parentId]].nodes = [];
+                }
                 $scope.tree[map[node.parentId]].nodes.push(node);
             } else {
                 roots.push(node);
@@ -108,6 +117,7 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
     }
 
     $scope.getCurrentGroup = function (left_key, right_key, level) {
+
         for(var i = 0; i < $scope.tree.length; i++){
             if(Number($scope.tree[i].node_level) == (level-1) &&
                 Number($scope.tree[i].left_key) < left_key && Number($scope.tree[i].right_key) > right_key){
@@ -116,44 +126,32 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
         }
     };
 
-    $scope.getSkillList = function () {
+    $scope.getAllSkills = function () {
+
         var params =  {
-            skill: 'NONE',
-            indicator: 'NONE',
-            exportToFile: 'NONE',
-            tree: 'SKILLS'
+            skillId: 'ALL_SKILLS',
         };
 
-        RestModel.get({'id':JSON.stringify(params)}, function (res) {
+        SkillsModel.get({'id':JSON.stringify(params)}, function (res) {
             if(res.data === undefined) {
-                console.log('ERROR IN GET SKILL LIST');
+                console.log('ERROR IN GET ALL SKILLS');
             }
             else {
-                $scope.skills = res.data;
+                $scope.data = res.data.rows;
             }
         });
     };
 
-    $scope.getCurrentSkill = function (id) {
-        for(var i = 0; i < $scope.skills.length; i++){
-            if($scope.skills[i].id == id){
-                return $scope.skills[i];
-            }
-        }
-    };
-
-    $scope.getAllData = function () {
-
+    $scope.getSkillsByGroup = function (left_key, right_key) {
         var params =  {
-            skill: 'ALL_SKILLS',
-            indicator: 'ALL_INDICATORS',
-            exportToFile: 'NONE',
-            tree: 'NONE'
+            skillId: 'BY_GROUP',
+            left_key: left_key,
+            right_key: right_key,
         };
 
-        RestModel.get({'id':JSON.stringify(params)}, function (res) {
+        SkillsModel.get({'id':JSON.stringify(params)}, function (res) {
             if(res.data === undefined) {
-                console.log('ERROR IN GET ALL DATA');
+                console.log('ERROR IN GET SKILLS BY GROUP');
             }
             else {
                 $scope.data = res.data.rows;
@@ -164,13 +162,10 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
     $scope.getSkill = function () {
 
         var params =  {
-            skill: globalEditParams.skill,
-            indicator: globalEditParams.indicator,
-            exportToFile: 'NONE',
-            tree: 'NONE'
+            skillId: globalEditParams.skill
         };
 
-        RestModel.get({'id':JSON.stringify(params)}, function (res) {
+        SkillsModel.get({'id':JSON.stringify(params)}, function (res) {
             if(res.data === undefined) {
                 console.log('ERROR IN GET SKILL');
             }
@@ -188,52 +183,78 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
     $scope.getIndicator = function () {
 
         var params =  {
-            skill: globalEditParams.skill,
-            indicator: globalEditParams.indicator,
-            exportToFile: 'NONE',
-            tree: 'NONE'
+            indicatorId: globalEditParams.indicator
         };
 
-        RestModel.get({'id':JSON.stringify(params)}, function (res) {
+        IndicatorsModel.get({'id':JSON.stringify(params)}, function (res) {
             if(res.data === undefined) {
                 console.log('ERROR IN GET INDICATOR');
             }
             else {
                 $scope.data = res.data;
                 $scope.nameText = res.data[0].indicators[0].indicator_name;
-                $scope.currentSkill = $scope.getCurrentSkill(res.data[0].id);
-                $scope.groupText = $scope.currentSkill.skill_name;
                 $scope.descriptionText = res.data[0].indicators[0].description;
             }
         })
     };
 
-    $scope.saveGroup = function(nameValue, groupRightKeyValue, groupLevelValue, descriptionValue, skillId){
+    $scope.getGroup = function () {
 
-        var value =  {
-            obj: "GROUP",
-            skillId: skillId,
-            skillName: nameValue,
-            groupRightKey: groupRightKeyValue,
-            groupLevel: groupLevelValue,
-            skillDescription: descriptionValue
+        var params =  {
+            tree: false,
+            groupId: globalEditParams.group
         };
 
-        RestModel.save(value, function(res){
+        console.log("GLOBAL GROUP ID", globalEditParams.group);
+
+        GroupsModel.get({'id':JSON.stringify(params)}, function (res) {
+            if(res.data === undefined) {
+                console.log('ERROR IN GET GROUP');
+            }
+            else {
+                console.log(res.data);
+                $scope.data = res.data;
+                $scope.nameText = res.data[0].skill_name;
+
+                console.log($scope.data[0].left_key,
+                    $scope.data[0].right_key, $scope.data[0].node_level);
+
+                $scope.currentGroup = $scope.getCurrentGroup($scope.data[0].left_key,
+                    $scope.data[0].right_key, $scope.data[0].node_level);
+                $scope.groupText = $scope.currentGroup.skill_name;
+                $scope.descriptionText = res.data[0].description;
+
+                console.log($scope.currentGroup);
+                console.log($scope.tree);
+            }
+        });
+    };
+
+    $scope.saveGroup = function(nameValue, groupRightKeyValue, groupLevelValue, descriptionValue, groupId){
+
+        var value =  {
+            groupId: groupId,
+            groupName: nameValue,
+            groupRightKey: groupRightKeyValue,
+            groupLevel: groupLevelValue,
+            groupDescription: descriptionValue
+        };
+
+        console.log(value);
+
+        GroupsModel.save(value, function(res){
             console.log(res);
        });
 
-        alert("Group is save!");
+        alert("Групу збережено!");
 
-        $scope.getAllData();
+        $scope.getAllSkills();
         $scope.getGroupTree();
-        $scope.getSkillList();
     };
 
     $scope.saveSkill = function(nameValue, groupRightKeyValue, groupLevelValue, descriptionValue, skillId){
 
         var value =  {
-            obj: "SKILL",
             skillId: skillId,
             skillName: nameValue,
             groupRightKey: groupRightKeyValue,
@@ -241,60 +262,56 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
             skillDescription: descriptionValue
         };
 
-        RestModel.save(value, function(res){
+        SkillsModel.save(value, function(res){
             console.log(res);
         });
 
-        alert("Skill is save!");
+        alert("Компетенцію збережено!");
 
-        $scope.getAllData();
-        $scope.getSkillList();
+        $scope.getAllSkills();
     };
 
     $scope.saveIndicator = function(nameValue, skillIdValue, descriptionValue, indicatorId){
 
         var value =  {
-            obj: "INDICATOR",
             skillId: skillIdValue,
             indicatorName: nameValue,
             indicatorId: indicatorId,
             indicatorDescription: descriptionValue
         };
 
-        RestModel.save(value, function(res){
+        IndicatorsModel.save(value, function(res){
             console.log(res);
         });
 
-        alert("Indicator is save!");
+        alert("Індикатор збережено!");
     };
 
     $scope.removeSkill = function(skillId){
 
-        var params = [skillId, "SKILL"];
+        var params = skillId;
 
         var answer = confirm("Ви дійсно бажаєте видалити компетенцію? ");
         if (answer === true) {
-            RestModel.delete({id:params}, function (res) {
+            SkillsModel.delete({id:params}, function (res) {
                 console.log(res);
-                $scope.getAllData();
-                $scope.getSkillList();
+                $scope.getAllSkills();
             });
             alert('Компетенцію видалено!');
 
         }
     };
 
-    $scope.removeGroup = function(skillId){
+    $scope.removeGroup = function(groupId){
 
-        var params = [skillId, "GROUP"];
+        var params = groupId;
 
         var answer = confirm("Ви дійсно бажаєте видалити групу? ");
         if (answer === true) {
-            RestModel.delete({id:params}, function (res) {
+            GroupsModel.delete({id:params}, function (res) {
                 console.log(res);
-                $scope.getAllData();
+                $scope.getAllSkills();
                 $scope.getGroupTree();
-                $scope.getSkillList();
             });
             alert('Групу видалено!');
         }
@@ -302,11 +319,11 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
 
     $scope.removeIndicator = function(indicatorId){
 
-        var params = [indicatorId, "INDICATOR"];
+        var params = indicatorId;
 
         var answer = confirm("Ви дійсно бажаєте видалити індикатор? ");
         if (answer === true) {
-            RestModel.delete({id:params}, function (res) {
+            IndicatorsModel.delete({id:params}, function (res) {
                 console.log(res);
                 $scope.getSkill();
             });
@@ -319,10 +336,9 @@ mainApp.controller('MainCtrl', ['$scope', 'RestModel', function ($scope, RestMod
             exportToFile: format,
             skill: 'ALL_SKILLS',
             indicator: 'ALL_INDICATORS',
-            tree: 'NONE'
         };
 
-        RestModel.get({'id':JSON.stringify(params)}, function (res) {
+        MainModel.get({'id':JSON.stringify(params)}, function (res) {
             alert("Export data!");
         });
     };
