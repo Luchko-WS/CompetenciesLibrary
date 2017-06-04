@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head></head>
+
+<body>
+
+
+<div ng-controller="MainCtrl">
+
+    <!-- Редагування індикатору -->
+    <div ng-if="getGlobalEditMode()==2">
+
+        <div ng-init="getIndicator()"></div>
+        <h2>Редагування індикатору:</h2>
+        <h3 ng-bind="data[0].indicators[0].indicator_name"></h3>
+
+        <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Індикатор" ng-model="nameText">
+        <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
+
+        <div style="margin-bottom: 20px" class="btn-group">
+            <a href="#skill"><button ng-click="saveIndicator(nameText, getGlobalSkillId(), descriptionText, data[0].indicators[0].id); setGlobalEditParams(getGlobalSkillId(), 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">Зберегти</button></a>
+            <a href="#skill"><button ng-click="setGlobalEditParams(getGlobalSkillId(), 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">Скасувати</button></a>
+        </div>
+
+    </div>
+
+    <!-- Додання індикатору -->
+    <div ng-if="getGlobalEditMode()==5">
+
+        <h2>Створення нового індикатору</h2>
+        <h3>для еомпетенції "{{getAdditionalData()}}":</h3>
+
+        <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Індикатор" ng-model="nameText">
+        <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
+
+        <div style="margin-bottom: 20px" class="btn-group">
+            <a href="#skill"><button ng-click="saveIndicator(nameText, getGlobalSkillId(), descriptionText, -1); setGlobalEditParams(getGlobalSkillId(), 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">Створити</button></a>
+            <a href="#skill"><button ng-click="setGlobalEditParams(getGlobalSkillId(), 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">Назад</button></a>
+        </div>
+
+    </div>
+
+    <!-- Перегляд індикатору -->
+    <div ng-if="getGlobalEditMode()==8">
+
+        <div ng-init="getIndicator()"></div>
+        <h2>Інформація про індикатор:</h2>
+        <h3 ng-bind="data[0].indicators[0].indicator_name"></h3>
+
+        <h4>Опис: {{descriptionText}}</h4>
+
+        <div style="margin-bottom: 20px" class="btn-group">
+            <a href="#skill"><button ng-click="setGlobalEditParams(getGlobalSkillId(), 'ALL_INDICATORS', 'ALL_GROUPS', 7)" class="btn btn-primary" type="button">Назад</button></a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

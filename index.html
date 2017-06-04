@@ -13,12 +13,21 @@
 </head>
 <body ng-app="MainApp"> <!--background="assets/img/background.jpg"-->
 
-    <div class="page-header">
-        <h1 class="text-center">Бібліотека компетенцій</h1>
-    </div>
+    <div ng-controller="UserCtrl">
+        <div class="page-header">
+            <h1 class="text-center">Бібліотека компетенцій</h1>
+        </div>
 
-    <div class="container">
-        <ng-view></ng-view>
+        <p style="text-align: right" ng-if="getUserId()!=null">Administrator mode</p>
+        <div style="text-align: right; margin-right: 20px">
+            <button ng-click="logIn()" class="btn btn-primary" type="button">{{buttonText}}</button>
+        </div>
+
+        <div class="container">
+            <ng-view></ng-view>
+        </div>
+
+        <h5 style="text-align: center">Вінниця, 2017</h5>
     </div>
 
     <script src="bower_components/jquery/dist/jquery.js"></script>
@@ -30,6 +39,7 @@
 
     <script src="app/main.js"></script>
     <script src="app/factories.js"></script>
-    <script src="app/controllers.js"></script>
+    <script src="app/userController.js"></script>
+    <script src="app/mainController.js"></script>
 </body>
 </html>

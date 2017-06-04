@@ -1,4 +1,4 @@
-mainApp.controller('MainCtrl', ['$scope', 'MainModel', 'SkillsModel', 'IndicatorsModel', 'GroupsModel', function ($scope, MainModel, SkillsModel, IndicatorsModel, GroupsModel) {
+mainApp.controller('MainCtrl', ['$scope', 'IOModel', 'SkillsModel', 'IndicatorsModel', 'GroupsModel', function ($scope, IOModel, SkillsModel, IndicatorsModel, GroupsModel) {
 
     $scope.data = null;
 
@@ -6,7 +6,9 @@ mainApp.controller('MainCtrl', ['$scope', 'MainModel', 'SkillsModel', 'Indicator
     $scope.currentGroup = null;
     $scope.skills = null;
     $scope.currentSkill = null;
+
     $scope.page = 0;
+    $scope.pageView = true;
 
     $scope.nameText = "";
     $scope.groupText = "";
@@ -14,7 +16,7 @@ mainApp.controller('MainCtrl', ['$scope', 'MainModel', 'SkillsModel', 'Indicator
 
     $scope.setPage = function (page) {
         $scope.page = page;
-    }
+    };
 
     $scope.setGlobalEditParams = function (par_skill, par_indicator, par_group, par_mode) {
         globalEditParams.skill = par_skill;
@@ -24,7 +26,6 @@ mainApp.controller('MainCtrl', ['$scope', 'MainModel', 'SkillsModel', 'Indicator
     };
 
     $scope.getGlobalEditMode = function () {
-        console.log(globalEditParams.edit_mode);
         return globalEditParams.edit_mode;
     };
 
@@ -51,7 +52,6 @@ mainApp.controller('MainCtrl', ['$scope', 'MainModel', 'SkillsModel', 'Indicator
                 $('#tree').on('nodeSelected', function(event, data) {
                     $scope.currentGroup = data;
                     $scope.groupText = $scope.currentGroup.skill_name;
-                    console.log($scope.currentGroup.id);
                 });
             }
         });
@@ -118,10 +118,12 @@ mainApp.controller('MainCtrl', ['$scope', 'MainModel', 'SkillsModel', 'Indicator
 
     $scope.getCurrentGroup = function (left_key, right_key, level) {
 
-        for(var i = 0; i < $scope.tree.length; i++){
-            if(Number($scope.tree[i].node_level) == (level-1) &&
-                Number($scope.tree[i].left_key) < left_key && Number($scope.tree[i].right_key) > right_key){
-                return $scope.tree[i];
+        if($scope.tree != null) {
+            for (var i = 0; i < $scope.tree.length; i++) {
+                if (Number($scope.tree[i].node_level) == (level - 1) &&
+                    Number($scope.tree[i].left_key) < left_key && Number($scope.tree[i].right_key) > right_key) {
+                    return $scope.tree[i];
+                }
             }
         }
     };
@@ -174,7 +176,9 @@ mainApp.controller('MainCtrl', ['$scope', 'MainModel', 'SkillsModel', 'Indicator
                 $scope.nameText = res.data[0].skill_name;
                 $scope.currentGroup = $scope.getCurrentGroup($scope.data[0].left_key,
                     $scope.data[0].right_key, $scope.data[0].node_level);
-                $scope.groupText = $scope.currentGroup.skill_name;
+                if($scope.currentGroup != null) {
+                    $scope.groupText = $scope.currentGroup.skill_name;
+                }
                 $scope.descriptionText = res.data[0].description;
             }
         });
@@ -205,27 +209,18 @@ mainApp.controller('MainCtrl', ['$scope', 'MainModel', 'SkillsModel', 'Indicator
             groupId: globalEditParams.group
         };
 
-        console.log("GLOBAL GROUP ID", globalEditParams.group);
-
         GroupsModel.get({'id':JSON.stringify(params)}, function (res) {
             if(res.data === undefined) {
                 console.log('ERROR IN GET GROUP');
             }
             else {
-                console.log(res.data);
                 $scope.data = res.data;
                 $scope.nameText = res.data[0].skill_name;
-
-                console.log($scope.data[0].left_key,
-                    $scope.data[0].right_key, $scope.data[0].node_level);
 
                 $scope.currentGroup = $scope.getCurrentGroup($scope.data[0].left_key,
                     $scope.data[0].right_key, $scope.data[0].node_level);
                 $scope.groupText = $scope.currentGroup.skill_name;
                 $scope.descriptionText = res.data[0].description;
-
-                console.log($scope.currentGroup);
-                console.log($scope.tree);
             }
         });
     };
@@ -239,8 +234,6 @@ mainApp.controller('MainCtrl', ['$scope', 'MainModel', 'SkillsModel', 'Indicator
             groupLevel: groupLevelValue,
             groupDescription: descriptionValue
         };
-
-        console.log(value);
 
         GroupsModel.save(value, function(res){
             console.log(res);
@@ -338,7 +331,7 @@ mainApp.controller('MainCtrl', ['$scope', 'MainModel', 'SkillsModel', 'Indicator
             indicator: 'ALL_INDICATORS',
         };
 
-        MainModel.get({'id':JSON.stringify(params)}, function (res) {
+        IOModel.get({'id':JSON.stringify(params)}, function (res) {
             alert("Export data!");
         });
     };
