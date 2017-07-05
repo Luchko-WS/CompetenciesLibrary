@@ -25,8 +25,7 @@ $app->add(function ($req, $res, $next) {
 $app->get('/params/{id}', function (Request $request, Response $response, $args) {
 
     $input = json_decode($args['id'], true);
-
-    file_put_contents('INDICATORS.txt', $input["indicatorId"]);
+    //file_put_contents('INDICATORS.txt', $input["indicatorId"]);
 
     $rowIndicators = DB::fetchAll("SELECT * FROM indicators WHERE id="
         .$input['indicatorId'].";");
@@ -38,40 +37,36 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
 
 $app->post('/params', function (Request $request, Response $response, $args) {
     $input = $request->getParsedBody();
-
     $skillId = $input['skillId'];
     $indicatorId = $input['indicatorId'];
     $indicatorName = $input['indicatorName'];
     $indicatorDescription = $input['indicatorDescription'];
+    $userId = $input['userId'];
 
     //редагування індикатору
     if ($indicatorId != -1) {
-
         $sql = "UPDATE indicators SET indicator_name='".$indicatorName.
             "', description='".$indicatorDescription.
             "', skill_id=".$skillId." WHERE id=".$indicatorId.";";
 
-        file_put_contents('indicator.txt', $sql);
-
+        //file_put_contents('indicator.txt', $sql);
         DB::exec($sql);
     }
     //створення індикатору
     else {
-        $sql = "INSERT INTO indicators (skill_id, indicator_name, description)".
-          "VALUES (".$skillId.", '".$indicatorName."', '".$indicatorDescription."');";
+        $sql = "INSERT INTO indicators (skill_id, indicator_name, description, user_id) ".
+          "VALUES (".$skillId.", '".$indicatorName."', '".$indicatorDescription."', ".$userId.");";
         DB::exec($sql);
+        file_put_contents('OOOOO.txt', $sql);
     }
-
     return $this->response->withJson($input);
 });
 
 $app->delete('/params/[{id}]', function (Request $request, Response $response, $args) {
     $input = $request->getAttribute('id');
     $id = $input;
-
     $sql = "DELETE FROM indicators WHERE id=".$id.";";
     DB::exec($sql);
-
     return $this->response->true;
 });
 

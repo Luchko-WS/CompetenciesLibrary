@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title></title>
+</head>
+<body ng-controller="UserController">
+<div class="row padded">
+    <div class="col-lg-2 col-xs-0"></div>
+    <div class="col-lg-8 col-xs-12">
+        <div ng-if="$user">
+            <div class="thumbnail">
+                <div ng-init="loadCurrentUserInfo();"></div>
+
+                <h4>Редагування користувача:</h4>
+                <h4 ng-bind="$user.login"></h4>
+
+                <div ng-if="message">
+                    <div class="alert alert-info">
+                        <h4><b>Увага!</b></h4>
+                        <p ng-bind="message" style="margin-bottom: 20px"></p>
+                    </div>
+                </div>
+
+                <div ng-show="show">
+                    <div class="form-group">
+                        <label>Старий пароль *</label>
+                        <input type="password" ng-model="user.oldPassword" class="form-control" placeholder="Старий пароль">
+                    </div>
+                    <div class="form-group">
+                        <label>Новий пароль *</label>
+                        <input type="password" ng-model="user.password" class="form-control" placeholder="Новий пароль">
+                    </div>
+                    <div class="form-group">
+                        <label>Повторіть новий пароль *</label>
+                        <input type="password" ng-model="user.confirmPassword" class="form-control" placeholder="Новий пароль">
+                    </div>
+                </div>
+                <button style="margin-bottom: 20px" class="btn btn-primary" ng-click="show=!show; onChangePasswordButtonClick()">{{buttonText}}</button>
+
+                <div class="form-group">
+                    <label>Ім'я *</label>
+                    <input type="text" ng-model="user.firstName" class="form-control" placeholder="Ім'я">
+                </div>
+                <div class="form-group">
+                    <label>Прізвище *</label>
+                    <input type="text" ng-model="user.secondName" class="form-control" placeholder="Прізвище">
+                </div>
+                <div class="form-group">
+                    <label>Організація</label>
+                    <input type="text" ng-model="user.organization" class="form-control" placeholder="Організація">
+                </div>
+
+                <button ng-click="saveUserInfo()" class="btn btn-primary">Зберегти</button>
+                <a href="#main"><button class="btn btn-primary">На головну</button></a>
+            </div>
+        </div>
+        <div ng-if="!$user">
+            <div class="alert alert-info">
+                <h4><b>Попередження!</b></h4>
+                <p style="margin-bottom: 20px">Вибачте, дана сторінка не доступна для Вас. Щоб переглянути її, увійдіть в систему.</p>
+                <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-2 col-xs-0"></div>
+</div>
+</body>
+</html>

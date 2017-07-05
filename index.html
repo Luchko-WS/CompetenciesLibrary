@@ -3,6 +3,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>Бібліотека компетенцій</title>
 
     <base href="/"/>
@@ -11,16 +12,28 @@
     <link rel="stylesheet" href="bower_components/bootstrap-select/dist/css/bootstrap-select.min.css">
 
 </head>
-<body ng-app="MainApp"> <!--background="assets/img/background.jpg"-->
+<body ng-app="MainApp">
 
-    <div ng-controller="UserCtrl">
+    <div ng-controller="UserController">
         <div class="page-header">
-            <h1 class="text-center">Бібліотека компетенцій</h1>
+            <a href="#main"><h1 class="text-center">Бібліотека компетенцій</h1></a>
         </div>
 
-        <p style="text-align: right" ng-if="getUserId()!=null">Administrator mode</p>
-        <div style="text-align: right; margin-right: 20px">
-            <button ng-click="logIn()" class="btn btn-primary" type="button">{{buttonText}}</button>
+        <div class="thumbnail">
+            <div class="row padded">
+                <div class="col-lg-11 col-xs-9">
+                    <p style="margin-left: 20px" ng-if="$user">{{$user.firstName}} {{$user.secondName}}</p>
+                </div>
+                <div class="col-lg-1 col-xs-3">
+                    <div style="margin-right: 20px">
+                        <a ng-if="!$user" href="#login"><button class="btn btn-primary" type="button">Log in</button></a>
+                        <div ng-if="$user">
+                            <a href="#editUserInfo"><button class="btn btn-primary" type="button">Edit</button></a>
+                            <button ng-click="logout()" class="btn btn-primary" type="button">Log out</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="container">
@@ -39,7 +52,10 @@
 
     <script src="app/main.js"></script>
     <script src="app/factories.js"></script>
-    <script src="app/userController.js"></script>
     <script src="app/mainController.js"></script>
+    <script src="app/userController.js"></script>
+    <script src="app/groupsController.js"></script>
+    <script src="app/skillsController.js"></script>
+    <script src="app/indicatorsController.js"></script>
 </body>
 </html>

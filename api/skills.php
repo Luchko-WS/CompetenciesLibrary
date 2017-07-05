@@ -26,6 +26,11 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
 
     $input = json_decode($args['id'], true);
 
+    if($input == null){
+        file_put_contents('NULL_ADD.txt', "NULL");
+        return $response;
+    }
+
     //отримуємо всі компетенції і їх критерії
     if ($input["skillId"] == "ALL_SKILLS") {
         $rowsSkills = DB::fetchAll("SELECT * FROM skill_tree WHERE node_type=1;");
@@ -68,11 +73,17 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
 $app->post('/params', function (Request $request, Response $response, $args) {
     $input = $request->getParsedBody();
 
+    if($input == null){
+        file_put_contents('NULL_ADD.txt', "NULL");
+        return -1;
+    }
+
     $skillId = $input['skillId'];
     $skillName = $input['skillName'];
     $groupRightKey = $input['groupRightKey'];
     $groupLevel = $input['groupLevel'];
     $skillDescription = $input['skillDescription'];
+    $userId = $input['userId'];
 
     //редагування компетенції
     if ($skillId != -1) {
@@ -94,11 +105,11 @@ $app->post('/params', function (Request $request, Response $response, $args) {
         DB::exec($sql);
 
         //додаємо новий вузол
-        $sql = "INSERT INTO skill_tree SET left_key=".$groupRightKey.", right_key=".($groupRightKey + 1).", node_level=".
-            ($groupLevel + 1).", skill_name='".$skillName."', description='".$skillDescription."', node_type=1;";
+        $sql = "INSERT INTO skill_tree SET left_key=".$groupRightKey.", right_key=".($groupRightKey + 1).
+            ", node_level=".($groupLevel + 1).", skill_name='".$skillName."', description='".
+            $skillDescription."', node_type=1, user_id=".$userId.";";
         DB::exec($sql);
         //file_put_contents('add_skill 3.txt', $sql);
-
     }
 
     return $this->response->withJson($input);

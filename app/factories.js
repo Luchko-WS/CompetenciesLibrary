@@ -22,6 +22,27 @@ mainApp.factory('GroupsModel', ['$resource', function ($resource) {
     });
 }]);
 
-mainApp.factory('IOModel', ['$resource', function ($resource) {
-    return $resource('http://localhost:8088/api/io.php/systemIO/:id', {'id':'@id'}, {});
+mainApp.factory('AuthModel', ['$resource', function ($resource) {
+    return $resource('http://localhost:8088/api/auth.php/auth/:id', {'id':'@id'}, {
+        'login': {method: 'PUT'}
+    });
+}]);
+
+mainApp.factory('jwtInterceptor', ['$rootScope', '$q', function ($rootScope, $q) {
+    return {
+        request: function (config) {
+            var token = window.localStorage.getItem('authToken');
+            config.headers = config.headers || {};
+            if (token != 'undefined' && angular.isDefined(token)) {
+                config.headers.Authorization = 'Bearer ' + token;
+            }
+            return config;
+        },
+        response: function (response) {
+            if (response.status === 401) {
+                // handle the case where the user is not authenticated
+            }
+            return response || $q.when(response);
+        }
+    };
 }]);

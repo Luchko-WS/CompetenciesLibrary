@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head></head>
+
+<body>
+<div ng-if="$user">
+    <div ng-controller="SkillsCtrl">
+        <div ng-init="getSkillName(getCurrentSkillIdIndicatorCtrl())"></div>
+        <div ng-if="data[0].skill_name">
+            <h2>Компетенція:</h2>
+            <h3 ng-bind="data[0].skill_name"></h3>
+
+            <div ng-controller="IndicatorsCtrl">
+                <!-- Додання індикатору -->
+                <h2>Створення нового індикатору</h2>
+                <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Індикатор" ng-model="nameText">
+                <textarea class="form-control" rows="5" style="margin-bottom: 10px" placeholder="Опис" ng-model="descriptionText"></textarea>
+
+                <div style="margin-bottom: 20px" class="btn-group">
+                    <a href="#skill/{{getCurrentSkillIdIndicatorCtrl()}}/edit"><button ng-click="saveIndicator(nameText, getCurrentSkillIdIndicatorCtrl(), descriptionText, -1, $user.id)" class="btn btn-primary" type="button">Створити</button></a>
+                    <a href="#skill/{{getCurrentSkillIdIndicatorCtrl()}}/edit"><button class="btn btn-primary" type="button">Назад</button></a>
+                </div>
+            </div>
+        </div>
+
+        <div ng-if="data[0].skill_name == null">
+            <h4>Компетенцію (id={{getCurrentSkillIdIndicatorCtrl()}}) не знайдено!</h4>
+            <div style="margin-bottom: 20px" class="btn-group">
+                <a href="#main"><button class="btn btn-primary" type="button">Назад</button></a>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-if="!$user">
+    <div class="alert alert-info">
+        <h4><b>Попередження!</b></h4>
+        <p style="margin-bottom: 20px">Вибачте, дана сторінка не доступна для Вас. Щоб переглянути її, увійдіть в систему.</p>
+        <a href="#main"><button class="btn btn-primary" type="button">Назад</button></a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -16,7 +16,7 @@
         <h3 ng-bind="data[0].indicators[0].indicator_name"></h3>
 
         <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Індикатор" ng-model="nameText">
-        <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
+        <textarea class="form-control" rows="5" style="margin-bottom: 10px" placeholder="Опис" ng-model="descriptionText"></textarea>
 
         <div style="margin-bottom: 20px" class="btn-group">
             <a href="#skill"><button ng-click="saveIndicator(nameText, getGlobalSkillId(), descriptionText, data[0].indicators[0].id); setGlobalEditParams(getGlobalSkillId(), 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">Зберегти</button></a>
@@ -29,10 +29,10 @@
     <div ng-if="getGlobalEditMode()==5">
 
         <h2>Створення нового індикатору</h2>
-        <h3>для еомпетенції "{{getAdditionalData()}}":</h3>
+        <h3>для компетенції "{{getAdditionalData()}}":</h3>
 
         <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Індикатор" ng-model="nameText">
-        <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Опис" ng-model="descriptionText">
+        <textarea class="form-control" rows="5" style="margin-bottom: 10px" placeholder="Опис" ng-model="descriptionText"></textarea>
 
         <div style="margin-bottom: 20px" class="btn-group">
             <a href="#skill"><button ng-click="saveIndicator(nameText, getGlobalSkillId(), descriptionText, -1); setGlobalEditParams(getGlobalSkillId(), 'ALL_INDICATORS', 'ALL_GROUPS', 1)" class="btn btn-primary" type="button">Створити</button></a>

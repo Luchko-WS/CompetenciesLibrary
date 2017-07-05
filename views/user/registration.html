@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title></title>
+</head>
+<body ng-controller="UserController">
+<div class="row padded">
+    <div class="col-lg-2 col-xs-0"></div>
+    <div class="col-lg-8 col-xs-12">
+        <div class="thumbnail">
+            <div ng-if="!$user" ng-controller="UserController">
+
+                <h4>Реєстрація нового користувача:</h4>
+
+                <div ng-if="message">
+                    <div class="alert alert-info">
+                        <h4><b>Увага!</b></h4>
+                        <p ng-bind="message" style="margin-bottom: 20px"></p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Електронна пошта *</label>
+                    <input type="text" ng-model="user.login" class="form-control" id="login" placeholder="Логін">
+                </div>
+                <div class="form-group">
+                    <label>Пароль *</label>
+                    <input type="password" ng-model="user.password" class="form-control" placeholder="Пароль">
+                </div>
+                <div class="form-group">
+                    <label>Повторіть пароль *</label>
+                    <input type="password" ng-model="user.confirmPassword" class="form-control" placeholder="Пароль">
+                </div>
+                <div class="form-group">
+                    <label>Ім'я *</label>
+                    <input type="text" ng-model="user.firstName" class="form-control" placeholder="Ім'я">
+                </div>
+                <div class="form-group">
+                    <label>Прізвище *</label>
+                    <input type="text" ng-model="user.secondName" class="form-control" placeholder="Прізвище">
+                </div>
+                <div class="form-group">
+                    <label>Організація</label>
+                    <input type="text" ng-model="user.organization" class="form-control" placeholder="Організація">
+                </div>
+
+                <button ng-click="registerUser()" class="btn btn-primary">Зареєструватися</button>
+                <a href="#main"><button class="btn btn-primary">Скасувати</button></a>
+            </div>
+            <div ng-if="$user">
+                <h4>Ви зареєстровані в системі як {{$user.firstName}} {{$user.secondName}}!</h4>
+                <a href="#main"><button class="btn btn-primary">Перейти на головну сторінку</button></a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-2 col-xs-0"></div>
+</div>
+</body>
+</html>

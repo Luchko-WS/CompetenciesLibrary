@@ -53,6 +53,7 @@ $app->post('/params', function (Request $request, Response $response, $args) {
     $groupRightKey = $input['groupRightKey'];
     $groupLevel = $input['groupLevel'];
     $groupDescription = $input['groupDescription'];
+    $userId = $input['userId'];
 
     //редагування групи
     if ($groupId != -1) {
@@ -74,8 +75,9 @@ $app->post('/params', function (Request $request, Response $response, $args) {
         DB::exec($sql);
 
         //додаємо новий вузол
-        $sql = "INSERT INTO skill_tree SET left_key=".$groupRightKey.", right_key=".($groupRightKey + 1).", node_level=".
-            ($groupLevel + 1).", skill_name='".$groupName."', description='".$groupDescription."', node_type=0;";
+        $sql = "INSERT INTO skill_tree SET left_key=".$groupRightKey.", right_key=".
+            ($groupRightKey + 1).", node_level=".($groupLevel + 1).", skill_name='".
+            $groupName."', description='".$groupDescription."', node_type=0, user_id=".$userId.";";
         DB::exec($sql);
         file_put_contents('SQL.txt', $sql);
 

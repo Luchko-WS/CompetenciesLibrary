@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head></head>
+
+<body>
+
+<div ng-controller="SkillsCtrl">
+
+    <!-- Перегляд компетенції -->
+    <div ng-controller="GroupsCtrl">
+        <div ng-init="getGroupTree();"></div>
+    </div>
+    <div ng-init="getSkill(getCurrentSkillIdSkillCtrl())"></div>
+
+    <div ng-if="data[0].skill_name">
+        <div class="row padded">
+            <div class="col-lg-1 col-xs-1"></div>
+            <div class="col-lg-10 col-xs-10">
+                <div class="thumbnail">
+                    <h2>Інформація про компетенцію:</h2>
+                    <h3 ng-bind="data[0].skill_name"></h3>
+
+                    <h4>Опис: {{descriptionText}}</h4>
+                    <h4>Група: {{groupText}}</h4>
+
+                    <a href="#main"><button ng-click="" class="btn btn-primary" type="button">Назад</button></a>
+
+                    <h3>Список індикаторів:</h3>
+                    <div class="thumbnail">
+
+                        <div ng-if="data[0].indicators.length == 0">
+                            <h5>Дана компетенція не містить в собі індикаторів</h5>
+                        </div>
+
+                        <div ng-repeat="item_indicator in data[0].indicators">
+                            <div style="margin: 5px">
+                                <div class="row padded">
+                                    <div class="col-lg-10 col-xs-10">
+                                        <a href="#skill/{{data[0].id}}/indicator/{{item_indicator.id}}/show"><h4>{{item_indicator.indicator_name}}</h4></a>
+                                        <h5>{{item_indicator.description}}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-1 col-xs-1"></div>
+        </div>
+    </div>
+
+    <div ng-if="data[0].skill_name == null">
+        <h4>Компетенцію (id={{getCurrentSkillIdSkillCtrl()}}) не знайдено!</h4>
+        <a href="#main"><button class="btn btn-primary" type="button">Назад</button></a>
+    </div>
+</div>
+
+</body>
+</html>
