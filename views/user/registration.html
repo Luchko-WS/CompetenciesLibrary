@@ -40,7 +40,6 @@
                     <div style="font-size: small; margin-bottom: 20px"><span style="color: red">*</span> — поля, які потрібно обов'язково заповнити</div>
 
                     <button ng-click="registerUser()" class="btn btn-success">Зареєструватися</button>
-                    <a href="#main"><button class="btn btn-primary">На головну</button></a>
 
                     <div id="messageBox" style="display: none; margin-top: 20px" ng-class="messageBoxClass">
                         <button id="closeMessageBoxButton" type="button" class="close">
@@ -55,8 +54,6 @@
                 <div class="alert alert-info">
                     <h4><b><span ng-bind="'Вітаємо, ' + $user.firstName + ' ' + $user.secondName + '!'"></span></b></h4>
                     <p style="margin-bottom: 20px">Ви авторизовані у системі!</p>
-                    <a href="#main"><button style="margin-bottom: 5px" class="btn btn-primary">Перейти на головну сторінку</button></a>
-                    <a href="#editLibrary"><button style="margin-bottom: 5px" class="btn btn-primary">Перейти до редактору</button></a>
                 </div>
             </div>
         </div>

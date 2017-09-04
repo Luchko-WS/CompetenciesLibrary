@@ -14,27 +14,53 @@
 </head>
 <body ng-app="MainApp">
     <div ng-controller="UsersController">
-        <div class="row" style="background-color: darkblue; margin: 0px; margin-bottom: 10px">
-            <div class="col-lg-3 col-md-3 col-xs-0"></div>
-            <div class="col-lg-6 col-md-5 col-xs-12">
-                <a href="#main"><h1 class="text-center" style="color: white">Бібліотека компетенцій</h1></a>
-            </div>
-            <div class="col-lg-3 col-md-4 col-xs-12" style="margin-top: 20px; margin-bottom: 10px">
-                <div style="float: right" ng-if="$user">
-                    <a href="#actions"><button class="btn btn-danger" type="button"><span class="glyphicon glyphicon-star" aria-hidden="true"></span> Дії <span class="badge badge-important" ng-bind="$countOfActions"></span></button></a>
-                    <a href="#editUserInfo"><button class="btn btn-danger" type="button"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span ng-bind="$user.firstName + ' ' + $user.secondName"></span></button></a>
-                    <button ng-click="logout()" class="btn btn-danger" type="button"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></button>
-                </div>
-                <a style="float: right" ng-if="!$user" href="#login"><button class="btn btn-danger" type="button"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span></button></a>
-            </div>
-        </div>
+		<div class="navbar navbar-inverse navbar-fixed-top" style="background-color:darkblue">
+			<h3 style="text-align: center; color: white">БІБЛІОТЕКА КОМПЕТЕНЦІЙ</h3>
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li><a href="#main" style="color: white">Головна сторінка</a></li>
+						<li ng-if="$user"><a href="#editLibrary" style="color: white">Редактор бібліотеки</a></li>
+						<li ng-if="$user"><a href="#actions" style="color: white">Дії користувачів <span class="badge badge-important" ng-bind="$countOfActions"></span></a></li>
+						<li ng-if="$user"><a href="#editUserInfo" style="color: white"><span ng-bind="$user.firstName + ' ' + $user.secondName"></span></a></li>
+						<li ng-if="$user"><a href="" ng-click="logout()" style="color: white">Вийти</a></li>
+						<li ng-if="!$user"><a href="#registration" style="color: white">Зареєструватися</a></li>
+						<li ng-if="!$user"><a href="#login" style="color: white">Увійти</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!--
+			<div class="row" style="background-color: darkblue; margin: 0px; margin-bottom: 10px">
+				<div class="col-lg-3 col-md-3 col-xs-0"></div>
+				<div class="col-lg-6 col-md-5 col-xs-12">
+					<a href="#main"><h1 class="text-center" style="color: white">Бібліотека компетенцій</h1></a>
+				</div>
+				<div class="col-lg-3 col-md-4 col-xs-12" style="margin-top: 20px; margin-bottom: 10px">
+					<div style="float: right" ng-if="$user">
+						<a href="#actions"><button class="btn btn-danger" type="button"><span class="glyphicon glyphicon-star" aria-hidden="true"></span> Дії <span class="badge badge-important" ng-bind="$countOfActions"></span></button></a>
+						<a href="#editUserInfo"><button class="btn btn-danger" type="button"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span ng-bind="$user.firstName + ' ' + $user.secondName"></span></button></a>
+						<button ng-click="logout()" class="btn btn-danger" type="button"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></button>
+					</div>
+					<a style="float: right" ng-if="!$user" href="#login"><button class="btn btn-danger" type="button"><span class="glyphicon glyphicon-log-in" aria-hidden="true"></span></button></a>
+				</div>
+			</div>
+		-->
+		<div class="container body-content" style="padding-top:120px">
+			<ng-view></ng-view>
+			<button id="toTop" style="border-radius: 25px; position: fixed; bottom: 20px; right: 20px; display: none; height: 50px; width: 50px" class="btn btn-primary"><span class="glyphicon glyphicon-arrow-up"></span></button>
+		</div>
 
-        <div style="background-color: white" class="container">
-            <ng-view></ng-view>
-            <button id="toTop" style="border-radius: 25px; position: fixed; bottom: 20px; right: 20px; display: none; height: 50px; width: 50px" class="btn btn-primary"><span class="glyphicon glyphicon-arrow-up"></span></button>
-        </div>
-
-        <h5 style="text-align: center">Вінниця, 2017</h5>
+		<footer>
+			<p style="text-align: center">Вінниця, 2017</p>
+		</footer>
     </div>
 
     <script src="bower_components/jquery/dist/jquery.js"></script>

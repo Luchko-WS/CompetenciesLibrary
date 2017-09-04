@@ -51,11 +51,11 @@ mainApp.controller('MainCtrl', ['$scope', '$rootScope', '$http', '$location', '$
     $rootScope.readyForDownloadFile = null;
 
     $scope.test = function (group) {
-        console.log(group.id);
+        //console.log(group.id);
         console.log(JSON.parse($scope.uploadData));
-        if(group.id) {
+        /*if(group.id) {
             $scope.importData(group.id);
-        }
+        }*/
     };
 
     //Експорт даних у файл

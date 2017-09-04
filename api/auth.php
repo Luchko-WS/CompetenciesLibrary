@@ -38,6 +38,17 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
 ]));
 
 //file_put_contents(filename, body);
+//Отримання даних про компетенції
+$app->get('/auth/{id}', function (Request $request, Response $response, $args) {
+    $input = json_decode($args['id'], true);
+    $login = $input["login"];
+	file_put_contents("ЛОГІН.txt", $login);
+	$res = count(DB::fetchAll("SELECT id FROM users WHERE login='$login';"));
+	
+	$response->getBody()->write('{"data":' . json_encode($res) . '}');
+    return $response;
+});
+
 //Вхід користувача в систему
 $app->put('/auth/{id}', function (Request $request, Response $response, $args) {
     $data = json_decode($args['id'], true);

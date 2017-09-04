@@ -13,7 +13,9 @@
                 <div ng-show="actionData != null && actionData != -1">
                     <div class="thumbnail">
                         <button id="actionToggleButton" style="margin-bottom: 5px" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" type="button">Фільтри <span class="caret"></span></button>
-                        <div id="actionToggleBox" style="display: none; margin-bottom: 5px" class="thumbnail">
+                        <button style="margin-bottom: 5px" ng-click="setFirstActionIDForUser(actionData[0].id)" class="btn btn-danger" type="button">Видалити усі дії</button>
+						
+						<div id="actionToggleBox" style="display: none; margin-bottom: 5px" class="thumbnail">
                             <h4>Відображати за статусом:</h4>
                             <div>
                                 <span style="margin-right: 10px">очікуються <input ng-model='filterParam.waitingActions' type="checkbox"></span>
@@ -36,8 +38,6 @@
                                 <span style="margin-right: 10px">індикатори <input ng-model='filterParam.indicatorObject' type="checkbox"></span>
                             </div>
                         </div>
-
-                        <button style="margin-bottom: 5px" ng-click="setFirstActionIDForUser(actionData[0].id)" class="btn btn-danger" type="button">Видалити усі дії</button>
 
                         <div class="input-group" style="margin-bottom: 10px">
                             <input type="text" class="form-control" type="text" class="form-control" ng-model="filterParam.name" placeholder="Пошук по назві, користувачу, групі...">

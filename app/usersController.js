@@ -71,6 +71,7 @@ mainApp.controller('UsersController', ['$scope', '$rootScope', '$http', '$locati
             window.localStorage.setItem('authUser', JSON.stringify(res.user));
             $rootScope.$user = res.user;
             $rootScope.initActionDataForUser();
+			$location.path('\main');
         }, function (err) {
             console.log(err);
             $scope.message = "Невірний логін чи пароль!";
@@ -91,7 +92,7 @@ mainApp.controller('UsersController', ['$scope', '$rootScope', '$http', '$locati
 
     /**
      БЛОК МАНІПУЛЯЦЇ ДАНИМИ КОРИСТУВАЧА
-     **/
+     **/ 
     //ЗБЕРЕЖЕННЯ ДАНИХ КОРИСТУВАЧА
     //Реєстрація користувача
     $scope.registerUser = function () {
@@ -218,7 +219,7 @@ mainApp.controller('UsersController', ['$scope', '$rootScope', '$http', '$locati
         if (!$scope.user.login || $scope.user.login.search(pattern) != 0) {
             showMessageWindow("alert alert-danger", "Увага!", "Невірний формат електронної пошти!");
             return false;
-        }
+        }		
         else{
             return true;
         }
@@ -249,7 +250,7 @@ mainApp.controller('UsersController', ['$scope', '$rootScope', '$http', '$locati
             login: $rootScope.$user.login,
             password: $scope.user.oldPassword
         };
-        AuthModel.get({'id':JSON.stringify(params)}, function (res) {
+		AuthModel.get({'id':JSON.stringify(params)}, function (res) {
             res = res.toJSON();
             console.log('res', res);
         }, function (err) {
@@ -265,7 +266,36 @@ mainApp.controller('UsersController', ['$scope', '$rootScope', '$http', '$locati
         if(!$scope.checkEmailAdress()){
             return false;
         }
-        else if(!$scope.checkPassword()){
+		else{
+			//Перевірка, чи існує даний користувач в БД (логін)
+			var result = false;
+			var params = {
+				login: $scope.user.login
+			};
+			AuthModel.get({'id': JSON.stringify(params)}, function (res) {
+				if (res.data === undefined) {
+					console.log('Не вдалося перевірити логін на існування! (res.data === undefined)');
+					showMessageWindow("alert alert-danger", "Увага!", "Не вдалося перевірити логін на існування!");
+				}
+				else {
+					if(Number(res.data) != 0){ //кількість користувачів з тиким логіном не 0
+						showMessageWindow("alert alert-danger", "Увага!", "Користувач з даним логіном існує!");
+					}
+					else{
+						result = true;
+					}
+				}
+			}, function (err) {
+				console.log("Не вдалося перевірити логін на існування!");
+				showMessageWindow("alert alert-danger", "Увага!", "Не вдалося перевірити логін на існування!");
+			});
+			
+			if(!result){
+				return false;
+			}
+		}
+		
+        if(!$scope.checkPassword()){
             return false;
         }
         else if(!$scope.user.firstName){
