@@ -7,6 +7,9 @@ mainApp.config(['$routeProvider', function ($routeProvider){
             templateUrl: 'views//testView.html'
         })
         //MAIN PAGE
+		.when('/', {
+           templateUrl: 'views//main.html'
+        })
         .when('/main', {
             templateUrl: 'views//main.html'
         })

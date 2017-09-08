@@ -1,5 +1,5 @@
 {
-  "name": "vntu-tutorial",
+  "name": "masterWork",
   "main": "index.html",
   "dependencies": {
     "font-awesome": ">=4.3.0",
@@ -10,7 +10,6 @@
     "bootstrap": "^3.3.7",
     "bootstrap-select": "^1.11.2",
     "jquery": ">=1.8",
-    "fuelux":"",
     "bootstrap-treeview":""
   },
   "resolutions": {

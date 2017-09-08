@@ -76,7 +76,9 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
         $rowSkill = DB::fetchAll("SELECT *, IF((SELECT COUNT(*) FROM users u WHERE u.id = s.user_id) <> 0, ".
             "(SELECT CONCAT(first_name, ' ', second_name) FROM users u WHERE u.id = s.user_id), 'невідомий') AS user ".
             "FROM skill_tree s WHERE id = $skillID AND s.node_type = 1;");
-        $rowSkill[0]['indicators'] = DB::fetchAll("SELECT * FROM indicators WHERE skill_id = ".$rowSkill[0]['id'].";");
+        $rowSkill[0]['indicators'] = DB::fetchAll("SELECT *, IF((SELECT COUNT(*) FROM users u WHERE u.id=i.user_id)<>0, ".
+			"(SELECT CONCAT(u.first_name, ' ', u.second_name) FROM users u WHERE u.id=i.user_id), \"невідомий\") AS user ".
+			"FROM indicators i WHERE i.skill_id = ".$rowSkill[0]['id'].";");
         $rowSkill[0]['path'] = getPath($rowSkill[0]['left_key'], $rowSkill[0]['right_key']);
         $parentGroup = DB::fetchAll("SELECT * FROM skill_tree".
             " WHERE left_key<" . $rowSkill[0]['left_key'] ." AND right_key>". $rowSkill[0]['right_key'] . " AND node_level=".($rowSkill[0]['node_level'] - 1).";");

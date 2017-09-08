@@ -33,6 +33,7 @@ mainApp.controller('IndicatorsCtrl', ['$scope', '$rootScope', '$http', '$locatio
         $scope.messageText = messageBody;
         $scope.messageBoxClass = messageClass;
         $('#indicatorMessageBox').fadeIn("slow");
+		setTimeout("$('#indicatorMessageBox').hide('slow')", 5000);
     }
     //Кнопка закриття повідомлення
     $("#closeIndicatorMessageBoxButton").click(function () {

@@ -34,6 +34,7 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
         $scope.messageText = messageBody;
         $scope.messageBoxClass = messageClass;
         $('#messageBox').fadeIn("slow");
+		setTimeout("$('#messageBox').hide('slow')", 5000);
     }
     //Кнопка закриття повідомлення
     $("#closeMessageBoxButton").click(function () {
@@ -223,9 +224,9 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
             showMessageWindow("alert alert-danger", "Увага!", "Заповніть поля назви і групи!");
             return;
         }
-        if (currentUserID != parentGroupUserID && parentGroupID != 1) {
+        if (currentUserID != parentGroupUserID && $rootScope.$currentGroup.left_key != 1) {
             $rootScope.saveAction('create', 'group', -1, groupName, null, groupDescription, parentGroupID, currentUserID);
-            showMessageWindow("Увага!", "Дану дію додано до списку.", "alert alert-info");
+            showMessageWindow("alert alert-info", "Увага!", "Дану дію додано до списку.");
             return;
         }
         $scope.createGroup(groupName, parentGroupID, groupDescription, currentUserID);

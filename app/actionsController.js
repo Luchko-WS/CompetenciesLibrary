@@ -74,7 +74,6 @@ mainApp.controller('ActionsCtrl', ['$scope', '$rootScope', '$http', '$location',
             //Відображення дій після тих, що були видалені користувачем
             firstActionID: $rootScope.$user.firstActionID
         };
-        console.log("params: ", params);
         ActionModel.get({'id':JSON.stringify(params)}, function (res) {
             if(res.data === undefined) {
                 console.log('Не вдалося отримати усі дії! (res.data === undefined)');
@@ -243,7 +242,7 @@ mainApp.controller('ActionsCtrl', ['$scope', '$rootScope', '$http', '$location',
         if($scope.myActionsTab == 'active' && obj.user_id != $rootScope.$user.id) {
             return false;
         }
-        if($scope.newActionsTab == 'active' && obj.id <= $scope.oldActionsID || obj.user_id == $rootScope.$user.id){
+        if($scope.newActionsTab == 'active' && (obj.id <= $scope.oldActionsID || obj.user_id == $rootScope.$user.id)){
             return false;
         }
 

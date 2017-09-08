@@ -17,6 +17,7 @@ mainApp.controller('UsersController', ['$scope', '$rootScope', '$http', '$locati
         $scope.messageText = messageBody;
         $scope.messageBoxClass = messageClass;
         $('#messageBox').fadeIn("slow");
+		setTimeout("$('#messageBox').hide('slow')", 5000);
     }
     //Кнопка закриття повідомлення
     $("#closeMessageBoxButton").click(function () {
