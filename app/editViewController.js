@@ -46,12 +46,21 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
                 });
 
                 $('#tree1').on('nodeUnselected', function(event, data) {
+                    $('#treeGroup').removeClass("col-lg-7 col-md-7");
+                    $('#treeGroup').addClass("col-lg-12 col-md-12");
                     $('#infoBox').hide("normal");
+                    $('#infoGroup').hide("normal");
+
                 });
 
                 $('#tree1').on('nodeSelected', function(event, data) {
                     $scope.currentItem1 = data;
                     //$('#infoBox').hide("normal");
+
+                    $('#infoGroup').show("normal");
+                    $('#treeGroup').removeClass("col-lg-12 col-md-12");
+                    $('#treeGroup').addClass("col-lg-7 col-md-7");
+
                     $('#infoBox').show("normal");
 
                     $('#name').text("Назва: " + data.name);

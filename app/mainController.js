@@ -20,6 +20,17 @@ mainApp.controller('MainCtrl', ['$scope', '$rootScope', '$http', '$location', '$
         }
     };
 
+    $rootScope.validatePageInput = function(pageNumber, itemCount) {
+        var pageCount = $rootScope.pageCount(itemCount);
+        if(pageNumber > pageCount){
+            $rootScope.$pagination.page = pageCount;
+            $rootScope.$pagination.pageSearch = pageCount;
+        }
+        else{
+            $rootScope.$pagination.page = pageNumber;
+        }
+    };
+
     /**
      БЛОК ІНТЕРФЕЙСУ
      **/

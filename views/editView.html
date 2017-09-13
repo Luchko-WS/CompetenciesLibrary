@@ -5,89 +5,89 @@
     <title></title>
 </head>
 <body>
-<div class="row">
-    <div class="col-lg-2 col-md-1 col-sm-0 col-xs-0"></div>
-    <div class="col-lg-8 col-md-10 col-sm-12 col-xs-12">
-        <div class="thumbnail">
-            <div ng-if="$user">
-                <div style="margin: 10px" ng-controller="EditViewCtrl" ng-init="getTree();">
-                    <div class="row padded">
-                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-0"></div>
-                        <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12">
-                            <div id="infoBox" style="display: none; padding: 15px" class="thumbnail" ng-controller="ActionsCtrl">
-                                <h3 style="margin-top: 10px">Інформація:</h3>
-                                <h4 id="name"></h4>
-                                <p id="item_type"></p>
-                                <p id="description"></p>
-                                <p id="child_item_count"></p>
-                                <p id="path"></p>
-                                <p id="user"></p>
-                                <button id="showSkillButton" style="display: none" class="btn btn-success" ng-click="openItem()" type="button"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>
-                                <button id="editItemButton" class="btn btn-primary" ng-click="editItem()" type="button"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
+<div class="thumbnail">
+    <div ng-if="$user">
+        <div style="margin: 10px" ng-controller="EditViewCtrl" ng-init="getTree();">
+            <h2>Бібліотека компетенцій</h2>
 
-                                <button id="removeSkillButton" ng-controller="SkillsCtrl" class="btn btn-danger" ng-click="prepareSkillToRemove(currentItem1.id, currentItem1.name, 0, currentItem1.user_id, $user.id, 1)" type="button"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
-                                <button id="removeGroupButton" ng-controller="GroupsCtrl" class="btn btn-danger" ng-click="prepareGroupToRemove(currentItem1.id, currentItem1.name, 0, currentItem1.user_id, $user.id, 1)" type="button"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
-
-                                <button id="moveSkillButton" class="openSecondTree btn btn-warning" type="button"><span class="glyphicon glyphicon-scissors" aria-hidden="true"></span></button>
-                                <button id="moveGroupButton" class="openSecondTree btn btn-warning" type="button"><span class="glyphicon glyphicon-scissors" aria-hidden="true"></span></button>
-
-                                <button id="copySkillButton" class="openSecondTree btn btn-warning" type="button"><span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span></button>
-                                <button id="copyGroupButton" class="openSecondTree btn btn-warning" type="button"><span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span></button>
-
-                                <button class="cancelButton btn btn-primary" type="button"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></button>
-                            </div>
-
-                            <div id="infoBox2" style="display: none">
-                                <h3 id="operation"></h3>
-                                <div class="thumbnail" style="padding: 15px" ng-controller="ActionsCtrl">
-                                    <h3 style="margin-top: 10px">Інформація:</h3>
-                                    <h4 id="name2"></h4>
-                                    <p id="item_type2"></p>
-                                    <p id="description2"></p>
-                                    <p id="path2"></p>
-                                    <p id="user2"></p>
-
-                                    <div ng-controller="GroupsCtrl">
-                                        <div ng-controller="SkillsCtrl">
-                                            <button id="acceptButton" ng-click="moveOrCopyItem()" class="closeSecondTree btn btn-success" type="button"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
-                                            <button class="cancelButton btn btn-danger" type="button"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-0"></div>
+            <div ng-controller="MainCtrl" id="controlPanel">
+                <div style="margin-bottom: 10px">
+                    <div ng-if="$user" class="btn-group" style="margin-bottom: 5px">
+                        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" type="button">Додати <span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a href="#skill/create">компетенцію</a></li>
+                            <li><a href="#group/create">групу</a></li>
+                        </ul>
                     </div>
-                    <div style="overflow: hidden">
-                        <h2>Бібліотека компетенцій</h2>
 
-                        <div ng-controller="MainCtrl" id="controlPanel">
-                            <div style="margin-bottom: 10px">
-                                <div ng-if="$user" class="btn-group" style="margin-bottom: 5px">
-                                    <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" type="button">Додати <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="#skill/create">компетенцію</a></li>
-                                        <li><a href="#group/create">групу</a></li>
-                                    </ul>
-                                </div>
+                    <a id="importButton" ng-if="$user" href="#upload"><button class="btn btn-primary" style="margin-bottom: 5px" type="button">Імпортувати...</button></a>
 
-                                <a id="importButton" ng-if="$user" href="#upload"><button class="btn btn-primary" style="margin-bottom: 5px" type="button">Імпортувати...</button></a>
+                    <div class="btn-group" style="margin-bottom: 5px">
+                        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" type="button">Експортувати... <span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a href="" ng-click="showProgress = !showProgress; exportAllData('JSON', currentItem1.id)">в формат JSON</a></li>
+                            <li><a href="" ng-click="showProgress = !showProgress; exportAllData('XLS', currentItem1.id)">в формат MS Excel</a></li>
+                        </ul>
+                    </div>
+                </div>
 
-                                <div class="btn-group" style="margin-bottom: 5px">
-                                    <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" type="button">Експортувати... <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="" ng-click="showProgress = !showProgress; exportAllData('JSON', currentItem1.id)">в формат JSON</a></li>
-                                        <li><a href="" ng-click="showProgress = !showProgress; exportAllData('XLS', currentItem1.id)">в формат MS Excel</a></li>
-                                    </ul>
-                                </div>
-                            </div>
+                <div class="progress" ng-show="showProgress">
+                    <div class="progress-bar progress-bar-striped active" role = "progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                        Експорт файлу...
+                    </div>
+                </div>
+            </div>
 
-                            <div class="progress" ng-show="showProgress">
-                                <div class="progress-bar progress-bar-striped active" role = "progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
-                                    Експорт файлу...
+            <div class="row padded">
+                <div id="infoGroup" style="display: none" class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+                    <div id="infoBox" style="display: none" ng-controller="ActionsCtrl">
+                        <h3 style="margin-top: 10px">Інформація:</h3>
+                        <div style="padding: 15px" class="thumbnail" >
+                            <h4 id="name"></h4>
+                            <p id="item_type"></p>
+                            <p id="description"></p>
+                            <p id="child_item_count"></p>
+                            <p id="path"></p>
+                            <p id="user"></p>
+                            <button id="showSkillButton" style="display: none" class="btn btn-success" ng-click="openItem()" type="button"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></button>
+                            <button id="editItemButton" class="btn btn-primary" ng-click="editItem()" type="button"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
+
+                            <button id="removeSkillButton" ng-controller="SkillsCtrl" class="btn btn-danger" ng-click="prepareSkillToRemove(currentItem1.id, currentItem1.name, 0, currentItem1.user_id, $user.id, 1)" type="button"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                            <button id="removeGroupButton" ng-controller="GroupsCtrl" class="btn btn-danger" ng-click="prepareGroupToRemove(currentItem1.id, currentItem1.name, 0, currentItem1.user_id, $user.id, 1)" type="button"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+
+                            <button id="moveSkillButton" class="openSecondTree btn btn-warning" type="button"><span class="glyphicon glyphicon-scissors" aria-hidden="true"></span></button>
+                            <button id="moveGroupButton" class="openSecondTree btn btn-warning" type="button"><span class="glyphicon glyphicon-scissors" aria-hidden="true"></span></button>
+
+                            <button id="copySkillButton" class="openSecondTree btn btn-warning" type="button"><span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span></button>
+                            <button id="copyGroupButton" class="openSecondTree btn btn-warning" type="button"><span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span></button>
+
+                            <button class="cancelButton btn btn-primary" type="button"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></button>
+                        </div>
+                    </div>
+
+                    <div id="infoBox2" style="display: none">
+                        <h3 id="operation"></h3>
+                        <div class="thumbnail" style="padding: 15px" ng-controller="ActionsCtrl">
+                            <h3 style="margin-top: 10px">Інформація:</h3>
+                            <h4 id="name2"></h4>
+                            <p id="item_type2"></p>
+                            <p id="description2"></p>
+                            <p id="path2"></p>
+                            <p id="user2"></p>
+
+                            <div ng-controller="GroupsCtrl">
+                                <div ng-controller="SkillsCtrl">
+                                    <button id="acceptButton" ng-click="moveOrCopyItem()" class="closeSecondTree btn btn-success" type="button"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                                    <button class="cancelButton btn btn-danger" type="button"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div id="treeGroup" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div style="overflow: hidden">
+
+                        <h3 style="margin-top: 10px">Каталоги бібліотеки:</h3>
 
                         <div ng-if="$tree==null" style="text-align: center">
                             <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
@@ -110,16 +110,15 @@
                     </div>
                 </div>
             </div>
-            <div ng-if="!$user" style="margin: 20px">
-                <div class="alert alert-info">
-                    <h4><b>Попередження!</b></h4>
-                    <p style="margin-bottom: 10px">Вибачте, дана сторінка недоступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
-                    <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
-                </div>
-            </div>
         </div>
     </div>
-    <div class="col-lg-2 col-md-1 col-sm-0 col-xs-0"></div>
+    <div ng-if="!$user" style="margin: 20px">
+        <div class="alert alert-info">
+            <h4><b>Попередження!</b></h4>
+            <p style="margin-bottom: 10px">Вибачте, дана сторінка недоступна для Вас. Щоб переглянути її, <a href="#login"><u>увійдіть</u></a> в систему.</p>
+            <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+        </div>
+    </div>
 </div>
 </body>
 </html>

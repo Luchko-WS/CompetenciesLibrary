@@ -4,7 +4,7 @@
 </head>
 <body>
 
-    <div ng-controller="MainCtrl" ng-init="$pagination.enabled = false; $pagination.pageSize = 10; $pagination.page = 1;">
+    <div ng-controller="MainCtrl" ng-init="$pagination.enabled = true; $pagination.pageSize = 10; $pagination.page = 1; $pagination.pageSearch = 1;">
         <div class="thumbnail">
             <div class="row" style="margin: 0px">
                 <h1 style="text-align: center">Головна сторінка</h1>
@@ -90,10 +90,16 @@
                         <div ng-if="skillData!=null && skillData!=-1">
                             <div ng-if="$pagination.enabled">
                                 <ul class="pager">
-                                    <button ng-disabled="$pagination.page==1" ng-click="$pagination.page = $pagination.page-1;" style="padding: 0px; border-radius: 16px; border-color: #0f5f9f; height: 32px; width: 45px" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span></button>
+                                    <button ng-disabled="$pagination.page==1" ng-click="$pagination.page = $pagination.page-1; $pagination.pageSearch = $pagination.page;" style="padding: 0px; border-radius: 16px; border-color: #0f5f9f; height: 32px; width: 45px" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span></button>
                                     <span style="padding: 10px" ng-bind="'Сторінка: ' + $pagination.page + ' / ' + pageCount((skillData | filter : skillsFilter).length)"></span>
-                                    <!--input type="text" class="form-control" style="height: 32px; width: 60px"-->
-                                    <button ng-disabled="((skillData | filter : skillsFilter).length - ($pagination.pageSize * $pagination.page)) <= 0" ng-click="$pagination.page = $pagination.page+1;" style="padding: 0px; border-radius: 16px; border-color: #0f5f9f; height: 32px; width: 45px" class="btn btn-default"><span class="glyphicon glyphicon-arrow-right"></span></button>
+                                    <button ng-disabled="((skillData | filter : skillsFilter).length - ($pagination.pageSize * $pagination.page)) <= 0" ng-click="$pagination.page = $pagination.page + 1; $pagination.pageSearch = $pagination.page;" style="padding: 0px; border-radius: 16px; border-color: #0f5f9f; height: 32px; width: 45px" class="btn btn-default"><span class="glyphicon glyphicon-arrow-right"></span></button>
+
+                                    <span class="input-group" style="width: 100px; margin: auto">
+                                        <input type="text" class="form-control" type="text" ng-model="$pagination.pageSearch" onkeyup="if(this.value[0] == 0) this.value=''; else this.value = this.value.replace (/\D/g, '')">
+                                            <div class="input-group-btn">
+                                            <button class="btn btn-primary" ng-click="validatePageInput($pagination.pageSearch, (skillData | filter : skillsFilter).length);">Go!</button>
+                                        </div>
+                                    </span>
                                 </ul>
                                 <h4 ng-if="$currentGroup" ng-bind="'Група: ' + $currentGroup.name"></h4>
                                 <div ng-repeat="item_skill in skillData | filter : skillsFilter | limitTo: $pagination.pageSize : (($pagination.page - 1) * $pagination.pageSize)">
@@ -134,10 +140,16 @@
                                     <h4>Компетенцій по даному критерію не знайдено...</h4>
                                 </div>
                                 <ul class="pager">
-                                    <button ng-disabled="$pagination.page==1" ng-click="$pagination.page = $pagination.page-1;" style="padding: 0px; border-radius: 16px; border-color: #0f5f9f; height: 32px; width: 45px" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span></button>
+                                    <button ng-disabled="$pagination.page==1" ng-click="$pagination.page = $pagination.page-1; $pagination.pageSearch = $pagination.page;" style="padding: 0px; border-radius: 16px; border-color: #0f5f9f; height: 32px; width: 45px" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span></button>
                                     <span style="padding: 10px" ng-bind="'Сторінка: ' + $pagination.page + ' / ' + pageCount((skillData | filter : skillsFilter).length)"></span>
-                                    <!--input type="text" class="form-control" style="height: 32px; width: 60px"-->
-                                    <button ng-disabled="((skillData | filter : skillsFilter).length - ($pagination.pageSize * $pagination.page)) <= 0" ng-click="$pagination.page = $pagination.page+1;" style="padding: 0px; border-radius: 16px; border-color: #0f5f9f; height: 32px; width: 45px" class="btn btn-default"><span class="glyphicon glyphicon-arrow-right"></span></button>
+                                    <button ng-disabled="((skillData | filter : skillsFilter).length - ($pagination.pageSize * $pagination.page)) <= 0" ng-click="$pagination.page = $pagination.page + 1; $pagination.pageSearch = $pagination.page;" style="padding: 0px; border-radius: 16px; border-color: #0f5f9f; height: 32px; width: 45px" class="btn btn-default"><span class="glyphicon glyphicon-arrow-right"></span></button>
+
+                                    <span class="input-group" style="width: 100px; margin: auto">
+                                        <input type="text" class="form-control" type="text" ng-model="$pagination.pageSearch" onkeyup="if(this.value[0] == 0) this.value=''; else this.value = this.value.replace (/\D/g, '')">
+                                            <div class="input-group-btn">
+                                            <button class="btn btn-primary" ng-click="validatePageInput($pagination.pageSearch, (skillData | filter : skillsFilter).length);">Go!</button>
+                                        </div>
+                                    </span>
                                 </ul>
                             </div>
 
