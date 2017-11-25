@@ -41,10 +41,12 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
             "FROM skill_tree s ORDER BY s.left_key;");
     }
     for($i = 0; $i < count($rows); $i++) {
-        $rowIndicators = DB::fetchAll("SELECT *, IF((SELECT COUNT(*) FROM users u WHERE u.id = i.user_id) <> 0, ".
-            "(SELECT CONCAT(first_name, ' ', second_name) FROM users u WHERE u.id = i.user_id), 'невідомий') AS user ".
-            "FROM indicators i WHERE i.skill_id = ".$rows[$i]['id'].";");
-        $rows[$i]['indicators'] = $rowIndicators;
+        if($rows[$i]['node_type'] == 1) {
+            $rowIndicators = DB::fetchAll("SELECT *, IF((SELECT COUNT(*) FROM users u WHERE u.id = i.user_id) <> 0, " .
+                "(SELECT CONCAT(first_name, ' ', second_name) FROM users u WHERE u.id = i.user_id), 'невідомий') AS user " .
+                "FROM indicators i WHERE i.skill_id = " . $rows[$i]['id'] . ";");
+            $rows[$i]['indicators'] = $rowIndicators;
+        }
     }
 
     if($input['format'] == "JSON") {
@@ -67,7 +69,7 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
 
         $rowId = 3;
         for($i = 0; $i < count($rows); $i++) {
-            if(count($rows[$i]['indicators']) == 0){
+
                 if($rows[$i]['node_type'] == 0){
                     $sheet->setCellValueByColumnAndRow(0, $rowId, $rows[$i]['name']." (ГРУПА)");
                 }
@@ -76,13 +78,15 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
                 }
                 $sheet->setCellValueByColumnAndRow(1, $rowId, $rows[$i]['description']);
                 $rowId++;
-            }
-            for($j = 0; $j < count($rows[$i]['indicators']); $j++) {
-                $sheet->setCellValueByColumnAndRow(0, $rowId, $rows[$i]['name']);
-                $sheet->setCellValueByColumnAndRow(1, $rowId, $rows[$i]['description']);
-                $sheet->setCellValueByColumnAndRow(2, $rowId, $rows[$i]['indicators'][$j]['name']);
-                $sheet->setCellValueByColumnAndRow(3, $rowId, $rows[$i]['indicators'][$j]['description']);
-                $rowId++;
+
+            if($rows[$i]['node_type'] == 1) {
+                for ($j = 0; $j < count($rows[$i]['indicators']); $j++) {
+                    $sheet->setCellValueByColumnAndRow(0, $rowId, $rows[$i]['name']);
+                    $sheet->setCellValueByColumnAndRow(1, $rowId, $rows[$i]['description']);
+                    $sheet->setCellValueByColumnAndRow(2, $rowId, $rows[$i]['indicators'][$j]['name']);
+                    $sheet->setCellValueByColumnAndRow(3, $rowId, $rows[$i]['indicators'][$j]['description']);
+                    $rowId++;
+                }
             }
         }
         $objWriter = new PHPExcel_Writer_Excel5($xls);
@@ -94,8 +98,29 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
 //import
 $app->put('/params/{id}', function (Request $request, Response $response, $args) {
     $input = json_decode($args['id'], true);
-    return $this->response->withJson($input);
+    $root = $input['root'];
+    $parent = $input['parent'];
 
+    //оновлюємо вузли, що знаходяться правіше
+    $sql = "UPDATE skill_tree SET left_key = left_key + 2, right_key = right_key + 2 ".
+        "WHERE left_key > ".$parent['right_key'].";";
+    DB::exec($sql);
+
+    //оновлюємо батьківську гілку
+    $sql = "UPDATE skill_tree SET right_key = right_key + 2 ".
+        "WHERE right_key >= ".$parent['right_key']." AND left_key < ".$parent['right_key'].";";
+    DB::exec($sql);
+
+    $sql = "INSERT INTO skill_tree SET left_key = ".$parent['right_key'].", right_key = " . ($parent['right_key'] + 1) .
+        ", node_level = ". ($parent['node_level'] + 1). ", name = '".$root['name']."', description = '" .
+        $root['description']."', node_type = ".$root['node_type'].", user_id = ".$root['user_id'].";";
+    DB::exec($sql);
+
+    $node = DB::fetchAll("SELECT * FROM skill_tree WHERE left_key = ".$parent['right_key']." AND right_key = ".($parent['right_key'] + 1).";");
+    $rootNode = $node[0];
+    file_put_contents('IO.txt', $rootNode);
+
+    return $this->response->withJson($rootNode);
 });
 
 $app->post('/params', function (Request $request, Response $response, $args) {

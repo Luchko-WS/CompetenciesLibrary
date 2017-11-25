@@ -90,6 +90,8 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
 
 //Створення та копіювання компетенції
 $app->post('/params', function (Request $request, Response $response, $args) {
+    //file_put_contents('SKILL.txt', "Create");
+
     $input = $request->getParsedBody();
     $skillName = $input['skillName'];
     $groupID = $input['groupID'];
@@ -129,6 +131,7 @@ $app->post('/params', function (Request $request, Response $response, $args) {
     }
     //додаємо новий вузол
     else {
+
         $sql = "INSERT INTO skill_tree SET left_key = $groupRightKey, right_key = " . ($groupRightKey + 1) .
             ", node_level = ($groupLevel + 1), name = '$skillName ', description = '" .
             $skillDescription . "', node_type = 1, user_id = $userID;";

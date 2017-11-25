@@ -159,7 +159,7 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
                 currentLevel++;
             }
             else if(currentLevel > $rootScope.$tree[i].node_level) {
-                for(j = 0; j < currentLevel - $rootScope.$tree[i].node_level; j++) {
+                for(var j = 0; j < currentLevel - $rootScope.$tree[i].node_level; j++) {
                     stack.shift();
                 }
                 $rootScope.$tree[i].parentId = stack[0];
@@ -182,6 +182,7 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
             }
         }
         root.nodes = roots;
+        console.log((root.nodes));
         return [root];
     };
 

@@ -39,6 +39,31 @@
             </div>
 
             <div class="row padded">
+                <div id="treeGroup" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div style="overflow: hidden">
+
+                        <h3 style="margin-top: 10px">Каталоги бібліотеки:</h3>
+
+                        <div ng-if="$tree==null" style="text-align: center">
+                            <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
+                        </div>
+
+                        <div ng-if="$tree==-1">
+                            <div class="alert alert-warning">
+                                <h4><b>Увага!</b></h4>
+                                <p style="margin-bottom: 10px">Не вдалося отримати дані!</p>
+                                <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
+                            </div>
+                        </div>
+
+                        <div id="boxWithTree1" style="float: left; overflow-y: scroll; height: 400px; width: 100%">
+                            <div id="tree1"></div>
+                        </div>
+                        <div id="boxWithTree2" style="float: right; display: none; overflow-y: scroll; height: 400px">
+                            <div id="tree2"></div>
+                        </div>
+                    </div>
+                </div>
                 <div id="infoGroup" style="display: none" class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
                     <div id="infoBox" style="display: none" ng-controller="ActionsCtrl">
                         <h3 style="margin-top: 10px">Інформація:</h3>
@@ -81,31 +106,6 @@
                                     <button class="cancelButton btn btn-danger" type="button"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="treeGroup" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div style="overflow: hidden">
-
-                        <h3 style="margin-top: 10px">Каталоги бібліотеки:</h3>
-
-                        <div ng-if="$tree==null" style="text-align: center">
-                            <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
-                        </div>
-
-                        <div ng-if="$tree==-1">
-                            <div class="alert alert-warning">
-                                <h4><b>Увага!</b></h4>
-                                <p style="margin-bottom: 10px">Не вдалося отримати дані!</p>
-                                <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
-                            </div>
-                        </div>
-
-                        <div id="boxWithTree1" style="float: left; overflow-y: scroll; height: 400px; width: 100%">
-                            <div id="tree1"></div>
-                        </div>
-                        <div id="boxWithTree2" style="float: right; display: none; overflow-y: scroll; height: 400px">
-                            <div id="tree2"></div>
                         </div>
                     </div>
                 </div>

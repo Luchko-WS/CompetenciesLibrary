@@ -166,6 +166,7 @@ mainApp.controller('SkillsCtrl', ['$scope', '$rootScope', '$http', '$location', 
             skillDescription: skillDescription,
             userID: userID
         };
+        console.log("CREATE");
         SkillsModel.create(params, function(res){
             console.log("Компетенцію створено!");
             console.log(res);

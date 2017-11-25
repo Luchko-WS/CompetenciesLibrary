@@ -41,7 +41,8 @@
                         <div ng-controller="GroupsCtrl" ng-init="getGroupTree()">
                             <div style="overflow-y: scroll; height: 400px; margin-bottom: 10px" id="tree"></div>
                         </div>
-                        <button ng-click="test($currentGroup)" class="btn btn-success">Імпортувати</button>
+
+                        <button ng-click="importData($currentGroup)" class="btn btn-success">Імпортувати</button>
                         <button id="cancelImportFileButton" class="btn btn-danger">Скасувати</button>
 
                     </div>

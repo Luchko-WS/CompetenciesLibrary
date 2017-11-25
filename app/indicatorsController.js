@@ -20,9 +20,9 @@ mainApp.controller('IndicatorsCtrl', ['$scope', '$rootScope', '$http', '$locatio
     КІНЕЦЬ БЛОКУ РОБОТИ З ПАРАМЕТРАМИ АДРЕСНОГО РЯДКА
     **/
 
-    ///////////////////////////////////
+    /**
     //БЛОК ІНТЕРФЕЙСУ
-    ///////////////////////////////////
+    **/
     //ПОВІДОМЛЕННЯ
     $scope.messageBoxClass = null;
     $scope.messageTitleText = null;

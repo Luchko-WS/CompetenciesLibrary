@@ -33,15 +33,7 @@
 
                 <div style="margin-bottom: 20px"></div>
 
-                <div class="row">
-                    <div class="col-sm-12 col-md-8" style="margin-bottom: 10px">
-                        <button style="width: 150px" ng-controller="ActionsCtrl" ng-click="prepareSkillToUpdate(skillData[0].id, skillData[0].name, nameText, descriptionText, $currentGroup.id, skillData[0].user_id, $user.id)" class="btn btn-success" type="button">Зберегти</button>
-                    </div>
-                    <div class="col-sm-12 col-md-4" style="margin-bottom: 20px">
-                        <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
-                        <a href="#editLibrary"><button ng-click="" class="btn btn-primary" type="button">До редактору</button></a>
-                    </div>
-                </div>
+                <button style="width: 150px" ng-controller="ActionsCtrl" ng-click="prepareSkillToUpdate(skillData[0].id, skillData[0].name, nameText, descriptionText, $currentGroup.id, skillData[0].user_id, $user.id)" class="btn btn-success" type="button">Зберегти</button>
 
                 <div id="messageBox" ng-class="messageBoxClass" style="display: none">
                     <button id="closeMessageBoxButton" type="button" class="close">
@@ -55,7 +47,7 @@
                     <h3>Список індикаторів:</h3>
                     <a href="#skill/{{skillData[0].id}}/indicator/create"><button style="margin-bottom: 10px" class="btn btn-primary" type="button">Додати індикатор</button></a>
 
-                    <div id="indicatorMessageBox" ng-class="messageBoxClass" style="display: none">
+                    <div id="indicatorMessageBox" ng-class="messageBoxClass" style="display: none; margin-top: 10px">
                         <button id="closeIndicatorMessageBoxButton" type="button" class="close">
                             <span aria-hidden="true">&times;</span>
                         </button>

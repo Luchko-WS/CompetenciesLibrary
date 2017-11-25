@@ -18,7 +18,7 @@
             <textarea class="form-control" rows="5" style="margin-bottom: 10px" placeholder="Опис" ng-model="descriptionText"></textarea>
 
             <div class="input-group" style="margin-bottom: 10px">
-                <input type="text" readonly class="form-control" placeholder="Група" ng-model="groupText">
+                <input type="text" id="groupText" readonly class="form-control" placeholder="Група" ng-model="groupText">
                 <div class="input-group-btn">
                     <button class="btn btn-primary" id="toggleButton" ng-click="show=!show"><span ng-bind="onClickSelectCurrentGroup(show)"></span></button>
                 </div>
@@ -28,17 +28,9 @@
 
             <div style="margin-bottom: 20px"></div>
 
-            <div class="row">
-                <div class="col-sm-12 col-md-8" style="margin-bottom: 10px">
-                    <button style="width: 150px" ng-controller="ActionsCtrl" ng-click="prepareSkillToCreate(nameText, descriptionText, $currentGroup.id, $currentGroup.user_id, $user.id);" class="btn btn-success" type="button">Створити</button>
-                </div>
-                <div class="col-sm-12 col-md-4" style="margin-bottom: 20px">
-                    <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
-                    <a href="#editLibrary"><button ng-click="" class="btn btn-primary" type="button">До редактору</button></a>
-                </div>
-            </div>
+            <button style="width: 150px" ng-controller="ActionsCtrl" ng-click="prepareSkillToCreate(nameText, descriptionText, $currentGroup.id, $currentGroup.user_id, $user.id);" class="btn btn-success" type="button">Створити</button>
 
-            <div id="messageBox" ng-class="messageBoxClass" style="display: none">
+            <div id="messageBox" ng-class="messageBoxClass" style="display: none; margin-top: 10px">
                 <button id="closeMessageBoxButton" type="button" class="close">
                     <span aria-hidden="true">&times;</span>
                 </button>
