@@ -106,6 +106,7 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
 
                     $('#path').text("Шлях: " + data.path);
                     $('#user').text("Власник: " + data.user);
+                    $('#creation_date').text("Створено: " + data.creation_date);
                     console.log($scope.currentItem1);
                 });
 

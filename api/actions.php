@@ -87,6 +87,9 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
 
 //Створення дії
 $app->post('/params', function (Request $request, Response $response, $args) {
+    date_default_timezone_set('Europe/Kiev');
+    $now = date("d.m.y G:i");
+
     $input = $request->getParsedBody();
     $actionType = $input['actionType'];
     $itemType = $input['itemType'];
@@ -99,12 +102,12 @@ $app->post('/params', function (Request $request, Response $response, $args) {
 
     if($actionType == 'edit'){
         $sql = "INSERT INTO actions SET state = 0, action_type = '$actionType', item_type = '$itemType', item_id = $itemID, item_name = '$itemName', ".
-            "new_item_name = '$newItemName', new_item_description = '$newItemDescription', new_parent_id = $newParentID, user_id = $userID;";
+            "new_item_name = '$newItemName', new_item_description = '$newItemDescription', new_parent_id = $newParentID, user_id = $userID, creation_date = '$now';";
         DB::exec($sql);
     }
     else{
         $sql = "INSERT INTO actions SET state = 0, action_type = '$actionType', item_type = '$itemType', item_id = $itemID, item_name = '$itemName', ".
-            "new_item_description = '$newItemDescription', new_parent_id = $newParentID, user_id = $userID;";
+            "new_item_description = '$newItemDescription', new_parent_id = $newParentID, user_id = $userID, creation_date = '$now';";
         DB::exec($sql);
     }
     return $this->response->withJson($input);

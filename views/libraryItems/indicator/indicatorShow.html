@@ -16,6 +16,7 @@
                 <h3 ng-bind="skillData[0].name"></h3>
                 <h4 ng-bind="'Група: ' + skillData[0].path"></h4>
                 <h4 ng-bind="'Користувач: ' + skillData[0].user"></h4>
+                <h4 ng-bind="'Створено: ' + skillData[0].creation_date"></h4>
 
                 <div ng-controller="IndicatorsCtrl">
                     <div ng-init="getIndicator(getRouteParamIndicatorID_IndicatorCtrl(), 1)"></div>
@@ -23,6 +24,7 @@
                         <h2>Інформація про індикатор:</h2>
                         <h3 ng-bind="nameText"></h3>
                         <h4 ng-bind="'Користувач: ' + indicatorData[0].user"></h4>
+                        <h4 ng-bind="'Створено: ' + indicatorData[0].creation_date"></h4>
                         <h4 ng-if="descriptionText" ng-bind="'Опис: ' + descriptionText"></h4>
 
                         <a ng-if="$user" href="#skill/{{getRouteParamSkillID_IndicatorCtrl()}}/indicator/{{getRouteParamIndicatorID_IndicatorCtrl()}}/edit"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">Редагувати індикатор</button></a>

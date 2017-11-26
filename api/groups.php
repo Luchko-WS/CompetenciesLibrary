@@ -96,6 +96,9 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
 
 //Створення та копіювання групи
 $app->post('/params', function (Request $request, Response $response, $args) {
+    date_default_timezone_set('Europe/Kiev');
+    $now = date("d.m.y G:i");
+
     $input = $request->getParsedBody();
     $parentGroupID = $input['parentGroupID'];
     $groupName = $input['groupName'];
@@ -136,7 +139,7 @@ $app->post('/params', function (Request $request, Response $response, $args) {
                 .", right_key = ".($parentGroupRightKey + ($groupData[$i]['right_key'] - $groupLeftKey))
                 .", node_level = ".($parentGroupLevel + 1 + ($groupData[$i]['node_level'] - $groupLevel))
                 .", name='".$groupData[$i]['name']."', description='".$groupData[$i]['description']
-                ."', node_type = ".$groupData[$i]['node_type'].", user_id = $userID;";
+                ."', node_type = ".$groupData[$i]['node_type'].", user_id = $userID, creation_date = '$now';";
             DB::exec($sql);
 
             if($groupData[$i]['node_type'] == 1) {
@@ -148,7 +151,7 @@ $app->post('/params', function (Request $request, Response $response, $args) {
 
                 for ($j = 0; $j < count($indicators); $j++) {
                     $sql = "INSERT INTO indicators (skill_id, name, description, user_id) " .
-                        "VALUES ($newSkillID, '" . $indicators[$j]['name'] . "', '" . $indicators[$j]['description'] . "', $userID);";
+                        "VALUES ($newSkillID, '" . $indicators[$j]['name'] . "', '" . $indicators[$j]['description'] . "', $userID, creation_date = '$now');";
                     DB::exec($sql);
                 }
             }
@@ -169,10 +172,12 @@ $app->post('/params', function (Request $request, Response $response, $args) {
         //додаємо новий вузол
         $sql = "INSERT INTO skill_tree SET left_key = $parentGroupRightKey, right_key = " .
             ($parentGroupRightKey + 1) . ", node_level = " . ($parentGroupLevel + 1) .
-            ", name='$groupName', description='$groupDescription', node_type = 0, user_id = $userID;";
+            ", name='$groupName', description='$groupDescription', node_type = 0, user_id = $userID, creation_date = '$now';";
         DB::exec($sql);
     }
-    return $this->response->withJson($input);
+
+    //$this->$response['config']['headers']['Access-Control-Allow-Origin'] = '*';
+    return $this->$response;
 });
 
 //Редагування групи

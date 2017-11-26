@@ -145,17 +145,22 @@ mainApp.controller('SkillsCtrl', ['$scope', '$rootScope', '$http', '$location', 
 
     //СТВОРЕННЯ КОМПЕТЕНЦІЇ
     //Підготовка до створення компетенції
-    $scope.prepareSkillToCreate = function (skillName, skillDescription, parentGroupID, parentGroupUserID, currentUserID) {
-        if(!skillName || !parentGroupID){
+    $scope.prepareSkillToCreate = function (skillName, skillDescription, parentGroup, currentUserID) {
+        if(!skillName || !parentGroup.id){
             showMessageWindow("alert alert-danger", "Увага!", "Заповніть поля назви і групи!");
             return;
         }
-        if (currentUserID != parentGroupUserID) {
-            $rootScope.saveAction('create', 'skill', -1, skillName, null, skillDescription, parentGroupID, currentUserID);
+        if(parentGroup.node_level == 1){
+            showMessageWindow("alert alert-danger", "Увага!", "Не можна створювати компетенцію в кореневій групі!");
+            return;
+        }
+
+        if (currentUserID != parentGroup.user_id) {
+            $rootScope.saveAction('create', 'skill', -1, skillName, null, skillDescription, parentGroup.id, currentUserID);
             showMessageWindow("alert alert-info", "Увага!", "Дану дію додано до списку.");
             return;
         }
-        $scope.createSkill(skillName, parentGroupID, skillDescription, currentUserID);
+        $scope.createSkill(skillName, parentGroup,id, skillDescription, currentUserID);
     };
 
     //Створення компетенції

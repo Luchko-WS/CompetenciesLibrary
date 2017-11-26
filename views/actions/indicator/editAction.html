@@ -17,6 +17,7 @@
                     <h4 style="margin-bottom: 10px" ng-if="actionData[0].state == -1">Статус: <span style="color: red">відхилено</span></h4>
                     <h4 style="margin-bottom: 10px" ng-if="actionData[0].state == 0">Статус: очікується</h4>
                     <h4 style="margin-bottom: 10px" ng-if="actionData[0].state == 1">Статус: <span style="color: green">прийнято</span></h4>
+                    <h4 style="margin-bottom: 10px">Створено: <span ng-bind="actionData[0].creation_date"></span></h4>
 
                     <div ng-show="indicatorData != null && indicatorData != -1">
                         <h3 ng-bind="'Компетенція: ' + actionData[0].skillName"></h3>

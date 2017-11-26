@@ -24,6 +24,7 @@
                 <h3 ng-bind="groupData[0].name"></h3>
                 <h4 ng-bind="'Користувач: ' + groupData[0].user"></h4>
                 <h4 ng-bind="'Група: ' + groupData[0].path"></h4>
+                <h4 ng-bind="'Створено: ' + groupData[0].creation_date"></h4>
 
                 <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Назва групи" ng-model="nameText">
                 <textarea class="form-control" rows="5" style="margin-bottom: 10px" placeholder="Опис" ng-model="descriptionText"></textarea>

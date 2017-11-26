@@ -19,6 +19,7 @@
                 <h3 ng-bind="skillData[0].name"></h3>
                 <h4 ng-bind="'Користувач: ' + skillData[0].user"></h4>
                 <h4 ng-bind="'Група: ' + skillData[0].path"></h4>
+                <h4 ng-bind="'Створено: ' + skillData[0].creation_date"></h4>
 
                 <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Компетенція" ng-model="nameText">
                 <textarea class="form-control" rows="5" style="margin-bottom: 10px" placeholder="Опис" ng-model="descriptionText"></textarea>
@@ -77,6 +78,7 @@
                                     <div class="panel-footer">
                                         <p ng-if="item_indicator.description" style="margin-left: 15px"><b>Опис: </b><span ng-bind="item_indicator.description"></span></p>
                                         <p style="margin-left: 15px"><b>Користувач: </b><span ng-bind="item_indicator.user"></span></p>
+                                        <p style="margin-left: 15px"><b>Користувач: </b><span ng-bind="'Створено: ' + item_indicator.creation_date"></span></p>
                                     </div>
                                 </div>
                             </div>

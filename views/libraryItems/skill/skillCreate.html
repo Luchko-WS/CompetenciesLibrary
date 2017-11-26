@@ -28,7 +28,7 @@
 
             <div style="margin-bottom: 20px"></div>
 
-            <button style="width: 150px" ng-controller="ActionsCtrl" ng-click="prepareSkillToCreate(nameText, descriptionText, $currentGroup.id, $currentGroup.user_id, $user.id);" class="btn btn-success" type="button">Створити</button>
+            <button style="width: 150px" ng-controller="ActionsCtrl" ng-click="prepareSkillToCreate(nameText, descriptionText, $currentGroup, $user.id);" class="btn btn-success" type="button">Створити</button>
 
             <div id="messageBox" ng-class="messageBoxClass" style="display: none; margin-top: 10px">
                 <button id="closeMessageBoxButton" type="button" class="close">

@@ -14,6 +14,7 @@
                 <h3 ng-bind="skillData[0].name"></h3>
                 <h4 ng-bind="'Група: ' + skillData[0].path"></h4>
                 <h4 ng-bind="'Користувач: ' + skillData[0].user"></h4>
+                <h4 ng-bind="'Створено: ' + skillData[0].creation_date"></h4>
 
                 <div ng-controller="IndicatorsCtrl">
                     <!-- Редагування індикатору -->
@@ -22,6 +23,7 @@
                         <h2>Редагування індикатору:</h2>
                         <h3 ng-bind="indicatorData[0].name"></h3>
                         <h4 ng-bind="'Користувач: ' + indicatorData[0].user"></h4>
+                        <h4 ng-bind="'Створено: ' + indicatorData[0].creation_date"></h4>
 
                         <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Індикатор" ng-model="nameText">
                         <textarea class="form-control" rows="5" style="margin-bottom: 10px" placeholder="Опис" ng-model="descriptionText"></textarea>

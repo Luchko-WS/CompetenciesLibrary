@@ -9,7 +9,7 @@ DB::init('mysql:dbname=prozorro;host=127.0.0.1;port=3306', 'root', 'WhiteShark28
 
 $app = new \Slim\App;
 
-$app->options('/{routes:.+}', function (Request $request, Response $response, $args) {
+$app->options('/{routes:.+}', function ($request, $response, $args) {
     return $response;
 });
 
@@ -21,6 +21,7 @@ $app->add(function ($req, $res, $next) {
         ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
 });
 
+//date_default_timezone_set('UTC+2');
 function getPath($leftKey, $rightKey){
     $parentGroups = DB::fetchAll("SELECT * FROM skill_tree".
         " WHERE left_key<" . $leftKey ." AND right_key>". $rightKey .
@@ -89,8 +90,11 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
 });
 
 //Створення та копіювання компетенції
-$app->post('/params', function (Request $request, Response $response, $args) {
+$app->post('/params', function (Request $request, Response $response) {
     //file_put_contents('SKILL.txt', "Create");
+
+    date_default_timezone_set('Europe/Kiev');
+    $now = date("d.m.y G:i");
 
     $input = $request->getParsedBody();
     $skillName = $input['skillName'];
@@ -117,28 +121,27 @@ $app->post('/params', function (Request $request, Response $response, $args) {
     if($isCopy){
         $sql = "INSERT INTO skill_tree SET left_key = $groupRightKey, right_key = " . ($groupRightKey + 1) .
             ", node_level=" . ($groupLevel + 1) . ", name='" . $skillName . "', description='" .
-            $skillDescription . "', node_type=1, user_id=" . $userID . ";";
+            $skillDescription . "', node_type=1, user_id=" . $userID . ", creation_date = '$now';";
         DB::exec($sql);
 
         $newSkill = DB::fetchAll("SELECT * FROM skill_tree WHERE left_key = $groupRightKey AND right_key = ".($groupRightKey + 1).";");
         $newSkillID = $newSkill[0]['id'];
         $indicators = DB::fetchAll("SELECT * FROM indicators WHERE skill_id = $skillID;");
         for($i = 0; $i < count($indicators); $i++){
-            $sql = "INSERT INTO indicators (skill_id, name, description, user_id) ".
-                "VALUES ($newSkillID, '".$indicators[$i]['name']."', '".$indicators[$i]['description']."', $userID);";
+            $sql = "INSERT INTO indicators (skill_id, name, description, user_id, creation_date) ".
+                "VALUES ($newSkillID, '".$indicators[$i]['name']."', '".$indicators[$i]['description']."', $userID, '$now');";
             DB::exec($sql);
         }
     }
     //додаємо новий вузол
     else {
-
         $sql = "INSERT INTO skill_tree SET left_key = $groupRightKey, right_key = " . ($groupRightKey + 1) .
             ", node_level = ($groupLevel + 1), name = '$skillName ', description = '" .
-            $skillDescription . "', node_type = 1, user_id = $userID;";
+            $skillDescription . "', node_type = 1, user_id = $userID, creation_date='$now';";
         DB::exec($sql);
     }
 
-    return $this->response->withJson($input);
+    return $this->$response->withJson($input);
 });
 
 //Редагування компетенції
@@ -171,7 +174,7 @@ $app->put('/params/{id}', function (Request $request, Response $response, $args)
 
         //оновлюємо новий вузол
         $sql = "UPDATE skill_tree SET left_key = $groupRightKey, right_key = ".($groupRightKey + 1).
-            ", node_level = ".($groupLevel + 1).", name = '$skillName', description = '$skillDescription' WHERE id = $skillID;";
+            ", node_level = ".($groupLevel + 1)." WHERE id = $skillID;";
         DB::exec($sql);
 
         //оновлюємо ключі від попереднього вузла

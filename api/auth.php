@@ -88,6 +88,8 @@ $app->put('/auth/{id}', function (Request $request, Response $response, $args) {
 
 //Збереження/редагування даних користувача
 $app->post("/auth", function (Request $request, Response $response, $args) {
+    date_default_timezone_set('Europe/Kiev');
+    $now = date("d.m.y G:i");
 
     $input = $request->getParsedBody();
     $id = $input['userID'];
@@ -115,7 +117,7 @@ $app->post("/auth", function (Request $request, Response $response, $args) {
     //Створення користувача
     else if($id == -1) {
         $sql = "INSERT INTO users SET login = '$login', password = '$password', first_name = '$firstName', ".
-            "second_name = '$secondName', organization = '$organization';";
+            "second_name = '$secondName', organization = '$organization', creation_date = '$now';";
         DB::exec($sql);
     }
     //Редагування користувача

@@ -36,13 +36,16 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
 
 //Створення індикатору
 $app->post('/params', function (Request $request, Response $response, $args) {
+    date_default_timezone_set('Europe/Kiev');
+    $now = date("d.m.y G:i");
+
     $input = $request->getParsedBody();
     $skillId = $input['skillID'];
     $indicatorName = $input['indicatorName'];
     $indicatorDescription = $input['indicatorDescription'];
     $userID = $input['userID'];
-    $sql = "INSERT INTO indicators (skill_id, name, description, user_id) ".
-      "VALUES ($skillId, '$indicatorName', '$indicatorDescription', $userID);";
+    $sql = "INSERT INTO indicators (skill_id, name, description, user_id, creation_date) ".
+      "VALUES ($skillId, '$indicatorName', '$indicatorDescription', $userID, '$now');";
     DB::exec($sql);
     return $this->response->withJson($input);
 });

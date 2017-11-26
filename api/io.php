@@ -97,6 +97,9 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
 
 //import
 $app->put('/params/{id}', function (Request $request, Response $response, $args) {
+    date_default_timezone_set('Europe/Kiev');
+    $now = date("d.m.y G:i");
+
     $input = json_decode($args['id'], true);
     $root = $input['root'];
     $parent = $input['parent'];
@@ -113,7 +116,7 @@ $app->put('/params/{id}', function (Request $request, Response $response, $args)
 
     $sql = "INSERT INTO skill_tree SET left_key = ".$parent['right_key'].", right_key = " . ($parent['right_key'] + 1) .
         ", node_level = ". ($parent['node_level'] + 1). ", name = '".$root['name']."', description = '" .
-        $root['description']."', node_type = ".$root['node_type'].", user_id = ".$root['user_id'].";";
+        $root['description']."', node_type = ".$root['node_type'].", user_id = ".$root['user_id'].", creation_date = '$now';";
     DB::exec($sql);
 
     $node = DB::fetchAll("SELECT * FROM skill_tree WHERE left_key = ".$parent['right_key']." AND right_key = ".($parent['right_key'] + 1).";");
