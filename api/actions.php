@@ -22,11 +22,11 @@ $app->add(function ($req, $res, $next) {
 });
 
 function getPath($id){
-    $itemInfo = DB::fetchAll("SELECT * FROM skill_tree WHERE id=" . $id .";");
+    $itemInfo = DB::fetchAll("SELECT * FROM object_tree WHERE id=" . $id .";");
     $leftKey = $itemInfo[0]['left_key'];
     $rightKey = $itemInfo[0]['right_key'];
 
-    $parentGroups = DB::fetchAll("SELECT * FROM skill_tree".
+    $parentGroups = DB::fetchAll("SELECT * FROM object_tree".
         " WHERE left_key<=" . $leftKey ." AND right_key>=". $rightKey .
         " ORDER BY left_key;");
     $path = "";
@@ -75,8 +75,8 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
         "FROM actions a WHERE a.id = $actionID;");
 
         if($rowAction[0]['item_type'] == 'indicator'){
-            $skill = DB::fetchAll("SELECT * FROM skill_tree WHERE id = " . $rowAction[0]['new_parent_id'] .";");
-            $rowAction[0]['skillName'] = $skill[0]['name'];
+            $object = DB::fetchAll("SELECT * FROM object_tree WHERE id = " . $rowAction[0]['new_parent_id'] .";");
+            $rowAction[0]['objectName'] = $object[0]['name'];
         }
         if($rowAction[0]['action_type'] != 'remove') {
             $rowAction[0]['path'] = getPath($rowAction[0]['new_parent_id']);

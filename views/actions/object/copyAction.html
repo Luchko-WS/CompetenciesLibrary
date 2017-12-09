@@ -13,8 +13,8 @@
                 <div ng-controller="ActionsCtrl">
                     <div ng-init="preparePageForAction()"></div>
                     <div ng-if="actionData != null && actionData != -1">
-                        <div ng-controller="SkillsCtrl" ng-init="getSkill(getItemID());">
-                            <h2 style="text-align: center">Видалення компетенції</h2>
+                        <div ng-controller="ObjectsCtrl" ng-init="getObject(getItemID());">
+                            <h2 style="text-align: center">Копіювання об'єкта</h2>
                             <h3>Запропоновані зміни користувачем:</h3>
                             <h3 style="margin-top: 5px; margin-bottom: 10px" ng-bind="actionData[0].user"></h3>
                             <h4 style="margin-bottom: 10px" ng-if="actionData[0].state == -1">Статус: <span style="color: red">відхилено</span></h4>
@@ -22,14 +22,15 @@
                             <h4 style="margin-bottom: 10px" ng-if="actionData[0].state == 1">Статус: <span style="color: green">прийнято</span></h4>
                             <h4 style="margin-bottom: 10px">Створено: <span ng-bind="actionData[0].creation_date"></span></h4>
 
-                            <div ng-show="skillData != null && skillData != -1">
-                                <h3 ng-bind="'Назва: ' + skillData[0].name"></h3>
-                                <h3 ng-if="skillData[0].description" ng-bind="'Опис: ' + skillData[0].description"></h3>
-                                <h3 ng-bind="'Група: ' + skillData[0].path"></h3>
+                            <div ng-show="objectData != null && objectData != -1">
+                                <h3 ng-bind="'Назва: ' + objectData[0].name"></h3>
+                                <h4 ng-if="objectData[0].description" ng-bind="'Опис: ' + objectData[0].description"></h4>
+                                <h4 ng-bind="'Із групи: ' + objectData[0].path"></h4>
+                                <h4 ng-bind="'В групу: ' + actionData[0].path"></h4>
 
                                 <div style="margin-top: 20px">
-                                    <a href="" ng-show="actionData[0].state == 0 && actionData[0].user_id != $user.id"><button style="margin-bottom: 5px" class="btn btn-success" type="button" ng-click="rejectOrAcceptTheAction(actionData[0].id, 1); removeSkill(actionData[0].item_id);">Прийняти</button></a>
-                                    <a href="" ng-show="actionData[0].state == 0 && actionData[0].user_id != $user.id"><button style="margin-bottom: 5px" class="btn btn-danger" type="button" ng-click="rejectOrAcceptTheAction(getActionID(), -1);">Скасувати</button></a>
+                                    <a href="" ng-show="actionData[0].state == 0 && actionData[0].user_id != $user.id"><button style="margin-bottom: 5px" class="btn btn-success" type="button" ng-click="rejectOrAcceptTheAction(actionData[0].id, 1); copyObject(actionData[0].item_id, actionData[0].item_name, actionData[0].new_parent_id, actionData[0].new_item_description, $user.id);">Прийняти</button></a>
+                                    <a href="" ng-show="actionData[0].state == 0 && actionData[0].user_id != $user.id"><button style="margin-bottom: 5px" class="btn btn-danger" type="button" ng-click="rejectOrAcceptTheAction(actionData[0].id, -1);">Скасувати</button></a>
                                     <a href="#actions"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">До списку дій</button></a>
                                 </div>
 
@@ -41,23 +42,21 @@
                                     <p ng-bind="messageText"></p>
                                 </div>
                             </div>
-                            <div ng-if="skillData==null" style="text-align: center">
+                            <div ng-if="objectData==null" style="text-align: center">
                                 <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
                             </div>
-                            <div ng-if="skillData == -1">
+                            <div ng-if="objectData == -1">
                                 <div class="alert alert-warning">
                                     <h4><b>Увага!</b></h4>
-                                    <p style="margin-bottom: 10px">Не вдалося отримати компетенцію (id=<span ng-bind="getItemID()"></span>)!</p>
+                                    <p style="margin-bottom: 10px">Не вдалося отримати об'єкт (id=<span ng-bind="getItemID()"></span>)!</p>
                                     <a href="#actions"><button class="btn btn-primary" type="button">До списку дій</button></a>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div ng-if="actionData==null" style="text-align: center">
+                    <div ng-show="actionData==null" style="text-align: center">
                         <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
                     </div>
-
                     <div ng-if="actionData == -1">
                         <div class="alert alert-warning">
                             <h4><b>Увага!</b></h4>

@@ -5,11 +5,11 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
      БЛОК КОНСТАНТ
      **/
     //Тип форматування дерева для Bootstrap Tree View
-    const GROUPS_AND_SKILLS = 0;
+    const GROUPS_AND_OBJECTS = 0;
     const ONLY_GROUPS = 1;
     //Тип операції, що викликала друге дерево Bootstrap Tree View
-    const SKILL_MOVE = 2;
-    const SKILL_COPY = 3;
+    const OBJECT_MOVE = 2;
+    const OBJECT_COPY = 3;
     const GROUP_MOVE = 4;
     const GROUP_COPY = 5;
     /**
@@ -24,7 +24,7 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
     $rootScope.getTree = function () {
         $rootScope.$tree = null;
         var params =  {
-            tree: 'GROUPS AND SKILLS'
+            tree: 'GROUPS AND OBJECTS'
         };
         GroupsModel.get({'id':JSON.stringify(params)}, function (res) {
             if(res.data === undefined) {
@@ -37,7 +37,7 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
                 $('#acceptButton').hide();
                 $('.cancelButton').hide();
 
-                $('#tree1').treeview({data: $scope.formatDataToTree(GROUPS_AND_SKILLS),
+                $('#tree1').treeview({data: $scope.formatDataToTree(GROUPS_AND_OBJECTS),
                     emptyIcon: 'glyphicon glyphicon-star',
                     showTags: true,
                     enabledLinks: true
@@ -64,13 +64,13 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
                     if(data.node_type == 0) {
                         $("#importButton").show();
                         $('#item_type').text("Тип: група");
-                        $('#child_item_count').text("Кількість груп: " + data.count_of_child_groups + ", кількість компетенцій: " + data.count_of_child_skills);
+                        $('#child_item_count').text("Кількість груп: " + data.count_of_child_groups + ", кількість об'єктів: " + data.count_of_child_objects);
 
                         $('#removeGroupButton').show();
-                        $('#removeSkillButton').hide();
-                        $('#showSkillButton').hide();
+                        $('#removeObjectButton').hide();
+                        $('#showObjectButton').hide();
 
-                        $('#moveSkillButton').hide();
+                        $('#moveObjectButton').hide();
                         if(data.node_level == 1) {
                             $('#moveGroupButton').hide();
                             $('#editItemButton').hide();
@@ -79,22 +79,22 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
                             $('#moveGroupButton').show();
                             $('#editItemButton').show();
                         }
-                        $('#copySkillButton').hide();
+                        $('#copyObjectButton').hide();
                         $('#copyGroupButton').show();
 
                     }
                     else{
                         $("#importButton").hide();
-                        $('#item_type').text("Тип: компетенція");
+                        $('#item_type').text("Тип: об'єкт");
                         $('#child_item_count').text("Кількість індикаторів: " + data.count_of_indicators);
 
-                        $('#removeSkillButton').show();
+                        $('#removeObjectButton').show();
                         $('#removeGroupButton').hide();
-                        $('#showSkillButton').show();
+                        $('#showObjectButton').show();
 
-                        $('#moveSkillButton').show();
+                        $('#moveObjectButton').show();
                         $('#moveGroupButton').hide();
-                        $('#copySkillButton').show();
+                        $('#copyObjectButton').show();
                         $('#copyGroupButton').hide();
                     }
                     if(data.description != null && data.description.length != 0) {
@@ -111,10 +111,10 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
                 });
 
                 var itemType = null;
-                $('#moveSkillButton').click(function () {
+                $('#moveObjectButton').click(function () {
                     showSecondTree();
-                    $scope.command = SKILL_MOVE;
-                    $('#operation').text('Перемістити компетенцію в:')
+                    $scope.command = OBJECT_MOVE;
+                    $('#operation').text("Перемістити об'єкт в:")
                     itemType = 1;
                 });
                 $('#moveGroupButton').click(function () {
@@ -123,10 +123,10 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
                     $('#operation').text('Перемістити групу в:')
                     itemType = 0;
                 });
-                $('#copySkillButton').click(function () {
+                $('#copyObjectButton').click(function () {
                     showSecondTree();
-                    $scope.command = SKILL_COPY;
-                    $('#operation').text('Скопіювати компетенцію в:')
+                    $scope.command = OBJECT_COPY;
+                    $('#operation').text("Скопіювати об'єкт в:")
                     itemType = 1;
                 });
                 $('#copyGroupButton').click(function () {
@@ -192,12 +192,12 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
         $('.cancelButton').show();
 
         $('#editItemButton').hide();
-        $('#showSkillButton').hide();
-        $('#removeSkillButton').hide();
+        $('#showObjectButton').hide();
+        $('#removeObjectButton').hide();
         $('#removeGroupButton').hide();
-        $('#moveSkillButton').hide();
+        $('#moveObjectButton').hide();
         $('#moveGroupButton').hide();
-        $('#copySkillButton').hide();
+        $('#copyObjectButton').hide();
         $('#copyGroupButton').hide();
     };
 
@@ -214,10 +214,10 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
         $('.cancelButton').hide();
 
         if(item_type == 1) {
-            $('#showSkillButton').show();
-            $('#removeSkillButton').show();
-            $('#moveSkillButton').show();
-            $('#copySkillButton').show();
+            $('#showObjectButton').show();
+            $('#removeObjectButton').show();
+            $('#moveObjectButton').show();
+            $('#copyObjectButton').show();
         }
         else {
             $('#removeGroupButton').show();
@@ -231,7 +231,7 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
         var root = $rootScope.$tree[0];
         root.text = $rootScope.$tree[0].name;
         root.node_id = 0;
-        root.tags = [$rootScope.$tree[0].count_of_child_skills, $rootScope.$tree[0].count_of_child_groups];
+        root.tags = [$rootScope.$tree[0].count_of_child_objects, $rootScope.$tree[0].count_of_child_groups];
         var stack = [0];
         var tagsStack = [0];
         var currentLevel = 2;
@@ -242,7 +242,7 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
             $rootScope.$tree[i].text = $rootScope.$tree[i].name;
 
             if($rootScope.$tree[i].node_type == 0) {
-                $rootScope.$tree[i].tags = [$rootScope.$tree[i].count_of_child_skills, $rootScope.$tree[i].count_of_child_groups];
+                $rootScope.$tree[i].tags = [$rootScope.$tree[i].count_of_child_objects, $rootScope.$tree[i].count_of_child_groups];
             }
             else {
                 $rootScope.$tree[i].tags = [$rootScope.$tree[i].count_of_indicators];
@@ -267,7 +267,7 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
         }
 
         var map = {}, node, roots = [], items = $rootScope.$tree;
-        if(param == GROUPS_AND_SKILLS) {
+        if(param == GROUPS_AND_OBJECTS) {
             for (var i = 1; i < items.length; i++) {
                 node = items[i];
                 if (node.node_type == 0) {
@@ -316,13 +316,13 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
      **/
     $scope.openItem = function () {
         if($scope.currentItem1.node_type == 1){
-            $location.path('/skill/' + $scope.currentItem1.id + '/show');
+            $location.path('/object/' + $scope.currentItem1.id + '/show');
         }
     };
 
     $scope.editItem = function () {
         if($scope.currentItem1.node_type == 1){
-            $location.path('/skill/' + $scope.currentItem1.id + '/edit');
+            $location.path('/object/' + $scope.currentItem1.id + '/edit');
         }
         else{
             $location.path('/group/' + $scope.currentItem1.id + '/edit');
@@ -331,12 +331,12 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
 
     $scope.moveOrCopyItem = function () {
         switch ($scope.command){
-            case SKILL_COPY:
-                $rootScope.prepareSkillToCopy($scope.currentItem1.id, $scope.currentItem1.name, $scope.currentItem1.description,
+            case OBJECT_COPY:
+                $rootScope.prepareObjectToCopy($scope.currentItem1.id, $scope.currentItem1.name, $scope.currentItem1.description,
                     $scope.currentItem2.id, $scope.currentItem2.user_id, $rootScope.$user.id);
                 break;
-            case SKILL_MOVE:
-                $rootScope.prepareSkillToMove($scope.currentItem1.id, $scope.currentItem1.name, $scope.currentItem1.name,
+            case OBJECT_MOVE:
+                $rootScope.prepareObjectToMove($scope.currentItem1.id, $scope.currentItem1.name, $scope.currentItem1.name,
                     $scope.currentItem1.description, $scope.currentItem2.id, $scope.currentItem1.user_id, $rootScope.$user.id);
                 break;
             case GROUP_COPY:

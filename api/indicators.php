@@ -40,12 +40,12 @@ $app->post('/params', function (Request $request, Response $response, $args) {
     $now = date("d.m.y G:i");
 
     $input = $request->getParsedBody();
-    $skillId = $input['skillID'];
+    $objectId = $input['objectID'];
     $indicatorName = $input['indicatorName'];
     $indicatorDescription = $input['indicatorDescription'];
     $userID = $input['userID'];
-    $sql = "INSERT INTO indicators (skill_id, name, description, user_id, creation_date) ".
-      "VALUES ($skillId, '$indicatorName', '$indicatorDescription', $userID, '$now');";
+    $sql = "INSERT INTO indicators (object_id, name, description, user_id, creation_date) ".
+      "VALUES ($objectId, '$indicatorName', '$indicatorDescription', $userID, '$now');";
     DB::exec($sql);
     return $this->response->withJson($input);
 });
@@ -53,12 +53,12 @@ $app->post('/params', function (Request $request, Response $response, $args) {
 //Редагування індикатору
 $app->put('/params/{id}', function (Request $request, Response $response, $args) {
     $input = json_decode($args['id'], true);
-    $skillID = $input['skillID'];
+    $objectID = $input['objectID'];
     $indicatorID = $input['indicatorID'];
     $indicatorName = $input['indicatorName'];
     $indicatorDescription = $input['indicatorDescription'];
     $sql = "UPDATE indicators SET name = '$indicatorName', ".
-        "description = '$indicatorDescription', skill_id = $skillID WHERE id = $indicatorID;";
+        "description = '$indicatorDescription', object_id = $objectID WHERE id = $indicatorID;";
     DB::exec($sql);
     return $this->response->withJson($input);
 });

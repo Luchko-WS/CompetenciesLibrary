@@ -23,7 +23,7 @@
 
                         <h3 ng-bind="'Назва: ' + actionData[0].item_name"></h3>
                         <h4 ng-if="actionData[0].item_description" ng-bind="'Опис: ' + actionData[0].item_description"></h4>
-                        <h4 ng-bind="'Компетенція: ' + actionData[0].skillName"></h4>
+                        <h4>Об'єкт: <span ng-bind="actionData[0].objectName"></span></h4>
                         <h4 ng-bind="'Шлях: ' + actionData[0].path"></h4>
 
                         <div ng-controller="IndicatorsCtrl">

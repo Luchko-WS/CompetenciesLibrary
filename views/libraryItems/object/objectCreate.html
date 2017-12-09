@@ -6,15 +6,15 @@
 <body>
 <div class="thumbnail">
     <div ng-if="$user" style="margin: 10px; margin-left: 20px; margin-right: 20px">
-        <div ng-controller="SkillsCtrl">
-            <!-- Додання нової компетенції -->
-            <h2>Створення нової компетенції:</h2>
+        <div ng-controller="ObjectsCtrl">
+            <!-- Додання нового об'єкта -->
+            <h2>Створення нового об'єкта:</h2>
 
             <div ng-controller="GroupsCtrl">
                 <div ng-init="getGroupTree();"></div>
             </div>
 
-            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Компетенція" ng-model="nameText">
+            <input style="margin-bottom: 10px" type="text" class="form-control" placeholder="Об'єкт" ng-model="nameText">
             <textarea class="form-control" rows="5" style="margin-bottom: 10px" placeholder="Опис" ng-model="descriptionText"></textarea>
 
             <div class="input-group" style="margin-bottom: 10px">
@@ -28,7 +28,7 @@
 
             <div style="margin-bottom: 20px"></div>
 
-            <button style="width: 150px" ng-controller="ActionsCtrl" ng-click="prepareSkillToCreate(nameText, descriptionText, $currentGroup, $user.id);" class="btn btn-success" type="button">Створити</button>
+            <button style="width: 150px" ng-controller="ActionsCtrl" ng-click="prepareObjectToCreate(nameText, descriptionText, $currentGroup, $user.id);" class="btn btn-success" type="button">Створити</button>
 
             <div id="messageBox" ng-class="messageBoxClass" style="display: none; margin-top: 10px">
                 <button id="closeMessageBoxButton" type="button" class="close">

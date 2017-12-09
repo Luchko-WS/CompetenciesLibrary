@@ -33,7 +33,7 @@
                         <div ng-if="$user" style="margin-bottom: 5px" class="btn-group">
                             <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" type="button">Додати <span class="caret"></span></button>
                             <ul class="dropdown-menu">
-                                <li><a href="#skill/create">компетенцію</a></li>
+                                <li><a href="#object/create">об'єкт</a></li>
                                 <li><a href="#group/create">групу</a></li>
                             </ul>
                         </div>
@@ -80,56 +80,56 @@
                         </div>
                     </div>
 
-                    <div ng-controller="SkillsCtrl">
-                        <div ng-init="getAllSkills();"></div>
+                    <div ng-controller="ObjectsCtrl">
+                        <div ng-init="getAllObjects();"></div>
 
-                        <div ng-if="skillData==null" style="text-align: center">
+                        <div ng-if="objectData==null" style="text-align: center">
                             <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
                         </div>
 
-                        <div ng-if="skillData!=null && skillData!=-1">
+                        <div ng-if="objectData!=null && objectData!=-1">
                             <div ng-if="$pagination.enabled">
                                 <ul class="pager">
                                     <button ng-disabled="$pagination.page==1" ng-click="$pagination.page = $pagination.page-1; $pagination.pageSearch = $pagination.page;" style="padding: 0px; border-radius: 16px; border-color: #0f5f9f; height: 32px; width: 45px" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span></button>
-                                    <span style="padding: 10px" ng-bind="'Сторінка: ' + $pagination.page + ' / ' + pageCount((skillData | filter : skillsFilter).length)"></span>
-                                    <button ng-disabled="((skillData | filter : skillsFilter).length - ($pagination.pageSize * $pagination.page)) <= 0" ng-click="$pagination.page = $pagination.page + 1; $pagination.pageSearch = $pagination.page;" style="padding: 0px; border-radius: 16px; border-color: #0f5f9f; height: 32px; width: 45px" class="btn btn-default"><span class="glyphicon glyphicon-arrow-right"></span></button>
+                                    <span style="padding: 10px" ng-bind="'Сторінка: ' + $pagination.page + ' / ' + pageCount((objectData | filter : objectsFilter).length)"></span>
+                                    <button ng-disabled="((objectData | filter : objectsFilter).length - ($pagination.pageSize * $pagination.page)) <= 0" ng-click="$pagination.page = $pagination.page + 1; $pagination.pageSearch = $pagination.page;" style="padding: 0px; border-radius: 16px; border-color: #0f5f9f; height: 32px; width: 45px" class="btn btn-default"><span class="glyphicon glyphicon-arrow-right"></span></button>
 
                                     <span class="input-group" style="width: 100px; margin: auto">
                                         <input type="text" class="form-control" type="text" ng-model="$pagination.pageSearch" onkeyup="if(this.value[0] == 0) this.value=''; else this.value = this.value.replace (/\D/g, '')">
                                             <div class="input-group-btn">
-                                            <button class="btn btn-primary" ng-click="validatePageInput($pagination.pageSearch, (skillData | filter : skillsFilter).length);">Go!</button>
+                                            <button class="btn btn-primary" ng-click="validatePageInput($pagination.pageSearch, (objectData | filter : objectsFilter).length);">Go!</button>
                                         </div>
                                     </span>
                                 </ul>
                                 <h4 ng-if="$currentGroup" ng-bind="'Група: ' + $currentGroup.name"></h4>
-                                <div ng-repeat="item_skill in skillData | filter : skillsFilter | limitTo: $pagination.pageSize : (($pagination.page - 1) * $pagination.pageSize)">
+                                <div ng-repeat="item_object in objectData | filter : objectsFilter | limitTo: $pagination.pageSize : (($pagination.page - 1) * $pagination.pageSize)">
                                     <div class="panel panel-info">
                                         <div class="panel-body" style="padding: 5px">
                                             <div class="row">
                                                 <div class="col-lg-10 col-md-12 col-sm-12 col-xs-12">
-                                                    <h4><span ng-bind="((($pagination.page - 1) * $pagination.pageSize) + $index+1) + '. '"></span><a href="#skill/{{item_skill.id}}/show"><span ng-bind="item_skill.name"></span></a></h4>
+                                                    <h4><span ng-bind="((($pagination.page - 1) * $pagination.pageSize) + $index+1) + '. '"></span><a href="#object/{{item_object.id}}/show"><span ng-bind="item_object.name"></span></a></h4>
                                                 </div>
                                                 <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12">
                                                     <div ng-if="$user">
-                                                        <a href="#skill/{{item_skill.id}}/edit"><button class="btn btn-primary" type="button"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button></a>
-                                                        <button ng-controller="ActionsCtrl" ng-click="prepareSkillToRemove(item_skill.id, item_skill.name, 0, item_skill.user_id, $user.id);" class="btn btn-danger" type="button"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                                                        <a href="#object/{{item_object.id}}/edit"><button class="btn btn-primary" type="button"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button></a>
+                                                        <button ng-controller="ActionsCtrl" ng-click="prepareObjectToRemove(item_object.id, item_object.name, 0, item_object.user_id, $user.id);" class="btn btn-danger" type="button"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="panel-footer">
                                             <div class="row">
-                                                <p ng-if="item_skill.description" style="margin-left: 15px"><span><b>Опис: </b></span><span ng-bind="item_skill.description"></span></p>
+                                                <p ng-if="item_object.description" style="margin-left: 15px"><span><b>Опис: </b></span><span ng-bind="item_object.description"></span></p>
                                                 <div class="col-lg-5 col-xs-12">
-                                                    <p><span><b>Група: </b></span><span ng-bind="item_skill.path"></span></p>
-                                                    <p><span><b>Користувач: </b></span><span ng-bind="item_skill.user"></span></p>
-                                                    <p><span><b>Створено: </b></span><span ng-bind="item_skill.creation_date"></span></p>
+                                                    <p><span><b>Група: </b></span><span ng-bind="item_object.path"></span></p>
+                                                    <p><span><b>Користувач: </b></span><span ng-bind="item_object.user"></span></p>
+                                                    <p><span><b>Створено: </b></span><span ng-bind="item_object.creation_date"></span></p>
                                                 </div>
                                                 <div class="col-lg-7 col-xs-12">
-                                                    <p ng-if="item_skill.indicators.length != 0"><b>Індикатори:</b></p>
-                                                    <div ng-repeat="item_indicator in item_skill.indicators">
+                                                    <p ng-if="item_object.indicators.length != 0"><b>Індикатори:</b></p>
+                                                    <div ng-repeat="item_indicator in item_object.indicators">
                                                         <ul>
-                                                            <li><a href="#skill/{{item_skill.id}}/indicator/{{item_indicator.id}}/show"><span ng-bind="item_indicator.name"></span></a></li>
+                                                            <li><a href="#object/{{item_object.id}}/indicator/{{item_indicator.id}}/show"><span ng-bind="item_indicator.name"></span></a></li>
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -137,18 +137,18 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div ng-if="(skillData | filter : skillsFilter).length == 0">
-                                    <h4>Компетенцій по даному критерію не знайдено...</h4>
+                                <div ng-if="(objectData | filter : objectsFilter).length == 0">
+                                    <h4>Об'єктів по даному критерію не знайдено...</h4>
                                 </div>
                                 <ul class="pager">
                                     <button ng-disabled="$pagination.page==1" ng-click="$pagination.page = $pagination.page-1; $pagination.pageSearch = $pagination.page;" style="padding: 0px; border-radius: 16px; border-color: #0f5f9f; height: 32px; width: 45px" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span></button>
-                                    <span style="padding: 10px" ng-bind="'Сторінка: ' + $pagination.page + ' / ' + pageCount((skillData | filter : skillsFilter).length)"></span>
-                                    <button ng-disabled="((skillData | filter : skillsFilter).length - ($pagination.pageSize * $pagination.page)) <= 0" ng-click="$pagination.page = $pagination.page + 1; $pagination.pageSearch = $pagination.page;" style="padding: 0px; border-radius: 16px; border-color: #0f5f9f; height: 32px; width: 45px" class="btn btn-default"><span class="glyphicon glyphicon-arrow-right"></span></button>
+                                    <span style="padding: 10px" ng-bind="'Сторінка: ' + $pagination.page + ' / ' + pageCount((objectData | filter : objectsFilter).length)"></span>
+                                    <button ng-disabled="((objectData | filter : objectsFilter).length - ($pagination.pageSize * $pagination.page)) <= 0" ng-click="$pagination.page = $pagination.page + 1; $pagination.pageSearch = $pagination.page;" style="padding: 0px; border-radius: 16px; border-color: #0f5f9f; height: 32px; width: 45px" class="btn btn-default"><span class="glyphicon glyphicon-arrow-right"></span></button>
 
                                     <span class="input-group" style="width: 100px; margin: auto">
                                         <input type="text" class="form-control" type="text" ng-model="$pagination.pageSearch" onkeyup="if(this.value[0] == 0) this.value=''; else this.value = this.value.replace (/\D/g, '')">
                                             <div class="input-group-btn">
-                                            <button class="btn btn-primary" ng-click="validatePageInput($pagination.pageSearch, (skillData | filter : skillsFilter).length);">Go!</button>
+                                            <button class="btn btn-primary" ng-click="validatePageInput($pagination.pageSearch, (objectData | filter : objectsFilter).length);">Go!</button>
                                         </div>
                                     </span>
                                 </ul>
@@ -157,34 +157,34 @@
                             <!--ACTUAL-->
                             <div ng-if="!$pagination.enabled">
                                 <h4 ng-if="$currentGroup" ng-bind="'Група: ' + $currentGroup.name"></h4>
-                                <div ng-repeat="item_skill in skillData | filter : skillsFilter">
+                                <div ng-repeat="item_object in objectData | filter : objectsFilter">
                                     <div class="panel panel-info">
                                         <div class="panel-body" style="padding: 5px">
                                             <div class="row">
                                                 <div class="col-lg-10 col-md-12 col-sm-12 col-xs-12">
-                                                    <h4><span ng-bind="($index+1) + '. '"></span><a href="#skill/{{item_skill.id}}/show"><span ng-bind="item_skill.name"></span></a></h4>
+                                                    <h4><span ng-bind="($index+1) + '. '"></span><a href="#object/{{item_object.id}}/show"><span ng-bind="item_object.name"></span></a></h4>
                                                 </div>
                                                 <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12">
                                                     <div ng-if="$user">
-                                                        <a href="#skill/{{item_skill.id}}/edit"><button class="btn btn-primary" type="button"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button></a>
-                                                        <button ng-controller="ActionsCtrl" ng-click="prepareSkillToRemove(item_skill.id, item_skill.name, 0, item_skill.user_id, $user.id);" class="btn btn-danger" type="button"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                                                        <a href="#object/{{item_object.id}}/edit"><button class="btn btn-primary" type="button"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button></a>
+                                                        <button ng-controller="ActionsCtrl" ng-click="prepareObjectToRemove(item_object.id, item_object.name, 0, item_object.user_id, $user.id);" class="btn btn-danger" type="button"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="panel-footer">
                                             <div class="row">
-                                                <p ng-if="item_skill.description" style="margin-left: 15px"><span><b>Опис: </b></span><span ng-bind="item_skill.description"></span></p>
+                                                <p ng-if="item_object.description" style="margin-left: 15px"><span><b>Опис: </b></span><span ng-bind="item_object.description"></span></p>
                                                 <div class="col-lg-5 col-xs-12">
-                                                    <p><span><b>Група: </b></span><span ng-bind="item_skill.path"></span></p>
-                                                    <p><span><b>Користувач: </b></span><span ng-bind="item_skill.user"></span></p>
-                                                    <p><span><b>Створено: </b></span><span ng-bind="item_skill.creation_date"></span></p>
+                                                    <p><span><b>Група: </b></span><span ng-bind="item_object.path"></span></p>
+                                                    <p><span><b>Користувач: </b></span><span ng-bind="item_object.user"></span></p>
+                                                    <p><span><b>Створено: </b></span><span ng-bind="item_object.creation_date"></span></p>
                                                 </div>
                                                 <div class="col-lg-7 col-xs-12">
-                                                    <p ng-if="item_skill.indicators.length != 0"><b>Індикатори:</b></p>
-                                                    <div ng-repeat="item_indicator in item_skill.indicators">
+                                                    <p ng-if="item_object.indicators.length != 0"><b>Індикатори:</b></p>
+                                                    <div ng-repeat="item_indicator in item_object.indicators">
                                                         <ul>
-                                                            <li><a href="#skill/{{item_skill.id}}/indicator/{{item_indicator.id}}/show"><span ng-bind="item_indicator.name"></span></a></li>
+                                                            <li><a href="#object/{{item_object.id}}/indicator/{{item_indicator.id}}/show"><span ng-bind="item_indicator.name"></span></a></li>
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -192,13 +192,13 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div ng-if="(skillData | filter : skillsFilter).length == 0">
-                                    <h4>Компетенцій по даному критерію не знайдено...</h4>
+                                <div ng-if="(objectData | filter : objectsFilter).length == 0">
+                                    <h4>Об'єктів по даному критерію не знайдено...</h4>
                                 </div>
                             </div>
                         </div>
-                        <div ng-if="skillData == -1">
-                            Не вдалося отримати компетенції. Будь ласка, спробуйте перезавантажити сторінку.
+                        <div ng-if="objectData == -1">
+                            Не вдалося отримати об'єкти. Будь ласка, спробуйте перезавантажити сторінку.
                         </div>
                     </div>
                 </div>

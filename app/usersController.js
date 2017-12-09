@@ -100,6 +100,7 @@ mainApp.controller('UsersController', ['$scope', '$rootScope', '$http', '$locati
         if(!$scope.validateRegistrationForm()){
             return;
         }
+
         var params =  {
             login: $scope.user.login,
             password: $scope.user.password,
@@ -108,6 +109,7 @@ mainApp.controller('UsersController', ['$scope', '$rootScope', '$http', '$locati
             organization: $scope.user.organization,
             userID: -1
         };
+
         AuthModel.save(params, function(res){
             console.log(res);
             $scope.login();
@@ -149,7 +151,7 @@ mainApp.controller('UsersController', ['$scope', '$rootScope', '$http', '$locati
 
     //Видалення користувача
     $scope.removeUser = function () {
-        var answer = confirm("Ви дійсно бажаєте видалити користувача?\nУсі Ваші компетенції, групи, індикатори, дії не будуть видалені.");
+        var answer = confirm("Ви дійсно бажаєте видалити користувача?\nУсі Ваші об'єкти, групи, індикатори, дії не будуть видалені.");
         if (answer === true) {
             var params = $rootScope.$user.id;
             AuthModel.delete({id: params}, function (res) {
@@ -269,33 +271,29 @@ mainApp.controller('UsersController', ['$scope', '$rootScope', '$http', '$locati
         }
 		else{
 			//Перевірка, чи існує даний користувач в БД (логін)
-			var result = false;
 			var params = {
 				login: $scope.user.login
 			};
+
 			AuthModel.get({'id': JSON.stringify(params)}, function (res) {
 				if (res.data === undefined) {
 					console.log('Не вдалося перевірити логін на існування! (res.data === undefined)');
 					showMessageWindow("alert alert-danger", "Увага!", "Не вдалося перевірити логін на існування!");
+                    return false;
 				}
 				else {
 					if(Number(res.data) != 0){ //кількість користувачів з тиким логіном не 0
 						showMessageWindow("alert alert-danger", "Увага!", "Користувач з даним логіном існує!");
-					}
-					else{
-						result = true;
+                        return false;
 					}
 				}
 			}, function (err) {
 				console.log("Не вдалося перевірити логін на існування!");
 				showMessageWindow("alert alert-danger", "Увага!", "Не вдалося перевірити логін на існування!");
+                return false;
 			});
-			
-			if(!result){
-				return false;
-			}
 		}
-		
+        
         if(!$scope.checkPassword()){
             return false;
         }

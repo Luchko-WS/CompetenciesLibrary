@@ -200,9 +200,9 @@ mainApp.controller('ActionsCtrl', ['$scope', '$rootScope', '$http', '$location',
         editActions : true,
         removeActions : true,
         name : '',
-        skillObject : true,
-        groupObject : true,
-        indicatorObject : true
+        object : true,
+        group : true,
+        indicator : true
     };
 
     $scope.actionsFilter = function (obj) {
@@ -229,13 +229,13 @@ mainApp.controller('ActionsCtrl', ['$scope', '$rootScope', '$http', '$location',
             return false;
         }
 
-        if(!$scope.filterParam.skillObject && obj.item_type == 'skill'){
+        if(!$scope.filterParam.object && obj.item_type == 'object'){
             return false;
         }
-        if(!$scope.filterParam.groupObject && obj.item_type == 'group'){
+        if(!$scope.filterParam.group && obj.item_type == 'group'){
             return false;
         }
-        if(!$scope.filterParam.indicatorObject && obj.item_type == 'indicator'){
+        if(!$scope.filterParam.indicator && obj.item_type == 'indicator'){
             return false;
         }
 

@@ -10,8 +10,8 @@ mainApp.controller('IndicatorsCtrl', ['$scope', '$rootScope', '$http', '$locatio
     /**
     БЛОК РОБОТИ З ПАРАМЕТРАМИ АДРЕСНОГО РЯДКА
      **/
-    $scope.getRouteParamSkillID_IndicatorCtrl = function () {
-        return $routeParams.skillID;
+    $scope.getRouteParamObjectID_IndicatorCtrl = function () {
+        return $routeParams.objectID;
     };
     $scope.getRouteParamIndicatorID_IndicatorCtrl = function () {
         return $routeParams.id;
@@ -58,8 +58,8 @@ mainApp.controller('IndicatorsCtrl', ['$scope', '$rootScope', '$http', '$locatio
                 $scope.indicatorData = -1;
             }
             else {
-                if(res.data[0].skill_id != $routeParams.skillId && $routeParams.skillId != undefined){
-                    console.log('Не вдалося отримати індикатор! (res.data[0].skill_id != $routeParams.skillId)');
+                if(res.data[0].object_id != $routeParams.objectId && $routeParams.objectId != undefined){
+                    console.log('Не вдалося отримати індикатор! (res.data[0].object_id != $routeParams.objectId)');
                     $scope.indicatorData = -1;
                 }
                 else {
@@ -78,25 +78,25 @@ mainApp.controller('IndicatorsCtrl', ['$scope', '$rootScope', '$http', '$locatio
 
     //СТВОРЕННЯ ІНДИКАТОРУ
     //Підготовка до створення індикатору
-    $scope.prepareIndicatorToCreate = function (indicatorName, indicatorDescription, parentSkillID, skillUserID, currentUserID) {
+    $scope.prepareIndicatorToCreate = function (indicatorName, indicatorDescription, parentObjectID, objectUserID, currentUserID) {
         if(!indicatorName){
             showMessageWindow("alert alert-danger", "Увага!", "Заповніть поле назви!");
             return;
         }
-        if (currentUserID != skillUserID) {
-            $rootScope.saveAction('create', 'indicator', -1, indicatorName, null, indicatorDescription, parentSkillID, currentUserID);
+        if (currentUserID != objectUserID) {
+            $rootScope.saveAction('create', 'indicator', -1, indicatorName, null, indicatorDescription, parentObjectID, currentUserID);
             showMessageWindow("alert alert-info", "Увага!", "Дану дію додано до списку.");
             return;
         }
-        $scope.createIndicator(indicatorName, parentSkillID, indicatorDescription, currentUserID);
+        $scope.createIndicator(indicatorName, parentObjectID, indicatorDescription, currentUserID);
     };
 
     //Створення індикатору
-    $scope.createIndicator = function(indicatorName, skillID, indicatorDescription, userID){
+    $scope.createIndicator = function(indicatorName, objectID, indicatorDescription, userID){
         var params =  {
             indicatorName: indicatorName,
             indicatorDescription: indicatorDescription,
-            skillID: skillID,
+            objectID: objectID,
             userID: userID
         };
         IndicatorsModel.create(params, function(res){
@@ -112,26 +112,26 @@ mainApp.controller('IndicatorsCtrl', ['$scope', '$rootScope', '$http', '$locatio
 
     //РЕДАГУВАННЯ ІНДИКАТОРУ
     //Підготовка індикатору до оновлення
-    $scope.prepareIndicatorToUpdate = function (indicatorID, indicatorName, newIndicatorName, newIndicatorDescription, newParentSkillID, userID, currentUserID) {
+    $scope.prepareIndicatorToUpdate = function (indicatorID, indicatorName, newIndicatorName, newIndicatorDescription, newParentObjectID, userID, currentUserID) {
         if(!indicatorName){
             showMessageWindow("alert alert-danger", "Увага!", "Заповніть поле назви!");
             return;
         }
         if (userID != currentUserID) {
-            $rootScope.saveAction('edit', 'indicator', indicatorID, indicatorName, newIndicatorName, newIndicatorDescription, newParentSkillID, currentUserID);
+            $rootScope.saveAction('edit', 'indicator', indicatorID, indicatorName, newIndicatorName, newIndicatorDescription, newParentObjectID, currentUserID);
             showMessageWindow("alert alert-info", "Увага!", "Дану дію додано до списку.");
             return;
         }
-        $scope.updateIndicator(indicatorID, newIndicatorName, newParentSkillID, newIndicatorDescription);
+        $scope.updateIndicator(indicatorID, newIndicatorName, newParentObjectID, newIndicatorDescription);
     };
 
     //Оновлення індикатору
-    $scope.updateIndicator = function(indicatorID, indicatorName, skillID, descriptionValue){
+    $scope.updateIndicator = function(indicatorID, indicatorName, objectID, descriptionValue){
         var params =  {
             indicatorID: indicatorID,
             indicatorName: indicatorName,
             indicatorDescription: descriptionValue,
-            skillID: skillID
+            objectID: objectID
         };
         IndicatorsModel.update({'id':JSON.stringify(params)}, function(res){
             console.log(res);
@@ -146,26 +146,26 @@ mainApp.controller('IndicatorsCtrl', ['$scope', '$rootScope', '$http', '$locatio
 
     //ВИДАЛЕННЯ ІНДИКАТОРУ
     //Підготовка до видалення індикатору
-    $scope.prepareIndicatorToRemove = function (indicatorID, indicatorName, parentSkillID, userID, currentUserID) {
+    $scope.prepareIndicatorToRemove = function (indicatorID, indicatorName, parentObjectID, userID, currentUserID) {
         var answer = confirm("Ви дійсно бажаєте видалити індикатор? ");
         if (answer === true) {
             if (userID != currentUserID) {
-                $rootScope.saveAction('remove', 'indicator', indicatorID, indicatorName, null, null, parentSkillID, currentUserID);
+                $rootScope.saveAction('remove', 'indicator', indicatorID, indicatorName, null, null, parentObjectID, currentUserID);
                 showMessageWindow("alert alert-info", "Увага!", "Дану дію додано до списку.");
                 return;
             }
-            $scope.removeIndicator(indicatorID, parentSkillID);
+            $scope.removeIndicator(indicatorID, parentObjectID);
         }
     };
 
     //Видалення індикатору
-    $scope.removeIndicator = function(indicatorID, skillID){
+    $scope.removeIndicator = function(indicatorID, objectID){
         var params = indicatorID;
         IndicatorsModel.delete({id:params}, function (res) {
             console.log("Індикатор видалено!");
             console.log(res);
-            if(skillID) {
-                $rootScope.getSkill(skillID, 1);
+            if(objectID) {
+                $rootScope.getObject(objectID, 1);
             }
         }, function (err) {
             console.log("Індикатор не видалено!");

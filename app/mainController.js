@@ -1,7 +1,7 @@
 mainApp.controller('MainCtrl', ['$scope', '$rootScope', '$http', '$location', '$routeParams', 'IOModel',
-    'GroupsModel', 'SkillsModel', 'IndicatorsModel',
+    'GroupsModel', 'ObjectsModel', 'IndicatorsModel',
     function ($scope, $rootScope, $http, $location, $routeParams, IOModel,
-              GroupsModel, SkillsModel, IndicatorsModel) {
+              GroupsModel, ObjectsModel, IndicatorsModel) {
 
     //Об'єкт, що зберігає параметри посторінкової навігації
     //Використовується на головній сторінці
@@ -171,21 +171,21 @@ mainApp.controller('MainCtrl', ['$scope', '$rootScope', '$http', '$location', '$
                 });
             }
             else if(item.node_type == 1) {
-                //save skill
+                //save object
                 var params =  {
-                    skillName: item.name,
+                    objectName: item.name,
                     groupID: parent_id,
-                    skillDescription: item.description,
+                    objectDescription: item.description,
                     userID: item.user_id
                 };
                 console.log("CREATE");
-                SkillsModel.create(params, function(res){
-                    console.log("Компетенцію створено!");
+                ObjectsModel.create(params, function(res){
+                    console.log("Об'єкт створено!");
                     console.log(res);
                     updateImportProgress(++stepImport);
                     return true;
                 }, function (err) {
-                    console.log("Компетенцію не створено!");
+                    console.log("Об'єкт не створено!");
                     console.log(err);
                     updateImportProgress(++stepImport);
                     return true;
@@ -200,7 +200,7 @@ mainApp.controller('MainCtrl', ['$scope', '$rootScope', '$http', '$location', '$
             var params =  {
                 indicatorName: item.name,
                 indicatorDescription: item.description,
-                skillID: parent_id,
+                objectID: parent_id,
                 userID: item.user_id
             };
             IndicatorsModel.create(params, function(res){
@@ -310,13 +310,13 @@ mainApp.controller('MainCtrl', ['$scope', '$rootScope', '$http', '$location', '$
             if ($scope.uploadData[i].node_type == 1) {
                 if ($scope.uploadData[i].indicators == null) {
                     alert("Імпортовані дані не валідні! " +
-                        "Компетенція #" + i + " " + $scope.uploadData[i].name + " не містить поле індикаторів!");
+                        "Об'єкт #" + i + " " + $scope.uploadData[i].name + " не містить поле індикаторів!");
                     return false;
                 }
                 for (var j = 0; j < $scope.uploadData[i].indicators.length; j++) {
                     if ($scope.uploadData[i].indicators[j].name == null || $scope.uploadData[i].indicators[j].name.length == 0) {
                         alert("Імпортовані дані не валідні! " +
-                            "Індикатор компетенції #" + i + " " + $scope.uploadData[i].name + " не містить поле назви!");
+                            "Індикатор об'єкта #" + i + " " + $scope.uploadData[i].name + " не містить поле назви!");
                         return false;
                     }
                 }

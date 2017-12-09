@@ -6,8 +6,8 @@ mainApp.factory('IOModel', ['$resource', function ($resource) {
     });
 }]);
 
-mainApp.factory('SkillsModel', ['$resource', function ($resource) {
-    return $resource('http://localhost:8030/api/skills.php/params/:id', {'id':'@id'}, {
+mainApp.factory('ObjectsModel', ['$resource', function ($resource) {
+    return $resource('http://localhost:8030/api/objects.php/params/:id', {'id':'@id'}, {
         'create' : {method: 'POST'},
         'update': {method: 'PUT'}
     });

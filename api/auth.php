@@ -38,7 +38,7 @@ $app->add(new \Slim\Middleware\JwtAuthentication([
 ]));
 
 //file_put_contents(filename, body);
-//Отримання даних про компетенції
+//Отримання даних про об'єкти
 $app->get('/auth/{id}', function (Request $request, Response $response, $args) {
     $input = json_decode($args['id'], true);
     $login = $input["login"];

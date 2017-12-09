@@ -95,7 +95,7 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
                 });
                 $('#tree').on('nodeSelected', function (event, data) {
                     $rootScope.$currentGroup = data;
-                    $rootScope.getSkillsByGroup($rootScope.$currentGroup.id);
+                    $rootScope.getObjectsByGroup($rootScope.$currentGroup.id);
                     $rootScope.$pagination.page = 1;
                     $('#editTreeNodeButtons').show();
                     if (data.node_level == 1) {
@@ -111,7 +111,7 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
             console.log(err);
         });
     };
-    //Отримання дерева (при редагуванні груп, компетенцій, імпорті файлів)
+    //Отримання дерева (при редагуванні груп, об'єктів, імпорті файлів)
     $rootScope.getGroupTree = function () {
         $rootScope.$tree = null;
         $rootScope.$currentGroup = null;
@@ -263,12 +263,12 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
     };
 
     //Копіювання групи
-    $scope.copyGroup = function(groupID, groupName, parentGroupID, descriptionValue, userID, reloadEditView){
+    $scope.copyGroup = function(groupID, groupName, parentGroupID, groupDescription, userID, reloadEditView){
         var params =  {
             groupID: groupID,
             groupName: groupName,
             parentGroupID: parentGroupID,
-            groupDescription: descriptionValue,
+            groupDescription: groupDescription,
             isCopy: true,
             userID: userID
         };
@@ -374,7 +374,7 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
                 $rootScope.getTree();
             }
             else {
-                $rootScope.getAllSkills();
+                $rootScope.getAllObjects();
                 $rootScope.getGroupTreeForMainPage();
             }
         }, function (err){

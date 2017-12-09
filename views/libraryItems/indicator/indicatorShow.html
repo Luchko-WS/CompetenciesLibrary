@@ -8,15 +8,15 @@
 <!-- Перегляд індикатору -->
 <div class="thumbnail">
     <div style="margin: 10px; margin-left: 20px; margin-right: 20px">
-        <div ng-controller="SkillsCtrl">
-            <div ng-init="getSkill(getRouteParamSkillID_IndicatorCtrl())"></div>
+        <div ng-controller="ObjectsCtrl">
+            <div ng-init="getObject(getRouteParamObjectID_IndicatorCtrl())"></div>
 
-            <div ng-if="skillData != null && skillData != -1">
-                <h2>Компетенція:</h2>
-                <h3 ng-bind="skillData[0].name"></h3>
-                <h4 ng-bind="'Група: ' + skillData[0].path"></h4>
-                <h4 ng-bind="'Користувач: ' + skillData[0].user"></h4>
-                <h4 ng-bind="'Створено: ' + skillData[0].creation_date"></h4>
+            <div ng-if="objectData != null && objectData != -1">
+                <h2>Об'єкт:</h2>
+                <h3 ng-bind="objectData[0].name"></h3>
+                <h4 ng-bind="'Група: ' + objectData[0].path"></h4>
+                <h4 ng-bind="'Користувач: ' + objectData[0].user"></h4>
+                <h4 ng-bind="'Створено: ' + objectData[0].creation_date"></h4>
 
                 <div ng-controller="IndicatorsCtrl">
                     <div ng-init="getIndicator(getRouteParamIndicatorID_IndicatorCtrl(), 1)"></div>
@@ -27,8 +27,8 @@
                         <h4 ng-bind="'Створено: ' + indicatorData[0].creation_date"></h4>
                         <h4 ng-if="descriptionText" ng-bind="'Опис: ' + descriptionText"></h4>
 
-                        <a ng-if="$user" href="#skill/{{getRouteParamSkillID_IndicatorCtrl()}}/indicator/{{getRouteParamIndicatorID_IndicatorCtrl()}}/edit"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">Редагувати індикатор</button></a>
-                        <a href="#skill/{{getRouteParamSkillID_IndicatorCtrl()}}/show"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">Назад до компетенції</button></a>
+                        <a ng-if="$user" href="#object/{{getRouteParamObjectID_IndicatorCtrl()}}/indicator/{{getRouteParamIndicatorID_IndicatorCtrl()}}/edit"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">Редагувати індикатор</button></a>
+                        <a href="#object/{{getRouteParamObjectID_IndicatorCtrl()}}/show"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">Назад до об'єкта</button></a>
                     </div>
 
                     <div ng-if="indicatorData==null" style="text-align: center">
@@ -38,8 +38,8 @@
                     <div ng-if="indicatorData == -1">
                         <div class="alert alert-warning">
                             <h4><b>Увага!</b></h4>
-                            <p style="margin-bottom: 10px">Не вдалося отримати індикатор (id=<span ng-bind="getRouteParamIndicatorID_IndicatorCtrl()"></span>) компетенції (id=<span ng-bind="getRouteParamSkillID_IndicatorCtrl()"></span>)!</p>
-                            <a href="#skill/{{getRouteParamSkillID_IndicatorCtrl()}}/show"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">До компетенції</button></a>
+                            <p style="margin-bottom: 10px">Не вдалося отримати індикатор (id=<span ng-bind="getRouteParamIndicatorID_IndicatorCtrl()"></span>) об'єкта (id=<span ng-bind="getRouteParamObjectID_IndicatorCtrl()"></span>)!</p>
+                            <a href="#object/{{getRouteParamObjectID_IndicatorCtrl()}}/show"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">До об'єкта</button></a>
                             <a href="#main"><button style="margin-bottom: 5px" class="btn btn-primary" type="button">На головну</button></a>
                             <a ng-if="$user" href="#editLibrary"><button ng-click="" style="margin-bottom: 5px" class="btn btn-primary" type="button">До редактору</button></a>
                         </div>
@@ -47,14 +47,14 @@
                 </div>
             </div>
 
-            <div ng-if="skillData==null" style="text-align: center">
+            <div ng-if="objectData==null" style="text-align: center">
                 <img src="assets/img/loading.gif"  width="120px" heidht ="120px">
             </div>
 
-            <div ng-show="skillData == -1">
+            <div ng-show="objectData == -1">
                 <div class="alert alert-warning">
                     <h4><b>Увага!</b></h4>
-                    <p style="margin-bottom: 10px">Не вдалося отримати компетенцію (id=<span ng-bind="getRouteParamSkillID_IndicatorCtrl()"></span>)!</p>
+                    <p style="margin-bottom: 10px">Не вдалося отримати об'єкт (id=<span ng-bind="getRouteParamObjectID_IndicatorCtrl()"></span>)!</p>
                     <a href="#main"><button class="btn btn-primary" type="button">На головну</button></a>
                     <a ng-if="$user" href="#editLibrary"><button ng-click="" class="btn btn-primary" type="button">До редактору</button></a>
                 </div>

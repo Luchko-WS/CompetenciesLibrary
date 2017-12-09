@@ -42,20 +42,20 @@ mainApp.config(['$routeProvider', function ($routeProvider){
             templateUrl: 'views//actions//loadActionPage.html',
             controller: 'ActionsCtrl'
         })
-        .when('/actions/id/:id/skill/create', {
-            templateUrl: 'views//actions//skill//createAction.html',
+        .when('/actions/id/:id/object/create', {
+            templateUrl: 'views//actions//object//createAction.html',
             controller: 'ActionsCtrl'
         })
-        .when('/actions/id/:id/skill/:itemID/copy', {
-            templateUrl: 'views//actions//skill//copyAction.html',
+        .when('/actions/id/:id/object/:itemID/copy', {
+            templateUrl: 'views//actions//object//copyAction.html',
             controller: 'ActionsCtrl'
         })
-        .when('/actions/id/:id/skill/:itemID/edit', {
-            templateUrl: 'views//actions//skill//editAction.html',
+        .when('/actions/id/:id/object/:itemID/edit', {
+            templateUrl: 'views//actions//object//editAction.html',
             controller: 'ActionsCtrl'
         })
-        .when('/actions/id/:id/skill/:itemID/remove', {
-            templateUrl: 'views//actions//skill//removeAction.html',
+        .when('/actions/id/:id/object/:itemID/remove', {
+            templateUrl: 'views//actions//object//removeAction.html',
             controller: 'ActionsCtrl'
         })
         .when('/actions/id/:id/group/create', {
@@ -87,28 +87,28 @@ mainApp.config(['$routeProvider', function ($routeProvider){
             controller: 'ActionsCtrl'
         })
         //ITEMS
-        //SKILL
-        .when('/skill/create', {
-            templateUrl: 'views//libraryItems//skill//skillCreate.html'
+        //OBJECT
+        .when('/object/create', {
+            templateUrl: 'views//libraryItems//object//objectCreate.html'
         })
-        .when('/skill/:id/edit', {
-            templateUrl: 'views//libraryItems//skill//skillEdit.html',
-            controller: 'SkillsCtrl'
+        .when('/object/:id/edit', {
+            templateUrl: 'views//libraryItems//object//objectEdit.html',
+            controller: 'ObjectsCtrl'
         })
-        .when('/skill/:id/show', {
-            templateUrl: 'views//libraryItems//skill//skillShow.html',
-            controller: 'SkillsCtrl'
+        .when('/object/:id/show', {
+            templateUrl: 'views//libraryItems//object//objectShow.html',
+            controller: 'ObjectsCtrl'
         })
         //INDICATOR
-        .when('/skill/:skillID/indicator/create', {
+        .when('/object/:objectID/indicator/create', {
             templateUrl: 'views//libraryItems//indicator//indicatorCreate.html',
             controller: 'IndicatorsCtrl'
         })
-        .when('/skill/:skillID/indicator/:id/edit', {
+        .when('/object/:objectID/indicator/:id/edit', {
             templateUrl: 'views//libraryItems//indicator//indicatorEdit.html',
             controller: 'IndicatorsCtrl'
         })
-        .when('/skill/:skillID/indicator/:id/show', {
+        .when('/object/:objectID/indicator/:id/show', {
             templateUrl: 'views//libraryItems//indicator//indicatorShow.html',
             controller: 'IndicatorsCtrl'
         })
@@ -135,7 +135,7 @@ mainApp.config(['$httpProvider', function ($httpProvider) {
  **/
 mainApp.run(['$rootScope', 'ActionModel', 'AuthModel', function ($rootScope, ActionModel) {
     //Змінні дерева та поточної групи
-    //Використовуються в головній сторінці, створенні, редагуванні компетенцій та груп
+    //Використовуються в головній сторінці, створенні, редагуванні об'єктів та груп
     $rootScope.$tree = null;
     $rootScope.$currentGroup = null;
 
