@@ -1,0 +1,11 @@
+api/PHPExcel/
+api/vendor/
+bower_components/
+node_modules/
+views/testView.html
+.idea/
+api/fileUpload.php
+api/PHPExcel.php
+api/composer.lock
+api/exportFile.json
+api/ExportFile.xls
