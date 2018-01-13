@@ -7,7 +7,7 @@ use Firebase\JWT\JWT;
 require 'vendor/autoload.php';
 require 'db.php';
 
-DB::init('mysql:dbname=prozorro;host=127.0.0.1;port=3306', 'root', 'WhiteShark28021995');
+DB::init('mysql:dbname=prozorro;host=localhost;port=3306', 'root', 'WhiteShark28021995');
 
 $app = new \Slim\App;
 

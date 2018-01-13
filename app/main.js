@@ -139,9 +139,21 @@ mainApp.run(['$rootScope', 'ActionModel', 'AuthModel', function ($rootScope, Act
     $rootScope.$tree = null;
     $rootScope.$currentGroup = null;
 
+    $rootScope.$mainTabTitle = "Головна сторінка";
+    $rootScope.$editorTabTitle = "Редактор бібліотеки";
+    $rootScope.$actionsTabTitle = "Дії користувачів ";
+    $rootScope.$registrationTabTitle = "Зареєструватися";
+
     //Отримання даних про користувача зі сховища браузера
     var authUser = window.localStorage.getItem('authUser');
     $rootScope.$user = authUser ? JSON.parse(authUser) : null;
+
+    if($rootScope.$user) {
+        $rootScope.$loginTabTitle = "Вийти";
+    }
+    else {
+        $rootScope.$loginTabTitle = "Увійти";
+    }
     //Кількість нових дій
     $rootScope.$countOfActions = '';
 
@@ -152,23 +164,27 @@ mainApp.run(['$rootScope', 'ActionModel', 'AuthModel', function ($rootScope, Act
                 actionID: 'init',
                 userID: $rootScope.$user.id
             };
-            ActionModel.get({'id': JSON.stringify(params)}, function (res) {
-                if (res.data === undefined) {
-                    console.log('Не вдалось ініціалізувати список дій для користувача (res.data === undefined)');
-                }
-                else {
-                    console.log(res.data);
-                    if (Number(res.data.count) != 0) {
-                        $rootScope.$countOfActions = res.data.count;
+
+            function asyncQuery() {
+                ActionModel.get({'id': JSON.stringify(params)}, function (res) {
+                    if (res.data === undefined) {
+                        console.log('Не вдалось ініціалізувати список дій для користувача (res.data === undefined)');
                     }
-                    $rootScope.$user.firstActionID = Number(res.data.firstActionID);
-                    $rootScope.$user.lastActionID = Number(res.data.lastActionID);
-                    window.localStorage.setItem('authUser', JSON.stringify($rootScope.$user));
-                }
-            }, function (err) {
-                console.log('Не вдалось ініціалізувати список дій для користувача');
-                console.log(err);
-            });
+                    else {
+                        console.log(res.data);
+                        if (Number(res.data.count) != 0) {
+                            $rootScope.$countOfActions = res.data.count;
+                        }
+                        $rootScope.$user.firstActionID = Number(res.data.firstActionID);
+                        $rootScope.$user.lastActionID = Number(res.data.lastActionID);
+                        window.localStorage.setItem('authUser', JSON.stringify($rootScope.$user));
+                    }
+                }, function (err) {
+                    console.log('Не вдалось ініціалізувати список дій для користувача');
+                    console.log(err);
+                });
+            };
+            setTimeout(asyncQuery, 0);
         }
     };
     $rootScope.initActionDataForUser();

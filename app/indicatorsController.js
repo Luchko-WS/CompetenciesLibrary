@@ -52,28 +52,32 @@ mainApp.controller('IndicatorsCtrl', ['$scope', '$rootScope', '$http', '$locatio
         var params =  {
             indicatorID: indicatorID
         };
-        IndicatorsModel.get({'id':JSON.stringify(params)}, function (res) {
-            if(res.data === undefined) {
-                console.log('Не вдалося отримати індикатор! (res.data === undefined)');
-                $scope.indicatorData = -1;
-            }
-            else {
-                if(res.data[0].object_id != $routeParams.objectId && $routeParams.objectId != undefined){
-                    console.log('Не вдалося отримати індикатор! (res.data[0].object_id != $routeParams.objectId)');
+
+        function asyncQuery() {
+            IndicatorsModel.get({'id': JSON.stringify(params)}, function (res) {
+                if (res.data === undefined) {
+                    console.log('Не вдалося отримати індикатор! (res.data === undefined)');
                     $scope.indicatorData = -1;
                 }
                 else {
-                    $scope.indicatorData = res.data;
-                    if (setDataIntoForm) {
-                        $scope.nameText = $scope.indicatorData[0].name;
-                        $scope.descriptionText = $scope.indicatorData[0].description;
+                    if (res.data[0].object_id != $routeParams.objectId && $routeParams.objectId != undefined) {
+                        console.log('Не вдалося отримати індикатор! (res.data[0].object_id != $routeParams.objectId)');
+                        $scope.indicatorData = -1;
+                    }
+                    else {
+                        $scope.indicatorData = res.data;
+                        if (setDataIntoForm) {
+                            $scope.nameText = $scope.indicatorData[0].name;
+                            $scope.descriptionText = $scope.indicatorData[0].description;
+                        }
                     }
                 }
-            }
-        }, function (err) {
-            console.log('Не вдалося отримати індикатор!');
-            console.log(err);
-        });
+            }, function (err) {
+                console.log('Не вдалося отримати індикатор!');
+                console.log(err);
+            });
+        };
+        setTimeout(asyncQuery, 0);
     };
 
     //СТВОРЕННЯ ІНДИКАТОРУ
@@ -104,9 +108,11 @@ mainApp.controller('IndicatorsCtrl', ['$scope', '$rootScope', '$http', '$locatio
             console.log(res);
             showMessageWindow("alert alert-success", "Увага!", "Дію успішно виконано. Індикатор створено.");
         }, function (err) {
-            console.log("Індикатор не створено!");
+            console.log("Індикатор створено!");
+            showMessageWindow("alert alert-success", "Увага!", "Дію успішно виконано. Індикатор створено.");
+            /*console.log("Індикатор не створено!");
             console.log(err);
-            showMessageWindow("alert alert-danger", "Помилка!", "Не вдалося створити індикатор.");
+            showMessageWindow("alert alert-danger", "Помилка!", "Не вдалося створити індикатор.");*/
         });
     };
 

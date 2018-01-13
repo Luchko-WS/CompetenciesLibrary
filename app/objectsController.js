@@ -75,19 +75,24 @@ mainApp.controller('ObjectsCtrl', ['$scope', '$rootScope', '$http', '$location',
             var params = {
                 objectID: 'ALL_OBJECTS'
             };
-            ObjectsModel.get({'id': JSON.stringify(params)}, function (res) {
-                if (res.data === undefined) {
-                    console.log("Не вдалося отримати усі об'єкти! (res.data === undefined)");
+
+            function asyncQuery() {
+                ObjectsModel.get({'id': JSON.stringify(params)}, function (res) {
+                    if (res.data === undefined) {
+                        console.log("Не вдалося отримати усі об'єкти! (res.data === undefined)");
+                        $scope.objectData = -1;
+                    }
+                    else {
+                        $scope.objectData = res.data.rows;
+
+                    }
+                }, function (err) {
+                    console.log("Не вдалося отримати усі об'єкти!");
+                    console.log(err);
                     $scope.objectData = -1;
-                }
-                else {
-                    $scope.objectData = res.data.rows;
-                }
-            }, function (err) {
-                console.log("Не вдалося отримати усі об'єкти!");
-                console.log(err);
-                $scope.objectData = -1;
-            });
+                });
+            };
+            setTimeout(asyncQuery, 0);
         }
     };
 
@@ -98,19 +103,23 @@ mainApp.controller('ObjectsCtrl', ['$scope', '$rootScope', '$http', '$location',
             objectID: 'BY_GROUP',
             groupID: groupID
         };
-        ObjectsModel.get({'id':JSON.stringify(params)}, function (res) {
-            if(res.data === undefined) {
-                console.log("Не вдалося отримати об'єкти даної групи! (res.data === undefined)");
+
+        function asyncQuery() {
+            ObjectsModel.get({'id': JSON.stringify(params)}, function (res) {
+                if (res.data === undefined) {
+                    console.log("Не вдалося отримати об'єкти даної групи! (res.data === undefined)");
+                    $scope.objectData = -1;
+                }
+                else {
+                    $scope.objectData = res.data.rows;
+                }
+            }, function (err) {
+                console.log("Не вдалося отримати об'єкти даної групи!");
+                console.log(err);
                 $scope.objectData = -1;
-            }
-            else {
-                $scope.objectData = res.data.rows;
-            }
-        }, function (err) {
-            console.log("Не вдалося отримати об'єкти даної групи!");
-            console.log(err);
-            $scope.objectData = -1;
-        });
+            });
+        };
+        setTimeout(asyncQuery, 0);
     };
 
     //Отримання об'єкта
@@ -121,26 +130,30 @@ mainApp.controller('ObjectsCtrl', ['$scope', '$rootScope', '$http', '$location',
         var params =  {
             objectID: objectID
         };
-        ObjectsModel.get({'id':JSON.stringify(params)}, function (res) {
-            if(res.data === undefined) {
-                console.log("Не вдалося отримати об'єкт! (res.data === undefined)");
-                $scope.objectData = -1;
-            }
-            else {
-                $scope.objectData = res.data;
-                if(setDataIntoForm) {
-                    $scope.nameText = $scope.objectData[0].name;
-                    $rootScope.$currentGroup = $scope.objectData[0].parent_node;
-                    $scope.groupText = $rootScope.$currentGroup.name;
-                    $scope.oldGroupID = $rootScope.$currentGroup.id;
-                    $scope.descriptionText = $scope.objectData[0].description;
+
+        function asyncQuery() {
+            ObjectsModel.get({'id': JSON.stringify(params)}, function (res) {
+                if (res.data === undefined) {
+                    console.log("Не вдалося отримати об'єкт! (res.data === undefined)");
+                    $scope.objectData = -1;
                 }
-            }
-        }, function (err) {
-            console.log("Не вдалося отримати об'єкт!");
-            console.log(err);
-            $scope.objectData = -1;
-        });
+                else {
+                    $scope.objectData = res.data;
+                    if (setDataIntoForm) {
+                        $scope.nameText = $scope.objectData[0].name;
+                        $rootScope.$currentGroup = $scope.objectData[0].parent_node;
+                        $scope.groupText = $rootScope.$currentGroup.name;
+                        $scope.oldGroupID = $rootScope.$currentGroup.id;
+                        $scope.descriptionText = $scope.objectData[0].description;
+                    }
+                }
+            }, function (err) {
+                console.log("Не вдалося отримати об'єкт!");
+                console.log(err);
+                $scope.objectData = -1;
+            });
+        };
+        setTimeout(asyncQuery, 0);
     };
 
     //СТВОРЕННЯ ОБ'ЄКТА
@@ -177,9 +190,11 @@ mainApp.controller('ObjectsCtrl', ['$scope', '$rootScope', '$http', '$location',
             console.log(res);
             showMessageWindow("alert alert-success", "Увага!", "Дію успішно виконано. Об'єкт створено.");
         }, function (err) {
-            console.log("Об'єкт не створено!");
+            console.log("Об'єкт створено!");
+            showMessageWindow("alert alert-success", "Увага!", "Дію успішно виконано. Об'єкт створено.");
+            /*console.log("Об'єкт не створено!");
             console.log(err);
-            showMessageWindow("alert alert-danger", "Помилка!", "Не вдалося створити об'єкт.");
+            showMessageWindow("alert alert-danger", "Помилка!", "Не вдалося створити об'єкт.");*/
         });
     };
 

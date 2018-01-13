@@ -59,6 +59,15 @@ mainApp.controller('UsersController', ['$scope', '$rootScope', '$http', '$locati
     /**
      БЛОК ВХОДУ/ВИХОДУ
      **/
+    $scope.auth = function () {
+        if($rootScope.$user != null) {
+            $scope.logout();
+        }
+        else {
+            $location.path('\login');
+        }
+    };
+
     //Вхід користувача в систему
     $scope.login = function () {
         $scope.message = null;
@@ -72,6 +81,7 @@ mainApp.controller('UsersController', ['$scope', '$rootScope', '$http', '$locati
             window.localStorage.setItem('authUser', JSON.stringify(res.user));
             $rootScope.$user = res.user;
             $rootScope.initActionDataForUser();
+            $rootScope.$loginTabTitle = "Вийти";
 			$location.path('\main');
         }, function (err) {
             console.log(err);
@@ -86,6 +96,7 @@ mainApp.controller('UsersController', ['$scope', '$rootScope', '$http', '$locati
         $rootScope.$countOfActions = '';
         window.localStorage.removeItem('authToken');
         window.localStorage.removeItem('authUser');
+        $rootScope.$loginTabTitle = "Увійти";
     };
     /**
      КІНЕЦЬ БЛОКУ ВХОДУ/ВИХОДУ
@@ -293,7 +304,7 @@ mainApp.controller('UsersController', ['$scope', '$rootScope', '$http', '$locati
                 return false;
 			});
 		}
-        
+
         if(!$scope.checkPassword()){
             return false;
         }

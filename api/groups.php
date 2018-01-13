@@ -6,7 +6,7 @@ require 'vendor/autoload.php';
 require 'db.php';
 require 'PHPExcel.php';
 
-DB::init('mysql:dbname=prozorro;host=127.0.0.1;port=3306', 'root', 'WhiteShark28021995');
+DB::init('mysql:dbname=prozorro;host=localhost;port=3306', 'root', 'WhiteShark28021995');
 
 $app = new \Slim\App;
 
@@ -45,7 +45,7 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
                 "(SELECT CONCAT(first_name, ' ', second_name) FROM users u WHERE u.id = s.user_id), 'невідомий') AS user ".
                 "FROM object_tree s ORDER BY s.left_key;");
             if(count($rows) == 0){
-                $sql = "INSERT INTO object_tree SET left_key = 1, right_key = 2, node_level = 1, name = 'Бібліотека ієрархічних даних', node_type = 0, user_id = 0;";
+                $sql = "INSERT INTO object_tree SET left_key = 1, right_key = 2, node_level = 1, name = 'Бібліотека даних', node_type = 0, user_id = 0;";
                 DB::exec($sql);
                 $rows = DB::fetchAll("SELECT *, IF((SELECT COUNT(*) FROM users u WHERE u.id = s.user_id) <> 0, ".
                     "(SELECT CONCAT(first_name, ' ', second_name) FROM users u WHERE u.id = s.user_id), 'невідомий') AS user ".
@@ -69,7 +69,7 @@ $app->get('/params/{id}', function (Request $request, Response $response, $args)
                 "(SELECT CONCAT(first_name, ' ', second_name) FROM users u WHERE u.id = s.user_id), 'невідомий') AS user ".
                 "FROM object_tree s WHERE s.node_type = 0  ORDER BY s.left_key");
             if(count($rows) == 0){
-                $sql = "INSERT INTO object_tree SET left_key = 1, right_key = 2, node_level = 1, name = 'Бібліотека ієрархічних даних', node_type = 0, user_id = 0;";
+                $sql = "INSERT INTO object_tree SET left_key = 1, right_key = 2, node_level = 1, name = 'Бібліотека даних', node_type = 0, user_id = 0;";
                 DB::exec($sql);
                 $rows = DB::fetchAll("SELECT *, IF((SELECT COUNT(*) FROM users u WHERE u.id = s.user_id) <> 0, ".
                     "(SELECT CONCAT(first_name, ' ', second_name) FROM users u WHERE u.id = s.user_id), 'невідомий') AS user ".

@@ -26,156 +26,161 @@ mainApp.controller('EditViewCtrl', ['$scope', '$rootScope', '$http', '$location'
         var params =  {
             tree: 'GROUPS AND OBJECTS'
         };
-        GroupsModel.get({'id':JSON.stringify(params)}, function (res) {
-            if(res.data === undefined) {
-                console.log('Не вдалося отримати дерево! (res.data === undefined)');
-                $rootScope.$tree = -1;
-            }
-            else {
-                $rootScope.$tree = res.data;
-                $('#infoBox').hide();
-                $('#acceptButton').hide();
-                $('.cancelButton').hide();
 
-                $('#tree1').treeview({data: $scope.formatDataToTree(GROUPS_AND_OBJECTS),
-                    emptyIcon: 'glyphicon glyphicon-star',
-                    showTags: true,
-                    enabledLinks: true
-                    //selectedColor: 'yellow',
-                    //selectedBackColor: 'darkorange'
-                });
+        function asyncQuery() {
+            GroupsModel.get({'id': JSON.stringify(params)}, function (res) {
+                if (res.data === undefined) {
+                    console.log('Не вдалося отримати дерево! (res.data === undefined)');
+                    $rootScope.$tree = -1;
+                }
+                else {
+                    $rootScope.$tree = res.data;
+                    $('#infoBox').hide();
+                    $('#acceptButton').hide();
+                    $('.cancelButton').hide();
 
-                $('#tree1').on('nodeUnselected', function(event, data) {
-                    $('#infoGroup').hide('quickly');
-                    setTimeout("$('#treeGroup').removeClass('col-lg-7 col-md-7'); $('#treeGroup').addClass('col-lg-12 col-md-12')", 200);
-                });
+                    $('#tree1').treeview({
+                        data: $scope.formatDataToTree(GROUPS_AND_OBJECTS),
+                        emptyIcon: 'glyphicon glyphicon-star',
+                        showTags: true,
+                        enabledLinks: true
+                        //selectedColor: 'yellow',
+                        //selectedBackColor: 'darkorange'
+                    });
 
-                $('#tree1').on('nodeSelected', function(event, data) {
-                    $scope.currentItem1 = data;
-                    //$('#infoBox').hide("normal");
+                    $('#tree1').on('nodeUnselected', function (event, data) {
+                        $('#infoGroup').hide('quickly');
+                        setTimeout("$('#treeGroup').removeClass('col-lg-7 col-md-7'); $('#treeGroup').addClass('col-lg-12 col-md-12')", 200);
+                    });
 
-                   //$("#infoGroup").animate({width : '40%'}, 'normal');
-                    $('#infoGroup').show("quickly");
-                    setTimeout("$('#treeGroup').removeClass('col-lg-12 col-md-12'); $('#treeGroup').addClass('col-lg-7 col-md-7')", 200);
+                    $('#tree1').on('nodeSelected', function (event, data) {
+                        $scope.currentItem1 = data;
+                        //$('#infoBox').hide("normal");
 
-                    $('#infoBox').show("normal");
+                        //$("#infoGroup").animate({width : '40%'}, 'normal');
+                        $('#infoGroup').show("quickly");
+                        setTimeout("$('#treeGroup').removeClass('col-lg-12 col-md-12'); $('#treeGroup').addClass('col-lg-7 col-md-7')", 200);
 
-                    $('#name').text("Назва: " + data.name);
-                    if(data.node_type == 0) {
-                        $("#importButton").show();
-                        $('#item_type').text("Тип: група");
-                        $('#child_item_count').text("Кількість груп: " + data.count_of_child_groups + ", кількість об'єктів: " + data.count_of_child_objects);
+                        $('#infoBox').show("normal");
 
-                        $('#removeGroupButton').show();
-                        $('#removeObjectButton').hide();
-                        $('#showObjectButton').hide();
+                        $('#name').text("Назва: " + data.name);
+                        if (data.node_type == 0) {
+                            $("#importButton").show();
+                            $('#item_type').text("Тип: група");
+                            $('#child_item_count').text("Кількість груп: " + data.count_of_child_groups + ", кількість об'єктів: " + data.count_of_child_objects);
 
-                        $('#moveObjectButton').hide();
-                        if(data.node_level == 1) {
+                            $('#removeGroupButton').show();
+                            $('#removeObjectButton').hide();
+                            $('#showObjectButton').hide();
+
+                            $('#moveObjectButton').hide();
+                            if (data.node_level == 1) {
+                                $('#moveGroupButton').hide();
+                                $('#editItemButton').hide();
+                            }
+                            else {
+                                $('#moveGroupButton').show();
+                                $('#editItemButton').show();
+                            }
+                            $('#copyObjectButton').hide();
+                            $('#copyGroupButton').show();
+
+                        }
+                        else {
+                            $("#importButton").hide();
+                            $('#item_type').text("Тип: об'єкт");
+                            $('#child_item_count').text("Кількість індикаторів: " + data.count_of_indicators);
+
+                            $('#removeObjectButton').show();
+                            $('#removeGroupButton').hide();
+                            $('#showObjectButton').show();
+
+                            $('#moveObjectButton').show();
                             $('#moveGroupButton').hide();
-                            $('#editItemButton').hide();
+                            $('#copyObjectButton').show();
+                            $('#copyGroupButton').hide();
                         }
-                        else{
-                            $('#moveGroupButton').show();
-                            $('#editItemButton').show();
+                        if (data.description != null && data.description.length != 0) {
+                            $('#description').text("Опис: " + data.description);
                         }
-                        $('#copyObjectButton').hide();
-                        $('#copyGroupButton').show();
+                        else {
+                            $('#description').text("");
+                        }
 
-                    }
-                    else{
-                        $("#importButton").hide();
-                        $('#item_type').text("Тип: об'єкт");
-                        $('#child_item_count').text("Кількість індикаторів: " + data.count_of_indicators);
+                        $('#path').text("Шлях: " + data.path);
+                        $('#user').text("Власник: " + data.user);
+                        $('#creation_date').text("Створено: " + data.creation_date);
+                        console.log($scope.currentItem1);
+                    });
 
-                        $('#removeObjectButton').show();
-                        $('#removeGroupButton').hide();
-                        $('#showObjectButton').show();
+                    var itemType = null;
+                    $('#moveObjectButton').click(function () {
+                        showSecondTree();
+                        $scope.command = OBJECT_MOVE;
+                        $('#operation').text("Перемістити об'єкт в:")
+                        itemType = 1;
+                    });
+                    $('#moveGroupButton').click(function () {
+                        showSecondTree();
+                        $scope.command = GROUP_MOVE;
+                        $('#operation').text('Перемістити групу в:')
+                        itemType = 0;
+                    });
+                    $('#copyObjectButton').click(function () {
+                        showSecondTree();
+                        $scope.command = OBJECT_COPY;
+                        $('#operation').text("Скопіювати об'єкт в:")
+                        itemType = 1;
+                    });
+                    $('#copyGroupButton').click(function () {
+                        showSecondTree();
+                        $scope.command = GROUP_COPY;
+                        $('#operation').text('Скопіювати групу в:')
+                        itemType = 0;
+                    });
 
-                        $('#moveObjectButton').show();
-                        $('#moveGroupButton').hide();
-                        $('#copyObjectButton').show();
-                        $('#copyGroupButton').hide();
-                    }
-                    if(data.description != null && data.description.length != 0) {
-                        $('#description').text("Опис: " + data.description);
-                    }
-                    else{
-                        $('#description').text("");
-                    }
-
-                    $('#path').text("Шлях: " + data.path);
-                    $('#user').text("Власник: " + data.user);
-                    $('#creation_date').text("Створено: " + data.creation_date);
-                    console.log($scope.currentItem1);
-                });
-
-                var itemType = null;
-                $('#moveObjectButton').click(function () {
-                    showSecondTree();
-                    $scope.command = OBJECT_MOVE;
-                    $('#operation').text("Перемістити об'єкт в:")
-                    itemType = 1;
-                });
-                $('#moveGroupButton').click(function () {
-                    showSecondTree();
-                    $scope.command = GROUP_MOVE;
-                    $('#operation').text('Перемістити групу в:')
-                    itemType = 0;
-                });
-                $('#copyObjectButton').click(function () {
-                    showSecondTree();
-                    $scope.command = OBJECT_COPY;
-                    $('#operation').text("Скопіювати об'єкт в:")
-                    itemType = 1;
-                });
-                $('#copyGroupButton').click(function () {
-                    showSecondTree();
-                    $scope.command = GROUP_COPY;
-                    $('#operation').text('Скопіювати групу в:')
-                    itemType = 0;
-                });
-
-                $('#acceptButton').click(function () {
-                    $('#infoBox2').hide("normal");
-                    hideSecondTree(itemType);
-                    itemType = null;
-                });
-                $('.cancelButton').click(function () {
-                    $('#infoBox2').hide("normal");
-                    hideSecondTree(itemType);
-                    itemType = null;
-                });
+                    $('#acceptButton').click(function () {
+                        $('#infoBox2').hide("normal");
+                        hideSecondTree(itemType);
+                        itemType = null;
+                    });
+                    $('.cancelButton').click(function () {
+                        $('#infoBox2').hide("normal");
+                        hideSecondTree(itemType);
+                        itemType = null;
+                    });
 
 
-                $('#tree2').treeview({data: $scope.formatDataToTree(ONLY_GROUPS)});
+                    $('#tree2').treeview({data: $scope.formatDataToTree(ONLY_GROUPS)});
 
-                $('#tree2').on('nodeUnselected', function(event, data) {
-                    $('#infoBox2').hide("normal");
-                });
+                    $('#tree2').on('nodeUnselected', function (event, data) {
+                        $('#infoBox2').hide("normal");
+                    });
 
-                $('#tree2').on('nodeSelected', function(event, data) {
-                    $scope.currentItem2 = data;
-                    $('#infoBox2').hide("normal");
-                    $('#infoBox2').show("normal");
-                    $('#acceptButton').show();
+                    $('#tree2').on('nodeSelected', function (event, data) {
+                        $scope.currentItem2 = data;
+                        $('#infoBox2').hide("normal");
+                        $('#infoBox2').show("normal");
+                        $('#acceptButton').show();
 
-                    $('#name2').text("Назва: " + data.name);
-                    $('#item_type2').text("Тип: група");
-                    if(data.description != null && data.description.length != 0) {
-                        $('#description2').text("Опис: " + data.description);
-                    }
-                    else{
-                        $('#description2').text("");
-                    }
-                    $('#path2').text("Шлях: " + data.path);
-                    $('#user2').text("Власник: " + data.user);
-                });
-            }
-        }, function (err) {
-            console.log('Не вдалося отримати дерево! (res.data === undefined)');
-            console.log(err);
-        });
+                        $('#name2').text("Назва: " + data.name);
+                        $('#item_type2').text("Тип: група");
+                        if (data.description != null && data.description.length != 0) {
+                            $('#description2').text("Опис: " + data.description);
+                        }
+                        else {
+                            $('#description2').text("");
+                        }
+                        $('#path2').text("Шлях: " + data.path);
+                        $('#user2').text("Власник: " + data.user);
+                    });
+                }
+            }, function (err) {
+                console.log('Не вдалося отримати дерево! (res.data === undefined)');
+                console.log(err);
+            });
+        };
+        setTimeout(asyncQuery, 0);
     };
 
     //Підготовка до показу другого дерева

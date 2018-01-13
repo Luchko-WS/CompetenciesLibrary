@@ -4,7 +4,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Бібліотека ієрархічних даних</title>
+    <title>СИСТЕМА ЛОКАЛЬНОГО МОНІТОРИНГУ СТАНУ ДОВКІЛЛЯ</title>
 
     <base href="/"/>
 
@@ -15,7 +15,7 @@
 <body ng-app="MainApp">
     <div ng-controller="UsersController">
 		<div class="navbar navbar-inverse navbar-fixed-top" style="background-color:darkblue">
-			<h3 style="text-align: center; color: white">БІБЛІОТЕКА ІЄРАРХІЧНИХ ДАНИХ</h3>
+			<h3 style="text-align: center; color: white">СИСТЕМА ЛОКАЛЬНОГО МОНІТОРИНГУ СТАНУ ДОВКІЛЛЯ</h3>
 			<div class="container">
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -26,13 +26,12 @@
 				</div>
 				<div class="navbar-collapse collapse">
 					<ul class="nav navbar-nav">
-						<li><a href="#main" style="color: white">Головна сторінка</a></li>
-						<li ng-if="$user"><a href="#editLibrary" style="color: white">Редактор бібліотеки</a></li>
-						<li ng-if="$user"><a href="#actions" style="color: white">Дії користувачів <span class="badge badge-important" ng-bind="$countOfActions"></span></a></li>
+						<li><a href="#main" style="color: white"><span ng-bind="$mainTabTitle"></span></a></li>
+						<li ng-if="$user"><a href="#editLibrary" style="color: white"><span ng-bind="$editorTabTitle"></span></a></li>
+						<li ng-if="$user"><a href="#actions" style="color: white"><span ng-bind="$actionsTabTitle"></span><span class="badge badge-important" ng-bind="$countOfActions"></span></a></li>
 						<li ng-if="$user"><a href="#editUserInfo" style="color: white"><span ng-bind="$user.firstName + ' ' + $user.secondName"></span></a></li>
-						<li ng-if="$user"><a href="" ng-click="logout()" style="color: white">Вийти</a></li>
-						<li ng-if="!$user"><a href="#registration" style="color: white">Зареєструватися</a></li>
-						<li ng-if="!$user"><a href="#login" style="color: white">Увійти</a></li>
+						<li ng-if="!$user"><a href="#registration" style="color: white"><span ng-bind="$registrationTabTitle"></span></a></li>
+						<li><a href="" ng-click="auth()" style="color: white"><span ng-bind="$loginTabTitle"></span></a></li>
 					</ul>
 				</div>
 			</div>
@@ -53,7 +52,7 @@
 				</div>
 			</div>
 		-->
-		<div class="container body-content" style="padding-top:120px">
+		<div class="container body-content" style="padding-top:160px">
 			<ng-view></ng-view>
 			<button id="toTop" style="border-radius: 25px; position: fixed; bottom: 20px; right: 20px; display: none; height: 50px; width: 50px" class="btn btn-primary"><span class="glyphicon glyphicon-arrow-up"></span></button>
 		</div>

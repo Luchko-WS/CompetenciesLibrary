@@ -74,30 +74,34 @@ mainApp.controller('ActionsCtrl', ['$scope', '$rootScope', '$http', '$location',
             //Відображення дій після тих, що були видалені користувачем
             firstActionID: $rootScope.$user.firstActionID
         };
-        ActionModel.get({'id':JSON.stringify(params)}, function (res) {
-            if(res.data === undefined) {
-                console.log('Не вдалося отримати усі дії! (res.data === undefined)');
-                $scope.actionData = -1;
-            }
-            else {
-                $scope.actionData = res.data;
-                console.log($scope.actionData);
-                $rootScope.$countOfActions = '';
-                $scope.oldActionsID = $rootScope.$user.lastActionID;
-                console.log("last: ", $scope.oldActionsID);
-                if($scope.actionData.length != 0) {
-                    if(Number($scope.actionData[0].id) > Number($scope.oldActionsID)) {
-                        console.log($scope.actionData[0].id, ">", $scope.oldActionsID);
-                        $rootScope.$user.lastActionID = $scope.actionData[0].id;
-                        $rootScope.setLastActionIDForUser($scope.actionData[0].id);
-                        window.localStorage.setItem('authUser', JSON.stringify($rootScope.$user));
+
+        function asyncQuery() {
+            ActionModel.get({'id': JSON.stringify(params)}, function (res) {
+                if (res.data === undefined) {
+                    console.log('Не вдалося отримати усі дії! (res.data === undefined)');
+                    $scope.actionData = -1;
+                }
+                else {
+                    $scope.actionData = res.data;
+                    console.log($scope.actionData);
+                    $rootScope.$countOfActions = '';
+                    $scope.oldActionsID = $rootScope.$user.lastActionID;
+                    console.log("last: ", $scope.oldActionsID);
+                    if ($scope.actionData.length != 0) {
+                        if (Number($scope.actionData[0].id) > Number($scope.oldActionsID)) {
+                            console.log($scope.actionData[0].id, ">", $scope.oldActionsID);
+                            $rootScope.$user.lastActionID = $scope.actionData[0].id;
+                            $rootScope.setLastActionIDForUser($scope.actionData[0].id);
+                            window.localStorage.setItem('authUser', JSON.stringify($rootScope.$user));
+                        }
                     }
                 }
-            }
-        }, function (err) {
-            console.log('Не вдалося отримати усі дії! (res.data === undefined)');
-            console.log(err);
-        });
+            }, function (err) {
+                console.log('Не вдалося отримати усі дії! (res.data === undefined)');
+                console.log(err);
+            });
+        };
+        setTimeout(asyncQuery, 0);
     };
 
     //Отримання дії
@@ -106,28 +110,32 @@ mainApp.controller('ActionsCtrl', ['$scope', '$rootScope', '$http', '$location',
         var params =  {
             actionID: actionID
         };
-        ActionModel.get({'id':JSON.stringify(params)}, function (res) {
-            if(res.data === undefined) {
-                console.log('Не вдалося отримати дію! (res.data === undefined)');
-                $scope.actionData = -1
-            }
-            else {
-                $scope.actionData = res.data;
-                //Перехід до потрібної сторінки відповідно до дії
-                if($scope.actionData[0].action_type == 'create') {
-                    $location.path('/actions/id/' + $scope.actionData[0].id + '/' +
-                        $scope.actionData[0].item_type + '/' + $scope.actionData[0].action_type);
+
+        function asyncQuery() {
+            ActionModel.get({'id': JSON.stringify(params)}, function (res) {
+                if (res.data === undefined) {
+                    console.log('Не вдалося отримати дію! (res.data === undefined)');
+                    $scope.actionData = -1
                 }
                 else {
-                    $location.path('/actions/id/' + $scope.actionData[0].id + '/' +
-                        $scope.actionData[0].item_type + '/' + $scope.actionData[0].item_id +
-                        '/' + $scope.actionData[0].action_type);
+                    $scope.actionData = res.data;
+                    //Перехід до потрібної сторінки відповідно до дії
+                    if ($scope.actionData[0].action_type == 'create') {
+                        $location.path('/actions/id/' + $scope.actionData[0].id + '/' +
+                            $scope.actionData[0].item_type + '/' + $scope.actionData[0].action_type);
+                    }
+                    else {
+                        $location.path('/actions/id/' + $scope.actionData[0].id + '/' +
+                            $scope.actionData[0].item_type + '/' + $scope.actionData[0].item_id +
+                            '/' + $scope.actionData[0].action_type);
+                    }
                 }
-            }
-        }, function (err) {
-            console.log('Не вдалося отримати усі дію!');
-            console.log(err);
-        });
+            }, function (err) {
+                console.log('Не вдалося отримати усі дію!');
+                console.log(err);
+            });
+        };
+        setTimeout(asyncQuery, 0);
     };
 
     //Збереження дії

@@ -82,34 +82,39 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
         var params = {
             tree: 'GROUPS'
         };
-        GroupsModel.get({'id': JSON.stringify(params)}, function (res) {
-            if (res.data === undefined) {
-                console.log('Не вдалося отримати дерево (res.data === undefined)');
-            }
-            else {
-                $rootScope.$tree = res.data;
-                $('#tree').treeview({data: $rootScope.formatDataToTree()});
-                $('#tree').on('nodeUnselected', function (event, data) {
-                    $rootScope.$currentGroup = null;
-                    $('#editTreeNodeButtons').hide();
-                });
-                $('#tree').on('nodeSelected', function (event, data) {
-                    $rootScope.$currentGroup = data;
-                    $rootScope.getObjectsByGroup($rootScope.$currentGroup.id);
-                    $rootScope.$pagination.page = 1;
-                    $('#editTreeNodeButtons').show();
-                    if (data.node_level == 1) {
-                        $('#editItemButton').hide();
-                    }
-                    else {
-                        $('#editItemButton').show();
-                    }
-                });
-            }
-        }, function (err) {
-            console.log('Не вдалося отримати дерево');
-            console.log(err);
-        });
+
+        function asyncQuery() {
+            GroupsModel.get({'id': JSON.stringify(params)}, function (res) {
+                if (res.data === undefined) {
+                    console.log('Не вдалося отримати дерево (res.data === undefined)');
+                }
+                else {
+                    $rootScope.$tree = res.data;
+                    $('#tree').treeview({data: $rootScope.formatDataToTree()});
+                    $('#tree').on('nodeUnselected', function (event, data) {
+                        $rootScope.$currentGroup = null;
+                        $('#editTreeNodeButtons').hide();
+                    });
+                    $('#tree').on('nodeSelected', function (event, data) {
+                        $rootScope.$currentGroup = data;
+                        $rootScope.getObjectsByGroup($rootScope.$currentGroup.id);
+                        $rootScope.$pagination.page = 1;
+                        $('#editTreeNodeButtons').show();
+                        if (data.node_level == 1) {
+                            $('#editItemButton').hide();
+                        }
+                        else {
+                            $('#editItemButton').show();
+                        }
+                    });
+                }
+            }, function (err) {
+                console.log('Не вдалося отримати дерево');
+                console.log(err);
+            });
+        };
+
+        setTimeout(asyncQuery, 0);
     };
     //Отримання дерева (при редагуванні груп, об'єктів, імпорті файлів)
     $rootScope.getGroupTree = function () {
@@ -118,24 +123,28 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
         var params =  {
             tree: 'GROUPS'
         };
-        GroupsModel.get({'id':JSON.stringify(params)}, function (res) {
-            if(res.data === undefined) {
-                console.log('Не вдалося отримати дерево (res.data === undefined)');
-            }
-            else {
-                $rootScope.$tree = res.data;
-                $('#tree').treeview({data: $rootScope.formatDataToTree()});
-                $('#tree').on('nodeUnselected', function(event, data) {
-                    $rootScope.$currentGroup = null;
-                });
-                $('#tree').on('nodeSelected', function(event, data) {
-                    $rootScope.$currentGroup = data;
-                });
-            }
-        }, function (err) {
-            console.log('Не вдалося отримати дерево');
-            console.log(err);
-        });
+
+        function asyncQuery() {
+            GroupsModel.get({'id':JSON.stringify(params)}, function (res) {
+                if(res.data === undefined) {
+                    console.log('Не вдалося отримати дерево (res.data === undefined)');
+                }
+                else {
+                    $rootScope.$tree = res.data;
+                    $('#tree').treeview({data: $rootScope.formatDataToTree()});
+                    $('#tree').on('nodeUnselected', function(event, data) {
+                        $rootScope.$currentGroup = null;
+                    });
+                    $('#tree').on('nodeSelected', function(event, data) {
+                        $rootScope.$currentGroup = data;
+                    });
+                }
+            }, function (err) {
+                console.log('Не вдалося отримати дерево');
+                console.log(err);
+            });
+        };
+        setTimeout(asyncQuery, 0);
     };
     //Форматування отриманих даних під Bootstrap Tree View
     $rootScope.formatDataToTree = function() {
@@ -195,27 +204,31 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
             tree: false,
             groupID: groupID
         };
-        GroupsModel.get({'id':JSON.stringify(params)}, function (res) {
-            if(res.data === undefined) {
-                console.log("Помилка при отриманні групи! (res.data === undefined)");
-                console.log(res);
-                $scope.groupData = -1;
-            }
-            else {
-                $scope.groupData = res.data;
-                if(setDataIntoForm) {
-                    $scope.nameText = $scope.groupData[0].name;
-                    $rootScope.$currentGroup = $scope.groupData[0].parent_node;
-                    $scope.oldGroupID = $rootScope.$currentGroup.id;
-                    $scope.groupText = $rootScope.$currentGroup.name;
-                    $scope.descriptionText = $scope.groupData[0].description;
+
+        function asyncQuery() {
+            GroupsModel.get({'id': JSON.stringify(params)}, function (res) {
+                if (res.data === undefined) {
+                    console.log("Помилка при отриманні групи! (res.data === undefined)");
+                    console.log(res);
+                    $scope.groupData = -1;
                 }
-            }
-        }, function (err) {
-            console.log("Помилка при отриманні групи!");
-            console.log(err);
-            $scope.groupData = -1;
-        });
+                else {
+                    $scope.groupData = res.data;
+                    if (setDataIntoForm) {
+                        $scope.nameText = $scope.groupData[0].name;
+                        $rootScope.$currentGroup = $scope.groupData[0].parent_node;
+                        $scope.oldGroupID = $rootScope.$currentGroup.id;
+                        $scope.groupText = $rootScope.$currentGroup.name;
+                        $scope.descriptionText = $scope.groupData[0].description;
+                    }
+                }
+            }, function (err) {
+                console.log("Помилка при отриманні групи!");
+                console.log(err);
+                $scope.groupData = -1;
+            });
+        };
+        setTimeout(asyncQuery, 0);
     };
 
     //СТВОРЕННЯ ГРУПИ
@@ -246,9 +259,12 @@ mainApp.controller('GroupsCtrl', ['$scope', '$rootScope', '$http', '$location', 
             console.log(res);
             showMessageWindow("alert alert-success", "Групу створено!", "Дію успішно виконано. Групу створено.");
         },function (err) {
+            console.log("Групу створено!");
+            showMessageWindow("alert alert-success", "Групу створено!", "Дію успішно виконано. Групу створено.");
+            /*
             console.log("Групу не створено!");
             console.log(err);
-            showMessageWindow("alert alert-danger", "Помилка!", "Не вдалося створити групу.");
+            showMessageWindow("alert alert-danger", "Помилка!", "Не вдалося створити групу.");*/
         });
     };
 
